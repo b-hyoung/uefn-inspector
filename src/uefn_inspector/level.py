@@ -1,6 +1,7 @@
 """Offline level/actor inventory built on top of the faithful .uasset model."""
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from .uasset import Package, read_package
 @dataclass
 class PlacedActor:
     device_class: str = ""
+    name: str = ""
     asset_refs: list[str] = field(default_factory=list)
 
 
@@ -35,7 +37,8 @@ def _device_class(pkg: Package) -> str:
 def inspect_actor(path: str | Path) -> PlacedActor:
     pkg = read_package(path)
     asset_refs = [n for n in pkg.names if n.startswith("/") and not n.startswith("/Script")]
-    return PlacedActor(device_class=_device_class(pkg), asset_refs=asset_refs)
+    name = next((e.object_name for e in pkg.exports if "_UAID_" in e.object_name), "")
+    return PlacedActor(device_class=_device_class(pkg), name=name, asset_refs=asset_refs)
 
 
 def inspect_level(path: str | Path) -> Level:
@@ -49,3 +52,33 @@ def inspect_level(path: str | Path) -> Level:
         except Exception as exc:  # keep going on a bad file (spec: graceful)
             warnings.append(f"{f.name}: {exc}")
     return Level(name=root.name, actors=actors, warnings=warnings)
+
+
+def audit_level(path: str | Path) -> dict:
+    """Health summary of a level: device counts, duplicate actor names, warnings.
+
+    broken_refs needs a full project asset index (assets, not just placed
+    actors), so it is left empty here with a note rather than reported noisily.
+    """
+    level = inspect_level(path)
+    device_counts = dict(
+        Counter(a.device_class for a in level.actors if a.device_class).most_common()
+    )
+    name_counts = Counter(a.name for a in level.actors if a.name)
+    duplicate_names = sorted(n for n, c in name_counts.items() if c > 1)
+    return {
+        "level": level.name,
+        "actor_count": len(level.actors),
+        "device_counts": device_counts,
+        "duplicate_names": duplicate_names,
+        "broken_refs": [],
+        "broken_refs_note": "requires full project asset index (not just actors)",
+        "warnings": level.warnings,
+    }
+
+
+def diff_levels(a: Level, b: Level) -> dict:
+    """Structural diff by device-class multiset. Empty when identical."""
+    ca = Counter(x.device_class for x in a.actors)
+    cb = Counter(x.device_class for x in b.actors)
+    return {"added": dict(cb - ca), "removed": dict(ca - cb)}

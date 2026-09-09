@@ -1,6 +1,12 @@
 from pathlib import Path
 
-from uefn_inspector.level import inspect_actor, inspect_level
+from uefn_inspector.level import (
+    Level,
+    audit_level,
+    diff_levels,
+    inspect_actor,
+    inspect_level,
+)
 
 FIXTURE = Path(__file__).parent / "fixtures" / "audioplayer.uasset"
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"
@@ -19,3 +25,23 @@ def test_inspect_level_aggregates_actors():
     assert "Device_CRD_AudioPlayer_C" in classes
     assert "GrayBox_Solid_Wall_C" in classes
     assert "Device_ClassSelector_V2_C" in classes
+
+
+def test_audit_reports_counts_and_keys():
+    rep = audit_level(LEVEL_DIR)
+    assert rep["device_counts"]
+    assert "duplicate_names" in rep
+    assert "broken_refs" in rep
+
+
+def test_diff_same_level_is_empty():
+    a = inspect_level(LEVEL_DIR)
+    d = diff_levels(a, a)
+    assert d["added"] == {} and d["removed"] == {}
+
+
+def test_diff_detects_removal():
+    a = inspect_level(LEVEL_DIR)
+    b = Level(actors=a.actors[:-1])
+    d = diff_levels(a, b)
+    assert d["removed"]

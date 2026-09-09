@@ -83,10 +83,10 @@
 
 ## M4 — 레벨
 
-### T40 레벨 audit/health · `todo` · P3 (T10)
+### T40 레벨 audit/health · `done` · P3 (T10)
 - **수용:** 리포트에 디바이스 개수·중복 이름·깨진참조 요약 포함.
 
-### T41 레벨 diff · `todo` · P3 (T10)
+### T41 레벨 diff · `done` · P3 (T10)
 - **수용:** `diff(levelA, levelA)` == 비어있음; 액터 추가/제거 시 차이 보고.
 
 ## M5 — 노출
