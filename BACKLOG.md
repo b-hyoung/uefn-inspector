@@ -44,11 +44,11 @@
 - **목표:** 파일/패키지 → 참조 대상(import 패키지 경로) 엣지 그래프.
 - **수용:** audioplayer 노드가 `Heartbeat_Near`(또는 그 패키지)로 향하는 엣지 보유.
 
-### T12 검색(에셋·디바이스) · `todo` · P1 (T10)
+### T12 검색(에셋·디바이스) · `done` · P1 (T10)
 - **목표:** `search(index, q)` 이름/클래스/타입 부분일치.
 - **수용:** `search(index,"AudioPlayer")` → audioplayer 패키지 포함.
 
-### T13 where-used (역참조) · `todo` · P1 (T11)
+### T13 where-used (역참조) · `done` · P1 (T11)
 - **목표:** 주어진 에셋 경로를 참조하는 파일 목록.
 - **수용:** `where_used(index,"Heartbeat_Near")` → audioplayer 포함. (지난번 "못 찾던" 것)
 
