@@ -25,12 +25,14 @@
 ### T1 견고성: 손상/미지원 파일 graceful · `done` · P0
 - **수용:** 랜덤 128바이트 임시파일 → `read_package` 예외 없음, `warnings` 있음, `exports==[]`.
 
-### T2 표준 태그드 프로퍼티 디코더 · `todo` · P1
+### T2 표준 태그드 프로퍼티 디코더 · `deferred` · P1
 - **목표:** export serial 영역에서 Bool/Int/Float/Name/Object/Enum 디코드, 모르는 타입 `unparsed`.
 - **수용:** `properties.decode(data, pkg, export)` → wall/light에서 표준 프로퍼티 ≥1개 올바른 파이썬 값, 예외 없음. Verse-VM(GUID) 프로퍼티는 `unparsed`.
+- **⏸ 보류 사유(2026-09-09):** export serial 시작이 단순 FName 태그가 아님(선두 구조/unversioned 직렬화 의심). 3회 탐색 실패 → 규약상 정지. name표엔 타입명 존재(태그드 시사)라 가능성은 있으나 깊은 작업 필요. **M1(찾기) 완료 후 재도전.**
 
-### T3 트랜스폼 읽기 · `todo` · P1 (T2 의존)
+### T3 트랜스폼 읽기 · `deferred` · P1 (T2 의존)
 - **수용:** `inspect_actor(wall)` → `transform.location` 유한 float 3개, 전부 0 아님.
+- **⏸ T2 의존이라 함께 보류.**
 
 ## M1 — 프로젝트 인덱스 + 검색 (핵심)
 
