@@ -18,7 +18,7 @@ from __future__ import annotations
 import struct
 from pathlib import Path
 
-from .uasset import ObjectExport, Package, _read_fstring
+from uefn_inspector.core.uasset import ObjectExport, Package, _read_fstring
 
 _MAX_INNER = 6
 _MAX_DEPTH = 6

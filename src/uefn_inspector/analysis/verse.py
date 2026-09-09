@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import re
 
-from .properties import decode_properties
-from .uasset import Package
+from uefn_inspector.core.properties import decode_properties
+from uefn_inspector.core.uasset import Package
 
 _SLOT = re.compile(r"__verse_0x[0-9A-Fa-f]+_(.+)")
 

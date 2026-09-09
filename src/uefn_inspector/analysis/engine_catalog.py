@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-_DEFAULT = Path(__file__).resolve().parents[2] / "data" / "engine_device_catalog.json"
+_DEFAULT = Path(__file__).resolve().parents[3] / "data" / "engine_device_catalog.json"
 
 
 def load_engine_catalog(path: str | Path | None = None) -> dict:

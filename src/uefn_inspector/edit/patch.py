@@ -10,8 +10,8 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from .uasset import read_package
-from .write import set_scalar
+from uefn_inspector.core.uasset import read_package
+from uefn_inspector.edit.write import set_scalar
 
 
 def patch_scalar_file(path: str | Path, export_name: str, prop: str, value,

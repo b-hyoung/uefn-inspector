@@ -5,8 +5,8 @@ testable and reusable; project wrappers apply them to the reference graph.
 """
 from __future__ import annotations
 
-from .graph import build_reference_graph
-from .index import ProjectIndex
+from uefn_inspector.model.graph import build_reference_graph
+from uefn_inspector.model.index import ProjectIndex
 
 DEFAULT_IGNORE = ("/Script", "/Engine")
 

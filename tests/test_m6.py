@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from uefn_inspector.analyze import (
+from uefn_inspector.analysis.analyze import (
     dependency_depth,
     fan_out,
     hotspots,
     to_mermaid,
 )
-from uefn_inspector.census import (
+from uefn_inspector.analysis.census import (
     cross_level_shared,
     external_deps,
     extract_strings,
@@ -14,9 +14,9 @@ from uefn_inspector.census import (
     size_report,
     type_census,
 )
-from uefn_inspector.index import ProjectIndex, build_index
+from uefn_inspector.model.index import ProjectIndex, build_index
 from uefn_inspector.level import Level, PlacedActor, find_duplicates, verse_devices
-from uefn_inspector.uasset import Package, read_package
+from uefn_inspector.core.uasset import Package, read_package
 
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"
 AUDIO = Path(__file__).parent / "fixtures" / "audioplayer.uasset"

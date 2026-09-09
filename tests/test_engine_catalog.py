@@ -1,4 +1,4 @@
-from uefn_inspector.engine_catalog import load_engine_catalog, search_engine_devices
+from uefn_inspector.analysis.engine_catalog import load_engine_catalog, search_engine_devices
 
 
 def test_engine_catalog_loads():

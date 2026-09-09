@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import struct
 
-from .uasset import Package
+from uefn_inspector.core.uasset import Package
 
 
 def resize_export_data(data: bytes, pkg: Package, export_index: int,

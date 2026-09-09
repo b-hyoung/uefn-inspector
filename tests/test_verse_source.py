@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from uefn_inspector.uasset import read_package
-from uefn_inspector.verse import verse_bindings
-from uefn_inspector.verse_source import cross_reference, parse_verse
+from uefn_inspector.core.uasset import read_package
+from uefn_inspector.analysis.verse import verse_bindings
+from uefn_inspector.analysis.verse_source import cross_reference, parse_verse
 
 FIX = Path(__file__).parent / "fixtures"
 

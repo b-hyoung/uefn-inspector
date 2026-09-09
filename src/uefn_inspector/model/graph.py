@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .index import ProjectIndex
+from uefn_inspector.model.index import ProjectIndex
 
 
 def _references(names: list[str]) -> set[str]:

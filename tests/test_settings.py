@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from uefn_inspector.query import list_settings
-from uefn_inspector.uasset import read_package
+from uefn_inspector.analysis.query import list_settings
+from uefn_inspector.core.uasset import read_package
 
 FIXTURE = Path(__file__).parent / "fixtures" / "audioplayer.uasset"
 

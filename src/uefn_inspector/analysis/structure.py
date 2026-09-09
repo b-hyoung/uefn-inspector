@@ -4,8 +4,8 @@ Generic — no project assumptions.
 """
 from __future__ import annotations
 
-from .index import ProjectIndex
-from .uasset import Package
+from uefn_inspector.model.index import ProjectIndex
+from uefn_inspector.core.uasset import Package
 
 
 def _resolve_class(pkg: Package, class_index: int) -> str:

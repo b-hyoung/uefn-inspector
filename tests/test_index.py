@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from uefn_inspector.index import build_index
+from uefn_inspector.model.index import build_index
 
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"
 

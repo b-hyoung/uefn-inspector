@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from uefn_inspector.analyze import (
+from uefn_inspector.analysis.analyze import (
     curve_usage,
     find_broken_refs,
     find_cycles,
@@ -9,8 +9,8 @@ from uefn_inspector.analyze import (
     material_usage,
     mesh_usage,
 )
-from uefn_inspector.index import ProjectIndex, build_index
-from uefn_inspector.uasset import ObjectImport, Package
+from uefn_inspector.model.index import ProjectIndex, build_index
+from uefn_inspector.core.uasset import ObjectImport, Package
 
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"
 

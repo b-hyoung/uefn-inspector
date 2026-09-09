@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from uefn_inspector.properties import decode_properties
-from uefn_inspector.uasset import read_package
-from uefn_inspector.verse import verse_bindings
+from uefn_inspector.core.properties import decode_properties
+from uefn_inspector.core.uasset import read_package
+from uefn_inspector.analysis.verse import verse_bindings
 
 AUDIO = Path(__file__).parent / "fixtures" / "audioplayer.uasset"
 VERSE = Path(__file__).parent / "fixtures" / "versedevice.uasset"

@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from uefn_inspector.index import build_index
-from uefn_inspector.properties import property_census
-from uefn_inspector.spatial import (
+from uefn_inspector.model.index import build_index
+from uefn_inspector.core.properties import property_census
+from uefn_inspector.analysis.spatial import (
     density_grid,
     min_spacing,
     spatial_bounds,

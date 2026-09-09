@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import re
 
-from .graph import build_reference_graph
-from .index import ProjectIndex
-from .uasset import Package
+from uefn_inspector.model.graph import build_reference_graph
+from uefn_inspector.model.index import ProjectIndex
+from uefn_inspector.core.uasset import Package
 
 _ENUM_TYPE = re.compile(r"^E[A-Z][A-Za-z0-9]+$")
 

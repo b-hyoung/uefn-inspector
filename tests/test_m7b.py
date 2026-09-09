@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from uefn_inspector.analyze import to_dot, transitive_reachable
-from uefn_inspector.census import engine_version_census, gameplay_tag_census
-from uefn_inspector.index import ProjectIndex, build_index
+from uefn_inspector.analysis.analyze import to_dot, transitive_reachable
+from uefn_inspector.analysis.census import engine_version_census, gameplay_tag_census
+from uefn_inspector.model.index import ProjectIndex, build_index
 from uefn_inspector.level import Level, PlacedActor, actor_diff
-from uefn_inspector.uasset import Package
+from uefn_inspector.core.uasset import Package
 
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"
 

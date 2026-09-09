@@ -1,6 +1,6 @@
 import os
 
-from uefn_inspector.uasset import read_package
+from uefn_inspector.core.uasset import read_package
 
 
 def test_read_package_graceful_on_truncated_file(tmp_path):

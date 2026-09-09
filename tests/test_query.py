@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from uefn_inspector.index import build_index
-from uefn_inspector.query import search, where_used
+from uefn_inspector.model.index import build_index
+from uefn_inspector.analysis.query import search, where_used
 
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"
 

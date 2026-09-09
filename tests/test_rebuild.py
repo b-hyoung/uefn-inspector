@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from uefn_inspector.properties import decode_properties
-from uefn_inspector.rebuild import resize_export_data
-from uefn_inspector.uasset import read_package
+from uefn_inspector.core.properties import decode_properties
+from uefn_inspector.edit.rebuild import resize_export_data
+from uefn_inspector.core.uasset import read_package
 
 SMALL = Path(__file__).parent / "fixtures" / "small.uasset"
 

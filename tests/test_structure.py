@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from uefn_inspector.structure import (
+from uefn_inspector.analysis.structure import (
     arch_lint,
     component_composition,
     outer_tree,
     soft_hard_refs,
 )
-from uefn_inspector.index import build_index
-from uefn_inspector.uasset import read_package
+from uefn_inspector.model.index import build_index
+from uefn_inspector.core.uasset import read_package
 
 AUDIO = Path(__file__).parent / "fixtures" / "audioplayer.uasset"
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"

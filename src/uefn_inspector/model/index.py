@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .uasset import Package, read_package
+from uefn_inspector.core.uasset import Package, read_package
 
 
 @dataclass

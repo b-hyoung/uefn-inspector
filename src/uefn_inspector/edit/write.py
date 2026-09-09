@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import struct
 
-from .properties import property_layout
-from .uasset import ObjectExport, Package
+from uefn_inspector.core.properties import property_layout
+from uefn_inspector.core.uasset import ObjectExport, Package
 
 
 class WriteError(Exception):

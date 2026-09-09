@@ -1,9 +1,9 @@
 import shutil
 from pathlib import Path
 
-from uefn_inspector.properties import decode_properties
-from uefn_inspector.uasset import read_package
-from uefn_inspector.write import set_scalar
+from uefn_inspector.core.properties import decode_properties
+from uefn_inspector.core.uasset import read_package
+from uefn_inspector.edit.write import set_scalar
 
 SMALL = Path(__file__).parent / "fixtures" / "small.uasset"
 

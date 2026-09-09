@@ -8,8 +8,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from .index import ProjectIndex
-from .uasset import Package
+from uefn_inspector.model.index import ProjectIndex
+from uefn_inspector.core.uasset import Package
 
 
 def type_census(index: ProjectIndex) -> Counter:

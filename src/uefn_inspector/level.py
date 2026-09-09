@@ -5,8 +5,8 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .properties import decode_properties
-from .uasset import Package, read_package
+from uefn_inspector.core.properties import decode_properties
+from uefn_inspector.core.uasset import Package, read_package
 
 
 @dataclass
