@@ -13,6 +13,9 @@
 | 4 | Export표 (내부 오브젝트 + serial 영역) | ✅ | 🔜 | 22개, `serial_offset/size` = 쓰기 주소 |
 | 5 | 배치 디바이스 인벤토리 (클래스·개수) | ✅ | ⛔ | export→import 참조로 정밀 클래스. `VerseDevice_C`도 잡힘 |
 | 5b | 레벨 전체 인벤토리 + CLI 리포트 | ✅ | ⛔ | `python -m uefn_inspector <경로>`. PointLevel 67액터 |
+| 5c | 프로젝트 인덱스 + 참조 그래프 | ✅ | ⛔ | build_index/build_reference_graph (M1) |
+| 5d | 검색(search) · 역참조(where-used) | ✅ | ⛔ | 지난 세션 '찾기' 토일 해소 (M1) |
+| 5e | 디바이스 설정 **발견**(이름·enum) | ✅ | ❌값 | list_settings — 설정 존재/이름만, 값은 9번 천장 |
 | 6 | 참조 에셋 (사운드·메시 경로) | ✅ | ⚠️ | `/` 경로 추출. Heartbeat 3단 확인 |
 | 7 | 트랜스폼 (위치·회전·스케일) | 🔜 | 🔜 | 표준 태그드 프로퍼티. 디코더로 예정 |
 | 8 | 표준 태그드 프로퍼티 (Bool/Int/Float/Enum) | ⚠️ | 🔜 | 이름·타입은 보임. 값 디코드는 부분 |

@@ -52,7 +52,7 @@
 - **목표:** 주어진 에셋 경로를 참조하는 파일 목록.
 - **수용:** `where_used(index,"Heartbeat_Near")` → audioplayer 포함. (지난번 "못 찾던" 것)
 
-### T14 디바이스 설정 발견 · `todo` · P1
+### T14 디바이스 설정 발견 · `done` · P1
 - **목표:** 패키지의 설정명/enum 타입 나열(값 아님, name표 기반).
 - **수용:** audioplayer → `"Can Be Heard By"`와 `"ECreativeAudioPlayerTarget"` 포함.
 
