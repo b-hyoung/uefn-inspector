@@ -82,3 +82,14 @@ def diff_levels(a: Level, b: Level) -> dict:
     ca = Counter(x.device_class for x in a.actors)
     cb = Counter(x.device_class for x in b.actors)
     return {"added": dict(cb - ca), "removed": dict(ca - cb)}
+
+
+def find_duplicates(level: Level) -> dict[str, int]:
+    """Device classes placed more than once."""
+    counts = Counter(a.device_class for a in level.actors if a.device_class)
+    return {cls: n for cls, n in counts.items() if n > 1}
+
+
+def verse_devices(level: Level) -> list[PlacedActor]:
+    """Placed actors that are Verse devices."""
+    return [a for a in level.actors if "VerseDevice" in a.device_class]

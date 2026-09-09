@@ -89,6 +89,33 @@
 ### T41 레벨 diff · `done` · P3 (T10)
 - **수용:** `diff(levelA, levelA)` == 비어있음; 액터 추가/제거 시 차이 보고.
 
+## M6 — 분석 확장 (NarshaADK 폭 따라잡기, 전부 오프라인 가능)
+
+### T60 hotspot(fan-in 최다 참조) · `done` · P1 (T11)
+- **수용:** `hotspots(index)` → (target, count) 내림차순, 최다 참조 자산 1위 반환.
+### T61 fan-out(파일별 참조 수) · `done` · P1 (T11)
+- **수용:** `fan_out(index)` → {path: 참조수}, audioplayer>0.
+### T62 타입 census(클래스 분포) · `done` · P1
+- **수용:** `type_census(index)` → Counter, 'BlueprintGeneratedClass' 등 포함.
+### T63 외부 의존성 리포트(마운트별) · `done` · P2
+- **수용:** `external_deps(index)` → '/Game','/Script' 등 루트별 카운트.
+### T64 네이밍 컨벤션 린트 · `done` · P2
+- **수용:** `naming_lint(names, rules)` → 규칙 위반 목록(합성 검증).
+### T65 문자열/텍스트 추출 · `done` · P2
+- **수용:** `extract_strings(pkg)` → 사람이 읽는 문자열(경로 제외) 목록.
+### T66 그래프 mermaid 내보내기 · `done` · P2 (T11)
+- **수용:** `to_mermaid(index)` → 'graph'로 시작하는 문자열, 엣지 포함.
+### T67 의존 깊이/최장 체인 · `done` · P3
+- **수용:** `dependency_depth(adj)` → 합성 그래프 최장 경로 길이.
+### T68 중복 배치 탐지 · `done` · P3 (T10)
+- **수용:** `find_duplicates(index)` → 동일 디바이스 클래스 다중 배치 카운트.
+### T69 Verse 디바이스 census · `done` · P3
+- **수용:** `verse_devices(index)` → VerseDevice 배치 파일 목록.
+### T70 cross-level 에셋 공유 · `done` · P3
+- **수용:** 두 레벨 인덱스에서 공유 참조 자산 반환(합성/실).
+### T71 파일 크기/bloat 리포트 · `done` · P3
+- **수용:** `size_report(index)` → 파일별 바이트, 최대 파일 식별.
+
 ## M5 — 노출
 
 ### T50 MCP 래핑 · `blocked` · 설계 확정 후

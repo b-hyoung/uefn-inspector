@@ -79,6 +79,46 @@ def asset_usage(index: ProjectIndex, class_substrings: tuple[str, ...]) -> dict[
     return {k: sorted(v) for k, v in usage.items()}
 
 
+def hotspots(index: ProjectIndex) -> list[tuple[str, int]]:
+    """Most-referenced content targets (fan-in), descending."""
+    g = build_reference_graph(index)
+    ranked = [(t, len(srcs)) for t, srcs in g.reverse.items()]
+    return sorted(ranked, key=lambda x: (-x[1], x[0]))
+
+
+def fan_out(index: ProjectIndex) -> dict[str, int]:
+    """How many content targets each file references."""
+    g = build_reference_graph(index)
+    return {path: len(targets) for path, targets in g.forward.items()}
+
+
+def dependency_depth(adjacency: dict[str, list[str]]) -> int:
+    """Longest chain length (in nodes) of a DAG. 0 if empty."""
+    memo: dict[str, int] = {}
+
+    def depth(node: str) -> int:
+        if node in memo:
+            return memo[node]
+        memo[node] = 1  # guard against cycles
+        best = 1 + max((depth(n) for n in adjacency.get(node, [])), default=0)
+        memo[node] = best
+        return best
+
+    return max((depth(n) for n in adjacency), default=0)
+
+
+def to_mermaid(index: ProjectIndex) -> str:
+    """Reference graph as a mermaid diagram (file name -> target leaf)."""
+    g = build_reference_graph(index)
+    lines = ["graph LR"]
+    for path, targets in g.forward.items():
+        src = path.rsplit("\\", 1)[-1].rsplit("/", 1)[-1]
+        for t in sorted(targets):
+            leaf = t.rsplit("/", 1)[-1]
+            lines.append(f'  "{src}" --> "{leaf}"')
+    return "\n".join(lines)
+
+
 def mesh_usage(index: ProjectIndex) -> dict[str, list[str]]:
     return asset_usage(index, ("StaticMesh", "SkeletalMesh"))
 
