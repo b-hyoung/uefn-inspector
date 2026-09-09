@@ -60,6 +60,10 @@ edit/      쓰기(B)
 claude mcp add uefn-inspector -s user -- <py> <abs>/mcp_server.py
 ```
 
+## 게임 루프 엔지니어링 (`game-loop-kit/`)
+uefn-inspector를 엔진 삼아 UEFN 게임을 **A-Z 루프**로 구축하는 범용 템플릿.
+**Plan→Task→Ticket** 계층 + 구조검증(inspector)/행동검증(PIE). → `game-loop-kit/README.md`
+
 ## 문서
 - `docs/CAPABILITIES.md` — 되는것/안되는것 확정표
 - `docs/ROADMAP.md` — 완성 구조·마일스톤
