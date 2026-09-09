@@ -1,0 +1,221 @@
+<title>오프라인 인스펙터 설명</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --ground:#f3f1ec; --surface:#ffffff; --surface-2:#f7f5f0;
+    --ink:#1c2230; --muted:#5f6b80; --faint:#8a94a6;
+    --line:#dcd8cf; --line-strong:#c3beb2;
+    --accent:#c8862a;         /* 추출된 데이터(금동) */
+    --accent-soft:#f0dcb4;
+    --live:#c0392f;           /* 라이브·에디터 필요(심박 크림슨) */
+    --live-soft:#f2d3ce;
+    --struct:#3f6d8c;         /* 구조/바이트 */
+    --struct-soft:#d3e2ea;
+    --ok:#3f7d55;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:'IBM Plex Sans KR','IBM Plex Sans',system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0f1420; --surface:#161d2b; --surface-2:#1c2434;
+      --ink:#e7ecf6; --muted:#a2adc2; --faint:#6f7c93;
+      --line:#2a3446; --line-strong:#3a4760;
+      --accent:#f0b757; --accent-soft:#3a2f18;
+      --live:#e5645d; --live-soft:#3a201f;
+      --struct:#6fa8c9; --struct-soft:#17303c;
+      --ok:#5fcf8b;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0f1420; --surface:#161d2b; --surface-2:#1c2434;
+    --ink:#e7ecf6; --muted:#a2adc2; --faint:#6f7c93;
+    --line:#2a3446; --line-strong:#3a4760;
+    --accent:#f0b757; --accent-soft:#3a2f18;
+    --live:#e5645d; --live-soft:#3a201f;
+    --struct:#6fa8c9; --struct-soft:#17303c;
+    --ok:#5fcf8b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-weight:400;line-height:1.65;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:940px;margin:0 auto;padding:clamp(24px,5vw,64px) clamp(18px,4vw,40px);}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);font-weight:500;margin:0 0 .6rem;}
+  h1{font-size:clamp(1.9rem,4.5vw,2.9rem);line-height:1.1;font-weight:700;margin:0 0 .5rem;
+    text-wrap:balance;letter-spacing:-.01em;}
+  .lede{font-size:1.06rem;color:var(--muted);max-width:60ch;margin:0 0 2.6rem;}
+  h2{font-size:1.32rem;font-weight:600;margin:2.8rem 0 .3rem;letter-spacing:-.01em;}
+  h2 .n{font-family:var(--mono);color:var(--accent);font-weight:700;margin-right:.55rem;font-size:1.05rem;}
+  .sub{color:var(--muted);margin:.1rem 0 1.3rem;max-width:62ch;}
+  p{margin:.5rem 0}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:640px){.two{grid-template-columns:1fr}}
+  .tag{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.72rem;
+    font-weight:500;letter-spacing:.04em;padding:.2rem .55rem;border-radius:999px;border:1px solid;}
+  .tag.live{color:var(--live);border-color:var(--live);background:var(--live-soft);}
+  .tag.us{color:var(--ok);border-color:var(--ok);background:transparent;}
+  .card h3{margin:.6rem 0 .5rem;font-size:1.05rem;font-weight:600;}
+  .card ul{margin:.3rem 0 0;padding-left:1.1rem;color:var(--muted);}
+  .card li{margin:.32rem 0}
+  .card li b{color:var(--ink);font-weight:600}
+  /* pipeline */
+  .pipe{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;}
+  .stage{flex:1;min-width:130px;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 15px;}
+  .stage .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--struct);text-transform:uppercase;}
+  .stage .big{font-size:1.02rem;font-weight:600;margin:.25rem 0 .2rem;}
+  .stage small{color:var(--muted);font-size:.83rem;line-height:1.45;display:block;}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:1.3rem;padding:0 .3rem;}
+  @media(max-width:640px){.arrow{transform:rotate(90deg);padding:.3rem 0;width:100%}}
+  .tables{display:flex;flex-direction:column;gap:8px}
+  .trow{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:.82rem;
+    padding:.35rem .55rem;background:var(--surface-2);border-radius:8px;}
+  .trow b{color:var(--accent);font-weight:700}
+  /* byte map */
+  .bytemap{display:flex;width:100%;height:52px;border-radius:10px;overflow:hidden;border:1px solid var(--line-strong);
+    font-family:var(--mono);font-size:.68rem;}
+  .seg{display:flex;align-items:center;justify-content:center;color:#fff;text-align:center;padding:2px;
+    line-height:1.2;overflow:hidden;white-space:nowrap;}
+  .seg span{opacity:.95}
+  .ticks{display:flex;width:100%;font-family:var(--mono);font-size:.66rem;color:var(--faint);
+    justify-content:space-between;margin-top:.35rem;}
+  .callout{margin-top:1rem;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:12px;padding:14px 18px;}
+  .callout .k{font-family:var(--mono);color:var(--accent);font-weight:700}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.08em .4em;border-radius:5px;
+    border:1px solid var(--line);}
+  .ceiling{margin-top:14px;border:1px dashed var(--live);background:var(--live-soft);border-radius:12px;padding:14px 18px;}
+  .ceiling b{color:var(--live)}
+  .flow2{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-family:var(--mono);font-size:.82rem;
+    color:var(--muted);margin-top:.4rem}
+  .chip{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:.25rem .5rem;color:var(--ink)}
+  .foot{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line);color:var(--faint);font-size:.85rem;
+    font-family:var(--mono);}
+  .hl{color:var(--accent);font-weight:600}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">UEFN · 오프라인 분석</p>
+  <h1>에디터를 안 켜고 레벨을 읽는다</h1>
+  <p class="lede">기본 MCP는 언리얼 에디터가 살아 있어야 뭔가를 읽습니다. 우리가 만든 도구는
+    <b>디스크의 <code>.uasset</code> 파일을 직접 파싱</b>해서, 에디터가 꺼져 있어도 — 혹은 다른 작업 중이어도 —
+    레벨에 뭐가 배치됐는지 읽어냅니다. 이 문서는 "무엇을, 어떻게, 왜"를 그림으로 설명합니다.</p>
+
+  <!-- 1. 대비 -->
+  <h2><span class="n">1</span>무슨 차이가 있나</h2>
+  <p class="sub">같은 "읽기"인데, 읽는 위치가 다릅니다.</p>
+  <div class="two">
+    <div class="card">
+      <span class="tag live">● 기본 MCP</span>
+      <h3>살아있는 에디터에 물어본다</h3>
+      <ul>
+        <li>언리얼이 <b>켜져 있어야</b> 함</li>
+        <li>리플렉션으로 <b>메모리의 오브젝트</b>를 조회</li>
+        <li>편집 중이면 경합 · 무거움</li>
+        <li>Verse-VM 내부 설정은 <b>못 읽음</b>(그 벽)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag us">● 우리 도구 (오프라인)</span>
+      <h3>파일을 직접 뜯어 읽는다</h3>
+      <ul>
+        <li>에디터 <b>꺼져 있어도 OK</b></li>
+        <li>디스크의 <code>.uasset</code> 바이트를 파싱</li>
+        <li><b>병렬</b> 가능 · 작업과 동시에</li>
+        <li>파일에 저장된 건 다 보임(값 해석은 별개)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2. 파이프라인 -->
+  <h2><span class="n">2</span>어떻게 읽나 — 3개의 표</h2>
+  <p class="sub">하나의 <code>.uasset</code> 파일은 안에 "표(table) 3개"를 품고 있습니다. 그걸 순서대로 파싱하면 인벤토리가 나옵니다.</p>
+  <div class="pipe">
+    <div class="stage">
+      <div class="lbl">입력</div>
+      <div class="big">.uasset 파일</div>
+      <small>배치된 액터 1개 = 파일 1개 (UEFN OFPA 방식)</small>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="lbl">파싱</div>
+      <div class="big">표 3개</div>
+      <div class="tables" style="margin-top:.5rem">
+        <div class="trow"><span>Name표</span><b>164</b></div>
+        <div class="trow"><span>Import표</span><b>49</b></div>
+        <div class="trow"><span>Export표</span><b>22</b></div>
+      </div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="lbl">출력</div>
+      <div class="big">인벤토리</div>
+      <small>배치 디바이스 + 참조 에셋 목록</small>
+    </div>
+  </div>
+  <div class="callout">
+    <p style="margin-top:0"><span class="k">Name표</span> = 파일이 쓰는 모든 이름(문자열). &nbsp;
+      <span class="k">Import표</span> = 이 파일이 <b>바깥에서 가져다 쓰는</b> 것(클래스·사운드 등). &nbsp;
+      <span class="k">Export표</span> = 이 파일 <b>안에 들어있는</b> 오브젝트들.</p>
+    <p style="margin-bottom:0">예: Import에서 <code>Device_CRD_AudioPlayer_C</code> 클래스를,
+      Name에서 <code>/MyProject/Audio/Heartbeat_Near</code> 사운드를 뽑아냅니다.</p>
+  </div>
+
+  <!-- 3. 바이트 맵 -->
+  <h2><span class="n">3</span>파일 안 지도 — <code>serial_offset</code>이 뭔가</h2>
+  <p class="sub">파일을 왼쪽부터 오른쪽까지 한 줄로 펴면 이렇게 구간이 나뉩니다(실제 오프셋 비율). 각 오브젝트가
+    <b>파일의 어느 바이트 구간에 사는지</b>가 곧 <code>serial_offset</code>입니다.</p>
+  <div class="bytemap">
+    <div class="seg" style="flex:0 0 3%;background:var(--faint)"><span>헤더</span></div>
+    <div class="seg" style="flex:0 0 28%;background:var(--struct)"><span>Name표</span></div>
+    <div class="seg" style="flex:0 0 9%;background:#7a6a3a"><span>Import</span></div>
+    <div class="seg" style="flex:0 0 19%;background:var(--accent)"><span>Export map</span></div>
+    <div class="seg" style="flex:1;background:#6b4a46"><span>오브젝트 데이터(값이 사는 곳)</span></div>
+  </div>
+  <div class="ticks"><span>0</span><span>646</span><span>6787</span><span>8747</span><span>12958</span><span>22130</span></div>
+  <div class="callout">
+    <p style="margin-top:0">배치된 오디오 디바이스는 Export표의 11번:</p>
+    <p style="margin-bottom:0;font-family:var(--mono);font-size:.9rem">
+      <b class="hl">Device_CRD_AudioPlayer_C_UAID_…</b><br>
+      → 데이터 구간 <b class="hl">15455 ~ 16741</b> (1286바이트)에 이 디바이스의 설정이 들어있음</p>
+  </div>
+
+  <!-- 4. A vs B -->
+  <h2><span class="n">4</span>지금(A) 읽기 · 나중(B) 쓰기</h2>
+  <p class="sub">지금은 A(읽기)만 만들지만, 리더가 위 "바이트 주소"를 들고 있어서 나중에 B(쓰기)를 재작업 없이 얹을 수 있습니다.</p>
+  <div class="two">
+    <div class="card">
+      <span class="tag us">A · 읽기 (지금 · 완료)</span>
+      <div class="flow2">
+        <span class="chip">파일</span>→<span class="chip">모델</span>→<span class="chip">리포트</span>
+      </div>
+      <ul>
+        <li>67개 액터 파일 <b>10ms</b>에 파싱</li>
+        <li>벽 46 · AudioPlayer 3 · 심박음 3단 다 잡힘</li>
+        <li>에디터 없이 · 병렬로</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag" style="color:var(--accent);border-color:var(--accent)">B · 쓰기 (미래 · 자리만)</span>
+      <div class="flow2">
+        <span class="chip">모델</span>→<span class="chip">수정</span>→<span class="chip">되쓰기</span>
+      </div>
+      <ul>
+        <li><code>serial_offset</code>로 "여기 고친다"를 짚음</li>
+        <li>표준 프로퍼티 편집 + 라운드트립 가능</li>
+        <li>지금은 구조만 준비, 구현 안 함</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ceiling">
+    <p style="margin:0"><b>천장(구조로 못 넘음):</b> <code>Can Be Heard By</code> 값,
+      <code>@editable</code> 바인딩은 GUID 낀 <b>비표준(Verse-VM) 직렬화</b>라, 파일에 있어도
+      정확한 값 <b>쓰기</b>는 막힘. 이건 라이브 MCP(에디터) 몫으로 남깁니다.</p>
+  </div>
+
+  <p class="foot">uefn-inspector · A=읽기 전용 · Python 먼저 → 필요시 Rust · TDD 5 tests green</p>
+</div>

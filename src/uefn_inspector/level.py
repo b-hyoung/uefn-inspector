@@ -13,6 +13,13 @@ class PlacedActor:
     asset_refs: list[str] = field(default_factory=list)
 
 
+@dataclass
+class Level:
+    name: str = ""
+    actors: list[PlacedActor] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+
+
 def _device_class(pkg: Package) -> str:
     # The placed actor export carries a "_UAID_" suffix; its class_index is a
     # negative FPackageIndex into the import table -> the real device class.
@@ -29,3 +36,16 @@ def inspect_actor(path: str | Path) -> PlacedActor:
     pkg = read_package(path)
     asset_refs = [n for n in pkg.names if n.startswith("/") and not n.startswith("/Script")]
     return PlacedActor(device_class=_device_class(pkg), asset_refs=asset_refs)
+
+
+def inspect_level(path: str | Path) -> Level:
+    """Scan a directory of .uasset actor files (UEFN OFPA layout) into a Level."""
+    root = Path(path)
+    actors: list[PlacedActor] = []
+    warnings: list[str] = []
+    for f in sorted(root.rglob("*.uasset")):
+        try:
+            actors.append(inspect_actor(f))
+        except Exception as exc:  # keep going on a bad file (spec: graceful)
+            warnings.append(f"{f.name}: {exc}")
+    return Level(name=root.name, actors=actors, warnings=warnings)
