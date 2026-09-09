@@ -34,6 +34,23 @@ Attenuation Falloff Distance / Attenuation Min Distance
 순수 파이썬 **라이브러리 + CLI**. MCP 래핑은 후속(나중에 이 라이브러리를 감싼다).
 외부 파싱 의존성 없음(파이썬 uasset 생태계 미성숙) — stdlib `struct`로 자체 파싱.
 
+## 2.5 B-ready 구조 (지금은 A만 구현)
+
+지금 구현은 A(읽기)뿐이지만, 미래 B(쓰기·되써넣기)가 재작업 없이 얹히도록 구조를 잡는다.
+
+B는 "읽고 → 고치고 → 되쓰기"라, 리더가 이름 문자열만 대충 분류하면 B가 못 올라간다.
+따라서 리더는 **바이트 주소를 아는 충실한(faithful) 모델**을 내놓는다.
+
+**지금 확립할 불변식 (구조만, B 구현 아님):**
+
+1. 이름 문자열이 아니라 **실제 객체 참조(imports/exports)** 로 모델링 — 분석 정밀도 ↑, 미래 수정도 참조 기반.
+2. export는 **serial_offset / serial_size(바이트 영역)** 를 보유 — B가 프로퍼티 위치를 찾을 주소.
+3. 리더는 **원본 바이트 유지** — 미래 라운드트립(읽은 걸 그대로 되쓰기)의 토대.
+
+**B의 천장 (구조로 못 넘음):** `Can Be Heard By` 값·`@editable` 바인딩은 GUID 낀 비표준(Verse-VM)
+직렬화라, 구조를 잘 잡아도 이 값들의 쓰기는 막힌다. B-ready가 여는 것은 주로 **표준 프로퍼티
+편집 + 라운드트립**이며, Verse-VM 설정은 라이브 MCP 몫으로 남긴다.
+
 ## 3. 파싱 전략 — 점진적 하이브리드
 
 1. **1단계 헤더 파싱**: `FPackageFileSummary → Name표 / Import표 / Export표`.
@@ -41,16 +58,17 @@ Attenuation Falloff Distance / Attenuation Min Distance
 2. **2단계 태그드 프로퍼티 값**: Bool / Int / Float / Name / Object참조 / Enum 부터.
    오디오 설정(`Can Be Heard By` enum 값, Attenuation 거리, 사운드 참조)을 우선 구현.
 
-## 4. 아키텍처 — 유닛 4개
+## 4. 아키텍처 — 유닛 (A 구현 4 + B 자리 1)
 
 각 유닛은 하나의 목적, 명확한 인터페이스, 독립 테스트 가능.
 
-| 유닛 | 입력 → 출력 | 의존 |
-|---|---|---|
-| `uasset.py` 패키지 리더 | .uasset 바이트 → `Package{summary, names[], imports[], exports[]}` | stdlib `struct` |
-| `properties.py` 프로퍼티 디코더 | export 프로퍼티 영역 + name표 → `{설정명: 값}` (enum은 name표로 해석) | 리더 |
-| `level.py` 레벨 모델 | .umap + `__ExternalActors__/*.uasset`(OFPA) → `Level{PlacedActor[]}` | 리더+디코더 |
-| `cli.py` 리포트/CLI | 프로젝트 경로 → JSON + 사람용 리포트 | 레벨 모델 |
+| 유닛 | 입력 → 출력 | 의존 | 상태 |
+|---|---|---|---|
+| `uasset.py` 충실한 리더 | .uasset 바이트 → `Package{names[]+idx, imports[], exports[](serial_offset/size), raw}` | stdlib `struct` | A |
+| `properties.py` 프로퍼티 디코더 | export 프로퍼티 영역 + name표 → `{설정명: 값}` (표준 타입, best-effort) | 리더 | A(부분) |
+| `level.py` 레벨 모델/분석 | .umap + `__ExternalActors__/*.uasset`(OFPA) → `Level{PlacedActor[]}` | 리더+디코더 | A |
+| `cli.py` 리포트/CLI | 프로젝트 경로 → JSON + 사람용 리포트 | 레벨 모델 | A |
+| `writer.py` 라운드트립+표적수정 | `Package` + 수정 → 되쓰기 | 리더 모델 | **B·미래(자리만)** |
 
 ### 데이터 흐름
 
