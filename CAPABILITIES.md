@@ -51,6 +51,9 @@
 | **GameplayTag census(휴리스틱)** | `gameplay_tag_census` | 점표기 식별 |
 | **표준 프로퍼티 값**(Float/Int/Bool/Object/Name/Enum/Struct) | `properties.decode_properties` | UE5.4 FPropertyTypeName |
 | **트랜스폼(위치) 디코드** | `inspect_actor().location` | PointLevel 60/67 좌표 |
+| **디바이스 설정 값** (구 "천장"!) | `decode_properties` | `Can Be Heard By = NewEnumerator3` — MCP가 못 읽던 값 |
+| **`@editable` 바인딩** (구 "천장"!) | `verse.verse_bindings` | KnifeDesign/HeartFar/HeartNear → 바인딩 액터 |
+| 프로퍼티 census / 공간 분석 | `property_census`·`spatial.*` | bounds/density/spacing |
 
 ## B. 읽기 · 오프라인 — ⚠️ 조건부
 
@@ -64,9 +67,8 @@
 
 | 능력 | 상태 | 사유 |
 |---|---|---|
-| 디바이스 설정 **값**(`Can Be Heard By`=?) | ❌ 천장 | GUID 낀 Verse-VM 직렬화. 이름은 보여도 값은 못 읽음 |
-| `@editable` 바인딩 **값** | ❌ 천장 | Verse VM 내부(리플렉션도 실패). 라이브 GUI만 |
-| 니아가라/시퀀서/DataTable | ⏸ | 이 프로젝트에 부재. 있는 프로젝트 발견 시 개시 |
+| 니아가라/시퀀서/DataTable 분석 | ⏸ | 이 프로젝트에 자산 부재(있으면 파서가 읽음) |
+| 클래스 계층(부모 체인) | ❌ (검증됨) | 프로젝트에 클래스 **정의** 없음(super_index=0/114). 엔진 cooked 콘텐츠(.pak/IoStore) 파싱 필요 = 대형 별개 작업 |
 
 ---
 
@@ -97,11 +99,13 @@
 - ✅ **버전 diff / 배치·병렬** — MCP 불가
 - ✅ **하이브리드**: 오프라인 그래프로 "무엇을 바꿀지" 판단 → 적용은 `execute_python`으로 (MCP 단독 불가)
 - ✅ **디스크 .uasset 동일길이 패치** → 에디터 reload (MCP는 파일 안 만짐)
+- 🎯 ✅ **Verse-VM 설정값·`@editable` 바인딩을 오프라인 파일에서 읽음** — 온라인 `execute_python`·리플렉션이 **못 읽던** 것(원 세션의 그 벽). 파일엔 태그드로 있으니 우리가 읽음. **이게 MCP 대비 유일 우위.**
 
-**아무도 못 하는 것 (온·오프 공통 천장)**
-- ❌ Verse-VM `@editable`·디바이스 설정 **값** 읽기/쓰기 — 온라인 `execute_python`도 실패 확인. 라이브 **GUI 수동**만.
+**아무도 못 하는 것 (진짜 천장)**
+- ⚠️ Verse-VM 값 **쓰기**(되써서 UEFN 수용) — 읽기는 됨, 쓰기 실검증은 T7(파괴적, 승인 필요).
+- ❌ 클래스 계층 등 **엔진 cooked 콘텐츠**(.pak/IoStore) — 프로젝트 밖 데이터.
 
-**정직한 결론:** 순수 온라인 조작은 `execute_python`이 이미 대부분 커버. 내 진짜 보완가치는 **오프라인 분석 + 하이브리드(오프라인 판단→온라인 실행)**, 그리고 **파일 디스크 패치**. Verse-VM 천장은 온·오프 모두 동일.
+**정직한 결론(정정):** 이전에 "Verse-VM은 온·오프 공통 천장"이라 한 건 **오진**. 온라인 리플렉션은 못 읽지만 **오프라인 파일 파싱은 읽는다**(실검증·회귀테스트 완료). 남은 건 그 값의 *쓰기*와 엔진 cooked 콘텐츠뿐.
 
 ---
 
@@ -109,9 +113,12 @@
 
 지금 모델로 오프라인 분석은 **~38개까지 채웠고**, 그 이상은 아래 셋 중 하나를 뚫어야 가능:
 
-1. ~~프로퍼티 값 디코드(T2)~~ → **✅ 뚫림(2026-09-09)**. UE5.4 FPropertyTypeName 구현으로 표준 값·트랜스폼 디코드. 이제 공간배치·수치 분석 가능.
-2. **콘텐츠 에셋 인덱싱**(BP/메시/머티리얼 .uasset, 배치 액터 아님) — 잠기면: 클래스 계층(super_index는 인스턴스라 0), 실 메시/머티리얼 사용, 완전한 의존 해소.
-3. **라이브 에디터** — 잠기면: Verse-VM `@editable`·설정 **값** (온·오프 공통 천장, GUI만). ← 표준 프로퍼티는 뚫렸지만 Verse-VM 커스텀 직렬화는 여전히 천장.
+1. ~~프로퍼티 값 디코드(T2)~~ → **✅ 뚫림**. UE5.4 FPropertyTypeName 구현. 표준 값·트랜스폼·공간분석.
+2. ~~Verse-VM 설정값·@editable 읽기~~ → **✅ 뚫림(오진 정정)**. 온라인 리플렉션은 못 읽어도 오프라인 파일은 읽음. `Can Be Heard By`=NewEnumerator3, KnifeDesign/HeartFar/HeartNear 바인딩 디코드.
+3. **콘텐츠 에셋 인덱싱**(엔진 cooked .pak/IoStore) — 남은 진짜 잠금: 클래스 계층, 완전 의존. UEFN 프로젝트 밖 데이터라 대형 별개 작업.
+4. **Verse-VM 값 *쓰기*** — 읽기는 됨. 되써서 UEFN 수용은 T7(파괴적, 승인 필요).
+
+**요약(정정):** 원래 3대 천장 중 **2개(프로퍼티 값·Verse-VM 읽기)가 뚫렸다.** 남은 건 엔진 cooked 콘텐츠(별개 대형)와 *쓰기* 검증뿐. 오프라인 **읽기·분석은 사실상 전부 가능.**
 
 즉 "분석 종류"는 사실상 소진. 남은 건 **깊이(값)·범위(콘텐츠 에셋)·런타임(라이브)** 축의 확장이며, 각각 위 3개 열쇠가 필요하다.
 
