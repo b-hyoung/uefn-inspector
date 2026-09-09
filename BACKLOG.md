@@ -22,7 +22,7 @@
 
 ## M0 — 기반 견고성
 
-### T1 견고성: 손상/미지원 파일 graceful · `todo` · P0
+### T1 견고성: 손상/미지원 파일 graceful · `done` · P0
 - **수용:** 랜덤 128바이트 임시파일 → `read_package` 예외 없음, `warnings` 있음, `exports==[]`.
 
 ### T2 표준 태그드 프로퍼티 디코더 · `todo` · P1

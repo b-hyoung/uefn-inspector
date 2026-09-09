@@ -107,7 +107,7 @@ def _fixed_header(data: bytes) -> tuple[int, int, int, int, int]:
 def _find_name_anchor(data: bytes, start: int) -> tuple[int, int, int, list[str]] | None:
     """Locate the (NameCount, NameOffset) summary field pair by validated scan.
     Returns (field_pos, count, offset, names)."""
-    for o in range(start, min(len(data), 4096)):
+    for o in range(start, max(start, min(len(data) - 8, 4096))):
         cand_count, cand_off = struct.unpack_from("<ii", data, o)
         parsed = _try_read_names(data, cand_count, cand_off)
         if parsed is not None and cand_count >= 5:
@@ -181,9 +181,17 @@ def _parse_exports(data: bytes, offset: int, count: int,
 
 def read_package(path: str | Path) -> Package:
     data = Path(path).read_bytes()
-    tag, legacy, ue4, ue5, after_versions = _fixed_header(data)
-    pkg = Package(tag=tag, legacy_file_version=legacy, file_version_ue4=ue4,
-                  file_version_ue5=ue5, source_path=str(path))
+    pkg = Package(source_path=str(path))
+    if len(data) < 24:
+        pkg.warnings.append("file too short for package header")
+        return pkg
+    try:
+        tag, legacy, ue4, ue5, after_versions = _fixed_header(data)
+    except struct.error:
+        pkg.warnings.append("header parse failed")
+        return pkg
+    pkg.tag, pkg.legacy_file_version = tag, legacy
+    pkg.file_version_ue4, pkg.file_version_ue5 = ue4, ue5
 
     anchor = _find_name_anchor(data, after_versions)
     if anchor is None:
