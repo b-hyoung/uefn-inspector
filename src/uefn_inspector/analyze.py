@@ -61,3 +61,31 @@ def find_broken_refs(known: set[str], references: set[str],
         if r not in known and not r.startswith(ignore_prefixes)
     ]
     return sorted(broken)
+
+
+def asset_usage(index: ProjectIndex, class_substrings: tuple[str, ...]) -> dict[str, list[str]]:
+    """Map an imported asset (by class type) -> files that reference it.
+
+    Component classes (``*Component``) are excluded: they are not assets.
+    """
+    usage: dict[str, set[str]] = {}
+    for path, pkg in index.packages.items():
+        for imp in pkg.imports:
+            cls = imp.class_name
+            if cls.endswith("Component"):
+                continue
+            if any(sub in cls for sub in class_substrings):
+                usage.setdefault(imp.object_name, set()).add(path)
+    return {k: sorted(v) for k, v in usage.items()}
+
+
+def mesh_usage(index: ProjectIndex) -> dict[str, list[str]]:
+    return asset_usage(index, ("StaticMesh", "SkeletalMesh"))
+
+
+def material_usage(index: ProjectIndex) -> dict[str, list[str]]:
+    return asset_usage(index, ("Material",))
+
+
+def curve_usage(index: ProjectIndex) -> dict[str, list[str]]:
+    return asset_usage(index, ("Curve",))
