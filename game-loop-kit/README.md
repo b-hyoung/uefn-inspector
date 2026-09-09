@@ -28,8 +28,16 @@ verse/   게임 Verse 소스
 | **uefn-inspector** (오프라인) | 구조 검증 · 선언↔배선 교차검증 · 값/배선 오프라인 쓰기 · SNAPSHOT 생성 |
 | **uefn/unreal MCP** (라이브) | 표준 배치 변경 · Verse 컴파일 · **PIE 실행·로그 읽기(행동검증)** |
 
-## 시작
-1. `spec/GDD.md`·`spec/systems/`·`spec/assets.md` 작성 (게임 정의)
-2. `plan/PLANS.md`에 Plan 추가 → `PLAN-NN/PLAN.md` + `tasks/TASK-*.md`에 Task·Ticket 작성
-3. `loop/LOOP.md` 규약으로 루프 실행 (수동 or `/loop`)
-4. `state/SNAPSHOT.md`는 uefn-inspector가 자동 갱신, `state/lessons.md`에 교훈 축적
+## 시작 (순서대로)
+1. **`spec/INTAKE.md`** — 질문지대로 캐낸다. *어떤 게임인지 · 재미가 어디서 오는지 · 티켓을 얼마나 잘게 할지.*
+2. 답을 **`spec/GDD.md`**(무엇/왜) · **`spec/systems/`**(정확한 규칙) · `spec/assets.md`에 기록
+3. **`plan/DECOMPOSE.md`** 규칙으로 Plan→Task→Ticket 배분 → `PLANS.md` · `PLAN-NN/` · `tasks/`
+4. **`loop/LOOP.md`** 규약으로 루프 실행 (수동 or `/loop`)
+5. `state/SNAPSHOT.md`는 uefn-inspector가 갱신, `state/lessons.md`에 교훈 축적
+
+## 핵심 문서 3개
+| 문서 | 답하는 것 |
+|---|---|
+| **`spec/INTAKE.md`** | **무엇을 물어볼까** — 게임·재미·디테일 수준을 캐내는 질문지 |
+| **`plan/DECOMPOSE.md`** | **어떻게 쪼갤까** — 답 → Plan/Task/Ticket 배분 규칙·티켓 크기·수용기준 |
+| **`HARNESS.md`** | **뭘 써서 할까** — 사용 가능한 MCP·스킬 목록과 루프 단계별 매핑 |
