@@ -44,6 +44,11 @@ class Package:
     exports: list[ObjectExport] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     source_path: str = ""
+    # layout info for the rebuild/fixup engine
+    export_offset: int = 0
+    export_stride: int = 0
+    import_offset: int = 0
+    trailing_summary_pos: int = 0  # first byte after ImportOffset field
 
 
 def _i32(data: bytes, o: int) -> int:
@@ -213,9 +218,13 @@ def read_package(path: str | Path) -> Package:
         export_count, export_offset = struct.unpack_from("<ii", data, p)
         p += 8
         import_count, import_offset = struct.unpack_from("<ii", data, p)
+        p += 8
     except struct.error:
         pkg.warnings.append("summary walk failed")
         return pkg
+
+    pkg.import_offset = import_offset
+    pkg.trailing_summary_pos = p  # first byte after ImportOffset field
 
     n = len(data)
     if 0 < import_offset < n and 0 <= import_count < 100000:
@@ -224,6 +233,9 @@ def read_package(path: str | Path) -> Package:
                                      export_offset, pkg.names)
     if 0 < export_offset < n and 0 <= export_count < 100000:
         pkg.export_count = export_count
+        pkg.export_offset = export_offset
+        pkg.export_stride = _detect_export_stride(data, export_offset,
+                                                  export_count, pkg.names) or 0
         pkg.exports = _parse_exports(data, export_offset, export_count, pkg.names)
 
     return pkg
