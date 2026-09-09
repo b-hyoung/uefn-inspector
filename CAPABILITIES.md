@@ -40,6 +40,15 @@
 | **Verse 디바이스 census** | `verse_devices` | 2개 |
 | **cross-level 에셋 공유** | `cross_level_shared` | 합성 검증 |
 | **파일 크기/bloat** | `size_report` | 총 621KB, 최대 53KB |
+| **컴포넌트 구성**(디바이스별) | `component_composition` | AudioPlayer 18컴포넌트 |
+| **outer 컨테인먼트 트리** | `outer_tree` | 액터→컴포넌트 |
+| **soft/hard 참조 분리** | `soft_hard_refs` | hard6·soft5 |
+| **아키텍처 린트**(컴포넌트 과다) | `arch_lint` | 임계 초과 파일 |
+| **actor 단위 diff**(이름) | `actor_diff` | added/removed |
+| **transitive 도달**(의존 확장) | `transitive_reachable` | 합성 |
+| **DOT 그래프 내보내기** | `to_dot` | Graphviz |
+| **엔진 버전 census** | `engine_version_census` | 522/1018 |
+| **GameplayTag census(휴리스틱)** | `gameplay_tag_census` | 점표기 식별 |
 
 ## B. 읽기 · 오프라인 — ⚠️ 조건부
 
@@ -94,6 +103,16 @@
 **정직한 결론:** 순수 온라인 조작은 `execute_python`이 이미 대부분 커버. 내 진짜 보완가치는 **오프라인 분석 + 하이브리드(오프라인 판단→온라인 실행)**, 그리고 **파일 디스크 패치**. Verse-VM 천장은 온·오프 모두 동일.
 
 ---
+
+## 🧱 확장 한계 — "더 못 채우는 이유" (현재 모델 = 배치 액터/레벨 uasset, 값 미디코드)
+
+지금 모델로 오프라인 분석은 **~38개까지 채웠고**, 그 이상은 아래 셋 중 하나를 뚫어야 가능:
+
+1. **프로퍼티 값 디코드(T2)** — 잠기면: 트랜스폼/공간배치, 실제 수치·설정값, 스칼라 프로퍼티 분석.
+2. **콘텐츠 에셋 인덱싱**(BP/메시/머티리얼 .uasset, 배치 액터 아님) — 잠기면: 클래스 계층(super_index는 인스턴스라 0), 실 메시/머티리얼 사용, 완전한 의존 해소.
+3. **라이브 에디터** — 잠기면: Verse-VM `@editable`·설정 **값** (온·오프 공통 천장, GUI만).
+
+즉 "분석 종류"는 사실상 소진. 남은 건 **깊이(값)·범위(콘텐츠 에셋)·런타임(라이브)** 축의 확장이며, 각각 위 3개 열쇠가 필요하다.
 
 ## 한 장 요약
 - **읽기/분석**: 오프라인으로 폭넓게 ✅ (검색·역참조·의존·감사·diff)
