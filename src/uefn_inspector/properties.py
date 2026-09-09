@@ -86,22 +86,25 @@ def _decode_value(d: bytes, vs: int, size: int, root: str,
     return None
 
 
-def _walk(d: bytes, names: list[str], start: int, end: int) -> tuple[dict, bool]:
+def _walk(d: bytes, names: list[str], start: int, end: int) -> tuple[dict, bool, dict]:
+    """Returns (values, ended_at_None, layout) where layout is
+    {name: (value_offset, size, type_root)} — layout enables in-place writes."""
     props: dict = {}
+    layout: dict = {}
     p = start
     while p + 8 <= end:
         ix = _i32(d, p)
         if not (0 <= ix < len(names)):
-            return props, False
+            return props, False, layout
         if names[ix] == "None":
-            return props, True
+            return props, True, layout
         try:
             name, q = _fname(d, p, names)
             root, children, q = _typename(d, q, names)
             if not root.endswith("Property"):
-                return props, False
+                return props, False, layout
             if q + 5 > end:
-                return props, False
+                return props, False, layout
             size = _i32(d, q)
             q += 4
             flags = d[q]
@@ -111,12 +114,26 @@ def _walk(d: bytes, names: list[str], start: int, end: int) -> tuple[dict, bool]
             if flags & 0x02:
                 q += 16
             if size < 0 or q + size > end:
-                return props, False
+                return props, False, layout
         except (_Bad, IndexError):
-            return props, False
+            return props, False, layout
         props[name] = _decode_value(d, q, size, root, children, names)
+        layout[name] = (q, size, root)
         p = q + size
-    return props, False
+    return props, False, layout
+
+
+def _best_walk(d: bytes, names: list[str], export) -> tuple[dict, dict]:
+    """Probe leading offsets, return (values, layout) of the cleanest walk."""
+    end = export.serial_offset + export.serial_size
+    best_score = (-1, -1)
+    best: tuple[dict, dict] = ({}, {})
+    for start in range(export.serial_offset, export.serial_offset + _MAX_LEAD):
+        vals, ended, layout = _walk(d, names, start, end)
+        score = (1 if ended else 0, len(vals))
+        if score > best_score:
+            best_score, best = score, (vals, layout)
+    return best
 
 
 def property_census(index) -> "Counter":
@@ -139,12 +156,12 @@ def decode_properties(pkg: Package, export: ObjectExport) -> dict:
     if not pkg.source_path or "None" not in pkg.names:
         return {}
     d = Path(pkg.source_path).read_bytes()
-    end = export.serial_offset + export.serial_size
-    best: dict = {}
-    best_score = (-1, -1)
-    for start in range(export.serial_offset, export.serial_offset + _MAX_LEAD):
-        props, ended = _walk(d, pkg.names, start, end)
-        score = (1 if ended else 0, len(props))
-        if score > best_score:
-            best_score, best = score, props
-    return best
+    return _best_walk(d, pkg.names, export)[0]
+
+
+def property_layout(pkg: Package, export: ObjectExport) -> dict:
+    """{name: (value_offset, size, type_root)} — for in-place writes."""
+    if not pkg.source_path or "None" not in pkg.names:
+        return {}
+    d = Path(pkg.source_path).read_bytes()
+    return _best_walk(d, pkg.names, export)[1]
