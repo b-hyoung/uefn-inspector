@@ -119,6 +119,17 @@ def _walk(d: bytes, names: list[str], start: int, end: int) -> tuple[dict, bool]
     return props, False
 
 
+def property_census(index) -> "Counter":
+    """Count which property names appear across all exports in a project."""
+    from collections import Counter
+    c: Counter = Counter()
+    for pkg in index.packages.values():
+        for export in pkg.exports:
+            for name in decode_properties(pkg, export):
+                c[name] += 1
+    return c
+
+
 def decode_properties(pkg: Package, export: ObjectExport) -> dict:
     """Decode an export's tagged properties into {name: value}.
 
