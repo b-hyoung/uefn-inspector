@@ -36,7 +36,7 @@
 
 ## M1 — 프로젝트 인덱스 + 검색 (핵심)
 
-### T10 프로젝트 인덱스 · `todo` · P0
+### T10 프로젝트 인덱스 · `done` · P0
 - **목표:** `index.build_index(dir)` → `{path: Package}` 전 파일 파싱(경고 수집).
 - **수용:** level 픽스처 인덱스 → 3개 패키지, 각 `imports`/`exports` 채워짐, 예외 없음.
 
