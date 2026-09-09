@@ -107,6 +107,33 @@ def dependency_depth(adjacency: dict[str, list[str]]) -> int:
     return max((depth(n) for n in adjacency), default=0)
 
 
+def transitive_reachable(adjacency: dict[str, list[str]], start: str) -> set[str]:
+    """All nodes reachable from `start` (excluding start itself)."""
+    seen: set[str] = set()
+    stack = list(adjacency.get(start, []))
+    while stack:
+        node = stack.pop()
+        if node in seen:
+            continue
+        seen.add(node)
+        stack.extend(adjacency.get(node, []))
+    seen.discard(start)
+    return seen
+
+
+def to_dot(index: ProjectIndex) -> str:
+    """Reference graph as Graphviz DOT."""
+    g = build_reference_graph(index)
+    lines = ["digraph refs {"]
+    for path, targets in g.forward.items():
+        src = path.rsplit("\\", 1)[-1].rsplit("/", 1)[-1]
+        for t in sorted(targets):
+            leaf = t.rsplit("/", 1)[-1]
+            lines.append(f'  "{src}" -> "{leaf}";')
+    lines.append("}")
+    return "\n".join(lines)
+
+
 def to_mermaid(index: ProjectIndex) -> str:
     """Reference graph as a mermaid diagram (file name -> target leaf)."""
     g = build_reference_graph(index)

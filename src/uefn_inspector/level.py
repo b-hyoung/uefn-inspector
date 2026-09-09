@@ -93,3 +93,10 @@ def find_duplicates(level: Level) -> dict[str, int]:
 def verse_devices(level: Level) -> list[PlacedActor]:
     """Placed actors that are Verse devices."""
     return [a for a in level.actors if "VerseDevice" in a.device_class]
+
+
+def actor_diff(a: Level, b: Level) -> dict[str, list[str]]:
+    """Which named actors were added / removed between two levels."""
+    na = {x.name for x in a.actors if x.name}
+    nb = {x.name for x in b.actors if x.name}
+    return {"added": sorted(nb - na), "removed": sorted(na - nb)}

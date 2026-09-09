@@ -70,3 +70,25 @@ def _all_refs(index: ProjectIndex) -> set[str]:
 def cross_level_shared(index_a: ProjectIndex, index_b: ProjectIndex) -> set[str]:
     """Content targets referenced by both indexes (shared assets)."""
     return _all_refs(index_a) & _all_refs(index_b)
+
+
+def engine_version_census(index: ProjectIndex) -> Counter:
+    """Distribution of (UE4/UE5) file versions across parsed packages."""
+    c: Counter = Counter()
+    for pkg in index.packages.values():
+        if pkg.tag:  # parsed a real header
+            c[f"{pkg.file_version_ue4}/{pkg.file_version_ue5}"] += 1
+    return c
+
+
+_TAG = re.compile(r"^[A-Za-z][\w]*(?:\.[A-Za-z][\w]*)+$")
+
+
+def gameplay_tag_census(index: ProjectIndex) -> Counter:
+    """Dotted identifiers that look like GameplayTags (heuristic)."""
+    c: Counter = Counter()
+    for pkg in index.packages.values():
+        for n in pkg.names:
+            if "/" not in n and " " not in n and "::" not in n and _TAG.match(n):
+                c[n] += 1
+    return c
