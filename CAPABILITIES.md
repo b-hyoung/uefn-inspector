@@ -28,6 +28,18 @@
 | 커브 사용 | `curve_usage` | 실 1건 |
 | 레벨 audit(개수·중복·경고) | `audit_level` | 9종·중복7 |
 | 레벨 diff(버전 비교) | `diff_levels` | 동일=∅ |
+| **hotspot(fan-in 최다참조)** | `hotspots` | Wall 46, ToyOptions 13 |
+| **fan-out(파일별 참조수)** | `fan_out` | ✅ |
+| **타입 census(클래스 분포)** | `type_census` | Package347·Class294·BPGC129 |
+| **외부 의존성(마운트별)** | `external_deps` | /Script1253·/Game101·/CRD_… |
+| **네이밍 컨벤션 린트** | `naming_lint` | 합성 검증 |
+| **문자열/텍스트 추출** | `extract_strings` | 'Can Be Heard By' 등 |
+| **그래프 mermaid 내보내기** | `to_mermaid` | graph LR + 엣지 |
+| **의존 깊이/최장 체인** | `dependency_depth` | 합성 검증 |
+| **중복 배치 탐지** | `find_duplicates` | 6종 |
+| **Verse 디바이스 census** | `verse_devices` | 2개 |
+| **cross-level 에셋 공유** | `cross_level_shared` | 합성 검증 |
+| **파일 크기/bloat** | `size_report` | 총 621KB, 최대 53KB |
 
 ## B. 읽기 · 오프라인 — ⚠️ 조건부
 
