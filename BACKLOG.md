@@ -28,7 +28,14 @@
 ### T2 표준 태그드 프로퍼티 디코더 · `deferred` · P1
 - **목표:** export serial 영역에서 Bool/Int/Float/Name/Object/Enum 디코드, 모르는 타입 `unparsed`.
 - **수용:** `properties.decode(data, pkg, export)` → wall/light에서 표준 프로퍼티 ≥1개 올바른 파이썬 값, 예외 없음. Verse-VM(GUID) 프로퍼티는 `unparsed`.
-- **⏸ 보류 사유(2026-09-09):** export serial 시작이 단순 FName 태그가 아님(선두 구조/unversioned 직렬화 의심). 3회 탐색 실패 → 규약상 정지. name표엔 타입명 존재(태그드 시사)라 가능성은 있으나 깊은 작업 필요. **M1(찾기) 완료 후 재도전.**
+- **⏸ 재도전 결과(2026-09-09) — 형식 크랙, 정밀구현 대기:**
+  - ✅ **태그드 확정**: PackageFlags=0x4840, PKG_UnversionedProperties(0x2000) **unset**. (unversioned 아님)
+  - ✅ 버그2개 규명: (a) `FPropertyTag.Size`는 **int32**(export map SerialSize int64와 혼동), (b) 각 export serial 앞에 **선두 1바이트**.
+  - ✅ **UE5.4+ `FPropertyTypeName` 형식 확정**: `name(FName8) · type(FName8) · InnerCount(int32) · params(FName8×N) · size(int32) · …` — Struct는 param=구조체명(예 Vector). 옛 walker가 InnerCount 누락해 어긋남.
+  - ✅ **실제 디코드 1건 성공**: `CachedMaxDrawDistance FloatProperty=0.0`.
+  - ⚠️ 남은 정밀 배치(arrayindex 유무 / Bool 값 위치 / struct GUID / 재귀 중첩)는 probe마다 레이어가 늘어 **엔진 소스 기준 구현 필요**.
+  - ❗ "Can Be Heard By"는 **Verse-VM(GUID 낀 커스텀)** = 천장. T2 대상은 표준 컴포넌트 프로퍼티(트랜스폼 등).
+  - **다음 열쇠:** UE5.4 `FPropertyTag::Serialize`/`FPropertyTypeName` 엔진 소스 확보 → 정밀 구현. (엔진 소스는 NarshaMCP/UE 설치에 있음)
 
 ### T3 트랜스폼 읽기 · `deferred` · P1 (T2 의존)
 - **수용:** `inspect_actor(wall)` → `transform.location` 유한 float 3개, 전부 0 아님.
