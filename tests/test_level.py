@@ -12,6 +12,13 @@ FIXTURE = Path(__file__).parent / "fixtures" / "audioplayer.uasset"
 LEVEL_DIR = Path(__file__).parent / "fixtures" / "level"
 
 
+def test_inspect_actor_decodes_location():
+    wall = LEVEL_DIR / "wall.uasset"
+    actor = inspect_actor(wall)
+    assert isinstance(actor.location, tuple) and len(actor.location) == 3
+    assert all(isinstance(x, float) for x in actor.location)
+
+
 def test_inspect_audioplayer_actor():
     actor = inspect_actor(FIXTURE)
     assert actor.device_class == "Device_CRD_AudioPlayer_C"

@@ -5,6 +5,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .properties import decode_properties
 from .uasset import Package, read_package
 
 
@@ -12,6 +13,7 @@ from .uasset import Package, read_package
 class PlacedActor:
     device_class: str = ""
     name: str = ""
+    location: tuple | None = None
     asset_refs: list[str] = field(default_factory=list)
 
 
@@ -38,7 +40,14 @@ def inspect_actor(path: str | Path) -> PlacedActor:
     pkg = read_package(path)
     asset_refs = [n for n in pkg.names if n.startswith("/") and not n.startswith("/Script")]
     name = next((e.object_name for e in pkg.exports if "_UAID_" in e.object_name), "")
-    return PlacedActor(device_class=_device_class(pkg), name=name, asset_refs=asset_refs)
+    location = None
+    for e in pkg.exports:
+        loc = decode_properties(pkg, e).get("RelativeLocation")
+        if isinstance(loc, tuple) and len(loc) == 3:
+            location = loc
+            break
+    return PlacedActor(device_class=_device_class(pkg), name=name,
+                       location=location, asset_refs=asset_refs)
 
 
 def inspect_level(path: str | Path) -> Level:

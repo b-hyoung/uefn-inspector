@@ -49,6 +49,8 @@
 | **DOT 그래프 내보내기** | `to_dot` | Graphviz |
 | **엔진 버전 census** | `engine_version_census` | 522/1018 |
 | **GameplayTag census(휴리스틱)** | `gameplay_tag_census` | 점표기 식별 |
+| **표준 프로퍼티 값**(Float/Int/Bool/Object/Name/Enum/Struct) | `properties.decode_properties` | UE5.4 FPropertyTypeName |
+| **트랜스폼(위치) 디코드** | `inspect_actor().location` | PointLevel 60/67 좌표 |
 
 ## B. 읽기 · 오프라인 — ⚠️ 조건부
 
@@ -61,8 +63,6 @@
 
 | 능력 | 상태 | 사유 |
 |---|---|---|
-| 표준 프로퍼티 **값**(Bool/Int/Float/Enum) | ⏸ 보류(T2) | export serial이 단순 태그드 아님(선두구조/unversioned 의심). 깊은 작업 필요 |
-| 트랜스폼 값 | ⏸ 보류(T3) | T2 의존 |
 | 디바이스 설정 **값**(`Can Be Heard By`=?) | ❌ 천장 | GUID 낀 Verse-VM 직렬화. 이름은 보여도 값은 못 읽음 |
 | `@editable` 바인딩 **값** | ❌ 천장 | Verse VM 내부(리플렉션도 실패). 라이브 GUI만 |
 | 니아가라/시퀀서/DataTable | ⏸ | 이 프로젝트에 부재. 있는 프로젝트 발견 시 개시 |
@@ -108,9 +108,9 @@
 
 지금 모델로 오프라인 분석은 **~38개까지 채웠고**, 그 이상은 아래 셋 중 하나를 뚫어야 가능:
 
-1. **프로퍼티 값 디코드(T2)** — 잠기면: 트랜스폼/공간배치, 실제 수치·설정값, 스칼라 프로퍼티 분석.
+1. ~~프로퍼티 값 디코드(T2)~~ → **✅ 뚫림(2026-09-09)**. UE5.4 FPropertyTypeName 구현으로 표준 값·트랜스폼 디코드. 이제 공간배치·수치 분석 가능.
 2. **콘텐츠 에셋 인덱싱**(BP/메시/머티리얼 .uasset, 배치 액터 아님) — 잠기면: 클래스 계층(super_index는 인스턴스라 0), 실 메시/머티리얼 사용, 완전한 의존 해소.
-3. **라이브 에디터** — 잠기면: Verse-VM `@editable`·설정 **값** (온·오프 공통 천장, GUI만).
+3. **라이브 에디터** — 잠기면: Verse-VM `@editable`·설정 **값** (온·오프 공통 천장, GUI만). ← 표준 프로퍼티는 뚫렸지만 Verse-VM 커스텀 직렬화는 여전히 천장.
 
 즉 "분석 종류"는 사실상 소진. 남은 건 **깊이(값)·범위(콘텐츠 에셋)·런타임(라이브)** 축의 확장이며, 각각 위 3개 열쇠가 필요하다.
 

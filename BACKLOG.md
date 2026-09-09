@@ -25,21 +25,18 @@
 ### T1 견고성: 손상/미지원 파일 graceful · `done` · P0
 - **수용:** 랜덤 128바이트 임시파일 → `read_package` 예외 없음, `warnings` 있음, `exports==[]`.
 
-### T2 표준 태그드 프로퍼티 디코더 · `deferred` · P1
+### T2 표준 태그드 프로퍼티 디코더 · `done` · P1
 - **목표:** export serial 영역에서 Bool/Int/Float/Name/Object/Enum 디코드, 모르는 타입 `unparsed`.
 - **수용:** `properties.decode(data, pkg, export)` → wall/light에서 표준 프로퍼티 ≥1개 올바른 파이썬 값, 예외 없음. Verse-VM(GUID) 프로퍼티는 `unparsed`.
-- **⏸ 재도전 결과(2026-09-09) — 형식 크랙, 정밀구현 대기:**
-  - ✅ **태그드 확정**: PackageFlags=0x4840, PKG_UnversionedProperties(0x2000) **unset**. (unversioned 아님)
-  - ✅ 버그2개 규명: (a) `FPropertyTag.Size`는 **int32**(export map SerialSize int64와 혼동), (b) 각 export serial 앞에 **선두 1바이트**.
-  - ✅ **UE5.4+ `FPropertyTypeName` 형식 확정**: `name(FName8) · type(FName8) · InnerCount(int32) · params(FName8×N) · size(int32) · …` — Struct는 param=구조체명(예 Vector). 옛 walker가 InnerCount 누락해 어긋남.
-  - ✅ **실제 디코드 1건 성공**: `CachedMaxDrawDistance FloatProperty=0.0`.
-  - ⚠️ 남은 정밀 배치(arrayindex 유무 / Bool 값 위치 / struct GUID / 재귀 중첩)는 probe마다 레이어가 늘어 **엔진 소스 기준 구현 필요**.
-  - ❗ "Can Be Heard By"는 **Verse-VM(GUID 낀 커스텀)** = 천장. T2 대상은 표준 컴포넌트 프로퍼티(트랜스폼 등).
-  - **다음 열쇠:** UE5.4 `FPropertyTag::Serialize`/`FPropertyTypeName` 엔진 소스 확보 → 정밀 구현. (엔진 소스는 NarshaMCP/UE 설치에 있음)
+- **✅ 완료(2026-09-09) — CUE4Parse 스펙 참조로 구현(`properties.py`):**
+  - UE5 v1012+ 레이아웃 확정: `Name · FPropertyTypeName(트리) · Size(int32) · PropertyTagFlags(uint8: 0x01→ArrayIndex, 0x02→Guid) · Value`.
+  - 선두 1바이트는 start 프로빙으로 처리(None 종료 walk 채택). Float/Double/Int/Bool/Object/Name/Enum/Struct(Vector·Rotator=3 double/float) 디코드.
+  - 실증: SMC `CachedMaxDrawDistance` 등 값, PointLevel **60/67 액터 좌표** 디코드.
+  - ❗ "Can Be Heard By" 등 **Verse-VM(GUID 커스텀)** 은 표준 태그 아님 → 여전히 ❌천장.
 
-### T3 트랜스폼 읽기 · `deferred` · P1 (T2 의존)
-- **수용:** `inspect_actor(wall)` → `transform.location` 유한 float 3개, 전부 0 아님.
-- **⏸ T2 의존이라 함께 보류.**
+### T3 트랜스폼 읽기 · `done` · P1 (T2 의존)
+- **수용:** `inspect_actor(wall)` → `location` float 3개.
+- **✅ 완료:** `PlacedActor.location` = RootComponent `RelativeLocation`(Vector 3 double). PointLevel 60/67 좌표.
 
 ## M1 — 프로젝트 인덱스 + 검색 (핵심)
 
