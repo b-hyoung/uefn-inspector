@@ -23,6 +23,8 @@ class ObjectImport:
 class ObjectExport:
     object_name: str = ""
     class_index: int = 0
+    super_index: int = 0
+    outer_index: int = 0
     serial_offset: int = 0
     serial_size: int = 0
 
@@ -173,6 +175,8 @@ def _parse_exports(data: bytes, offset: int, count: int,
         exports.append(ObjectExport(
             object_name=_read_fname(data, o + 16, names),
             class_index=_i32(data, o),
+            super_index=_i32(data, o + 4),
+            outer_index=_i32(data, o + 12),
             serial_size=_i64(data, o + 28),
             serial_offset=_i64(data, o + 36),
         ))
