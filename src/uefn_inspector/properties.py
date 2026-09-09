@@ -18,7 +18,7 @@ from __future__ import annotations
 import struct
 from pathlib import Path
 
-from .uasset import ObjectExport, Package
+from .uasset import ObjectExport, Package, _read_fstring
 
 _MAX_INNER = 6
 _MAX_DEPTH = 6
@@ -60,23 +60,53 @@ def _typename(d: bytes, o: int, names: list[str], depth: int = 0) -> tuple[str, 
     return root, children, o
 
 
+_TAGFLAG_BOOL_TRUE = 0x10
+
+
 def _decode_value(d: bytes, vs: int, size: int, root: str,
-                  children: list, names: list[str]):
+                  children: list, names: list[str], flags: int = 0):
     try:
         if root == "FloatProperty" and size >= 4:
             return struct.unpack_from("<f", d, vs)[0]
         if root == "DoubleProperty" and size >= 8:
             return struct.unpack_from("<d", d, vs)[0]
-        if root in ("IntProperty", "Int32Property") and size >= 4:
+        if root in ("IntProperty", "Int32Property", "UInt32Property") and size >= 4:
             return _i32(d, vs)
         if root == "BoolProperty":
-            return bool(d[vs]) if size >= 1 else None
+            # UE5.4: the bool value lives in the PropertyTagFlags (BoolTrue bit),
+            # not the value region (which is empty, size 0).
+            return bool(flags & _TAGFLAG_BOOL_TRUE)
+        if root == "StrProperty" and size >= 4:
+            return _read_fstring(d, vs)[0]
+        if root == "ArrayProperty" and size >= 4:
+            inner = children[0][0] if children else ""
+            count = _i32(d, vs)
+            if inner == "ObjectProperty" and 0 <= count <= (size - 4) // 4:
+                return [_i32(d, vs + 4 + 4 * i) for i in range(count)]
+            return {"count": count, "inner": inner}  # partial: element decode TBD
+        if root == "SoftObjectProperty" and size >= 4:
+            return _read_fstring(d, vs)[0]
         if root == "ObjectProperty" and size >= 4:
             return f"obj:{_i32(d, vs)}"
         if root in ("NameProperty", "EnumProperty", "ByteProperty") and size >= 8:
             return _fname(d, vs, names)[0]
         if root == "StructProperty":
-            # Vector/Rotator = 3 components (doubles in UE5, size 24; floats size 12)
+            sname = children[0][0] if children else ""
+            if sname in ("Vector", "Rotator", "Vector_NetQuantize") and size == 24:
+                return tuple(struct.unpack_from("<3d", d, vs))
+            if sname in ("Vector", "Rotator") and size == 12:
+                return tuple(struct.unpack_from("<3f", d, vs))
+            if sname == "Vector2D" and size == 16:
+                return tuple(struct.unpack_from("<2d", d, vs))
+            if sname == "LinearColor" and size == 16:
+                return tuple(struct.unpack_from("<4f", d, vs))
+            if sname == "Quat" and size == 32:
+                return tuple(struct.unpack_from("<4d", d, vs))
+            if sname == "Guid" and size == 16:
+                return d[vs:vs + 16].hex()
+            if sname == "IntPoint" and size == 8:
+                return tuple(struct.unpack_from("<2i", d, vs))
+            # unnamed/other: fall back to the common 3-component shape
             if size == 24:
                 return tuple(struct.unpack_from("<3d", d, vs))
             if size == 12:
@@ -117,7 +147,7 @@ def _walk(d: bytes, names: list[str], start: int, end: int) -> tuple[dict, bool,
                 return props, False, layout
         except (_Bad, IndexError):
             return props, False, layout
-        props[name] = _decode_value(d, q, size, root, children, names)
+        props[name] = _decode_value(d, q, size, root, children, names, flags)
         layout[name] = (q, size, root)
         p = q + size
     return props, False, layout
