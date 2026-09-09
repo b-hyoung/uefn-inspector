@@ -40,7 +40,7 @@
 - **목표:** `index.build_index(dir)` → `{path: Package}` 전 파일 파싱(경고 수집).
 - **수용:** level 픽스처 인덱스 → 3개 패키지, 각 `imports`/`exports` 채워짐, 예외 없음.
 
-### T11 참조 그래프 · `todo` · P0 (T10)
+### T11 참조 그래프 · `done` · P0 (T10)
 - **목표:** 파일/패키지 → 참조 대상(import 패키지 경로) 엣지 그래프.
 - **수용:** audioplayer 노드가 `Heartbeat_Near`(또는 그 패키지)로 향하는 엣지 보유.
 
