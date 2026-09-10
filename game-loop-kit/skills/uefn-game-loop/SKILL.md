@@ -27,6 +27,13 @@ description: Run the whole UEFN game loop end-to-end — intake (what game / whe
 - 산출: `FUN-DEPTH.md` D-NN → `FUN-HYPOTHESIS.md` H-NN(지표·판정식·반증조건) → `GDD/systems/assets`
 - **일회성이 아니다** — ⑤에서 기각되면 여기로 돌아온다.
 
+### ①.5 실현가능성 — "UEFN에서 되나?"  📄 `spec/UEFN-FEASIBILITY.md`
+핵심 메카닉 3~5개를 🟢직행 / 🟡우회 / ⚫GUI수동 / 🔴불가 로 판정
+- **🔴가 코어면 기획 변경** — 수단이 막히면 **같은 재미를 내는 다른 수단**으로 (재미는 목적, 수단은 교체 가능)
+- 🟡은 대체 설계 **확정 후** 티켓화 · ⚫은 별도 티켓+정지게이트
+- 실측 예: @editable 연결⚫ · 조명 벽통과🟡 · 조준점 색변경🔴(→오디오/포스트프로세스) · 외부통신🔴
+- **단정 전에 `engine_devices` 검색** (디바이스 1119개)
+
 ### ② DOR 게이트 — 착수해도 되나  📄 `spec/DOR.md`
 5영역 체크 + **적대적 전면공격 1회**(`loop/review/ADVERSARIAL.md` B-0 판단가능성 우선)
 - **Blocker 0이어야 착수.** 가장 흔한 반려: 지표가 재미있는/없는 플레이를 **구별 못 함**.

@@ -21,7 +21,9 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
 4. **Phase 3 코어 루프** — 30초/5분/세션/진행 각각의 **재미 원천**
 5. **Phase 3.5 깊이 파기** ⭐ — 4층(감각→**판단**→**숙련**→이야기) · 긴장 대립쌍 · 실패모드 ·
    가장 불확실한 층 · **팩 필수질문 4개**
-6. **Phase 4~6** — 기둥/안티기둥 · 플레이어/MVP/UEFN제약 · **티켓 해상도**
+6. **Phase 4~6** — 기둥/안티기둥 · 플레이어/MVP · **티켓 해상도**
+7. **UEFN 실현가능성** ⭐ — `KIT/spec/UEFN-FEASIBILITY.md`로 핵심 메카닉 등급 판정.
+   🔴가 코어면 **기획을 바꾼다**(같은 재미, 다른 수단). 🟡은 대체 설계 확정, ⚫은 GUI 티켓.
 
 ## 산출 (문서에 기록)
 `spec/FUN-DEPTH.md`(D-NN) → `spec/FUN-HYPOTHESIS.md`(H-NN, 지표는 팩에서 선별) →
