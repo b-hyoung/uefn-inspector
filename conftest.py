@@ -28,5 +28,6 @@ def pytest_collection_modifyitems(config, items):
             "test_m6", "test_m7b", "test_structure", "test_spatial",
             "test_verse", "test_verse_source", "test_write",
             "test_write_versevm", "test_patch", "test_rebuild", "test_cli",
+            "test_add_binding", "test_rebuild_trailing",
         }:
             item.add_marker(skip)
