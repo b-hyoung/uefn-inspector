@@ -49,6 +49,7 @@ class Package:
     export_stride: int = 0
     import_offset: int = 0
     trailing_summary_pos: int = 0  # first byte after ImportOffset field
+    name_count_pos: int = 0        # position of the NameCount summary field
 
 
 def _i32(data: bytes, o: int) -> int:
@@ -207,6 +208,7 @@ def read_package(path: str | Path) -> Package:
         pkg.warnings.append("name table not found")
         return pkg
     o, pkg.name_count, pkg.name_offset, pkg.names = anchor
+    pkg.name_count_pos = o
 
     # Walk the summary forward from the NameCount field through the known
     # post-name layout to reach the export/import table pointers.

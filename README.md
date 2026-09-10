@@ -70,7 +70,8 @@ PYTHONPATH=src python -m uefn_inspector "<...>" --json
 
 ## 무엇이 되나 (요약 — 상세는 docs/CAPABILITIES.md)
 - **읽기(오프라인):** 인벤토리 · 검색 · where-used · 의존/순환/영향/고아 · census · 공간분석 · 프로퍼티 값(**91% 디코드**) · **Verse-VM 설정값·@editable 배선** · `.verse` 구조↔배선 교차검증
-- **쓰기(오프라인, UEFN 수용 검증됨):** 스칼라·enum·오브젝트참조 **동일크기 in-place**(백업+롤백). 크기변경 편집은 fixup 엔진(토대만)
+- **쓰기(오프라인):** 스칼라·enum·오브젝트참조 **동일크기 in-place**(백업+롤백, **UEFN 수용 검증됨**)
+  · **새 `@editable` 슬롯 배선 추가**(크기변경 + 오프셋 fixup, ⚠️ UEFN 수용 미검증 — 사본으로)
 - **엔진 콘텐츠:** CUE4Parse CLI로 Fortnite 마운트 → 디바이스 카탈로그 (심층값은 usmap 필요)
   ⚠️ 카탈로그(`data/engine_device_catalog.json`)는 **저장소에 없다** — Fortnite 파생물이라 재배포 안 함.
   직접 생성: `cue4parse_cli/README.md`. **없어도 `engine_devices` 외 모든 도구는 동작한다.**
@@ -107,6 +108,7 @@ uefn-inspector를 엔진 삼아 UEFN 게임을 **A-Z 루프**로 구축하는 �
 **Plan→Task→Ticket** 계층 + 구조검증(inspector)/행동검증(PIE). → `game-loop-kit/README.md`
 
 ## 문서
+- **`CHANGELOG.md`** — `git pull` 후 **무엇이 바뀌었는지** (새 기능·해제된 한계·깨지는 변경)
 - `docs/CAPABILITIES.md` — 되는것/안되는것 확정표
 - `docs/ROADMAP.md` — 완성 구조·마일스톤
 - `docs/BACKLOG.md` — 티켓 보드(자율 루프용)
