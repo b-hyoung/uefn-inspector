@@ -42,6 +42,7 @@
 | ⭐ **디바이스 설정값 읽기**(예 `Can Be Heard By`) | `read_actor` · `core.properties.decode_properties` | ❌ | **✅ 읽힘** |
 | ⭐ **디바이스 설정값 변경**(enum) | `edit.write.set_enum` | ❌ | **✅ 씀** |
 | ⭐ **새 `@editable` 슬롯 배선 추가** | `edit.add_binding.add_binding` | ❌ | **⚠️ 됨**(크기변경 — UEFN 수용 미검증, 사본 필수) |
+| ⭐ **`@editable` 슬롯 → 타 액터 배선(오프라인)** | `edit.wire.bind_editable` | ❌ | **⚠️ 구조 검증됨 / UEFN 수용: 에디터 세션 검증 진행 중**(SavedActor 형식: 타 OFPA 패키지 액터를 import로 추가하고 슬롯 서브오브젝트 export의 `SavedActor`가 그 import를 가리키게 함 — 미바인딩 슬롯은 태그 삽입=크기변경, 사본 필수. 래퍼 import 형식은 폐기) |
 | ⭐ **선언↔배선 교차검증**(미배선 슬롯 탐지) | `analysis.verse_source.cross_reference` | ❌ | **✅** (스펙 드리프트 자동 감지) |
 | 프로퍼티 값·트랜스폼 | `read_actor` | 표준값만 △ | ✅ (91% 디코드) |
 | 스칼라 값 변경 | `edit.write.set_scalar` · `edit.patch.patch_scalar_file`(백업+롤백) | 표준값 ✅ | ✅ (에디터 닫고) |
