@@ -21,35 +21,29 @@
 **권장:** 분석들을 **MCP 도구로 노출**해 세션에서 호출 + 필요 시 MD/JSON 리포트로 스냅샷.
 기존 라이브 MCP(uefn/unreal)와 **상호보완**: 라이브 MCP=물리 배치 조작, uefn-inspector=오프라인 로직/값 읽기·쓰기.
 
-## 시작하기 (클론 후)
+## 시작하기 — 한 줄 설치
 
-**1. 요구사항** — Python 3.11+ (파싱엔 외부 의존성 없음)
 ```bash
-pip install mcp pytest      # MCP 서버용 + 테스트용 (분석만 할 거면 불필요)
+git clone https://github.com/b-hyoung/uefn-inspector.git
+cd uefn-inspector
+node bin/cli.js install        # 스킬 4종 + MCP 서버 등록 (Python·mcp 자동 처리)
 ```
+> npm 배포 후에는 `npx uefn-inspector install` 로도 동일.
 
-**2. 바로 써보기** — 자기 UEFN 프로젝트의 레벨을 분석
-```bash
-# 레벨 폴더 = <UEFN프로젝트>/Content/__ExternalActors__/Level/<레벨이름>
-PYTHONPATH=src python -m uefn_inspector "<...>/Content/__ExternalActors__/Level/<레벨>"
-PYTHONPATH=src python -m uefn_inspector "<...>/<레벨>" --json
-```
-출력 예:
-```
-레벨: PointLevel   (액터 67개)
-배치 디바이스:
-   46 x GrayBox_Solid_Wall_C
-    3 x Device_CRD_AudioPlayer_C
-참조 오디오: /MyProject/Audio/Heartbeat_Near ...
-```
-> UEFN 프로젝트 경로는 보통 `문서(Documents)/FortniteProjects/<프로젝트>`.
+**Claude Code 재시작** → **`/uefn-game-loop`** 으로 시작.
 
-**3. 슬래시 스킬 설치** ⭐ — `/uefn-game-loop` 등으로 바로 시작
-```bash
-./install-skills.sh          # macOS/Linux/Git Bash
-powershell -File install-skills.ps1   # Windows
-```
-→ `~/.claude/skills/`에 설치(KIT 경로는 이 클론으로 자동 설정). **Claude Code 재시작** 후:
+| 명령 | 하는 일 |
+|---|---|
+| `node bin/cli.js install` | 스킬 + MCP (권장) |
+| `node bin/cli.js skills` | 슬래시 스킬만 |
+| `node bin/cli.js mcp` | MCP 등록만 |
+| `node bin/cli.js doctor` | 환경 점검(Python·mcp·claude CLI·설치 상태) |
+| `node bin/cli.js uninstall` | 되돌리기 |
+
+요구사항: **Python 3.11+**, Node 18+ (설치 CLI용), Claude Code.
+Python이 자동 탐지 안 되면 `UEFN_PYTHON=<python 경로>` 로 지정.
+
+### 설치되는 것
 | 슬래시 | 하는 일 |
 |---|---|
 | **`/uefn-game-loop`** | ⭐ 기본 진입점 — 루프 전체(①인테이크→②DOR→③분해→④레벨×4→⑤판정) |
@@ -57,22 +51,22 @@ powershell -File install-skills.ps1   # Windows
 | `/uefn-level` | 레벨 1개 3시간 빌드 |
 | `/uefn-review` | 적대적 리뷰 ("재미를 판단할 수 있나") |
 
-**4. MCP로 등록** (Claude 세션에서 도구로 호출)
+MCP 도구 7개: `inspect_level` · `audit` · `find` · `who_uses` · **`read_actor`**(Verse-VM 값) · **`editable_bindings`**(@editable 배선) · `engine_devices`
+
+## 직접 써보기 (설치 없이)
 ```bash
-claude mcp add uefn-inspector -s user -- python <abs>/mcp_server.py
+PYTHONPATH=src python -m uefn_inspector "<UEFN프로젝트>/Content/__ExternalActors__/Level/<레벨>"
+PYTHONPATH=src python -m uefn_inspector "<...>" --json
 ```
-등록 후 세션에서 `/mcp` → reconnect. 도구 7개가 뜬다.
-
-**5. (선택) 라이브러리로**
-```python
-import sys; sys.path.insert(0, "src")
-from uefn_inspector.core.uasset import read_package
-from uefn_inspector.analysis.verse import verse_bindings
-print(verse_bindings(read_package("<placed_verse_device>.uasset")))   # @editable 배선
 ```
+레벨: PointLevel   (액터 67개)
+배치 디바이스:  46 x GrayBox_Solid_Wall_C · 3 x Device_CRD_AudioPlayer_C ...
+참조 오디오: /MyProject/Audio/Heartbeat_Near ...
+```
+> UEFN 프로젝트 경로는 보통 `문서(Documents)/FortniteProjects/<프로젝트>`.
 
-**6. (선택) 엔진 디바이스 카탈로그** — `engine_devices` 도구용.
-저장소에 없다(Fortnite 파생물). 필요하면 `cue4parse_cli/README.md` 따라 직접 생성.
+**(선택) 엔진 디바이스 카탈로그** — `engine_devices` 도구용. 저장소에 없다(Fortnite 파생물).
+필요하면 `cue4parse_cli/README.md` 따라 자기 설치본에서 생성.
 
 ## 무엇이 되나 (요약 — 상세는 docs/CAPABILITIES.md)
 - **읽기(오프라인):** 인벤토리 · 검색 · where-used · 의존/순환/영향/고아 · census · 공간분석 · 프로퍼티 값(**91% 디코드**) · **Verse-VM 설정값·@editable 배선** · `.verse` 구조↔배선 교차검증

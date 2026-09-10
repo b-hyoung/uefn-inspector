@@ -5,11 +5,39 @@
 ## 1. MCP 서버 (등록됨)
 | 서버 | 종류 | 루프에서의 역할 |
 |---|---|---|
-| **uefn-inspector** | stdio(우리 도구) | **구조검증**·오프라인 읽기/쓰기·선언↔배선 교차검증 (`inspect_level`·`read_actor`·`editable_bindings`·`find`·`who_uses`·`audit`·`engine_devices`) |
+| **uefn-inspector** | stdio(우리 도구) | **오프라인 전담** — 아래 §1.5 표가 핵심 |
 | **uefn** (KirChuvakov) | stdio → UEFN 리스너 | **라이브 조작**·`execute_python`(임의 unreal)·`get_editor_log`(**행동검증**)·액터/에셋/뷰포트 |
 | **unreal-mcp** (Epic 공식) | http :8000 | UEFN 내장 MCP — Verse 컴파일(BuildAll)·고정 툴셋 (에디터 ON 필요) |
 | git | stdio | 커밋·이력 (티켓 단위 커밋) |
 | sqlite · n8n · blender · unrealclaude | — | 이 kit 범위 밖(다른 작업용) |
+
+## 1.5 ⭐ 오프라인으로 되는 것 (= 이 도구를 쓰는 이유)
+
+> **핵심:** 아래 ⭐ 항목들은 **라이브 MCP·에디터 Python 리플렉션이 못 한다.**
+> "GUI로만 가능"이라고 판단하기 전에 **반드시 이 표를 본다.** (2026-09-10 실측·UEFN 수용 검증됨)
+
+| 하려는 것 | MCP 도구 / 라이브러리 | 라이브(uefn/unreal-mcp) | 오프라인(uefn-inspector) |
+|---|---|---|---|
+| ⭐ **`@editable` 배선 읽기** (어느 슬롯이 뭐에 연결됐나) | `editable_bindings` · `analysis.verse.verse_bindings` | ❌ 못 읽음(Verse VM 내부) | **✅ 읽힘** |
+| ⭐ **`@editable` 배선 변경**(기존 슬롯 재연결) | `edit.write.set_object_ref` | ❌ | **✅ 씀** (UEFN 수용 확인) |
+| ⭐ **디바이스 설정값 읽기**(예 `Can Be Heard By`) | `read_actor` · `core.properties.decode_properties` | ❌ | **✅ 읽힘** |
+| ⭐ **디바이스 설정값 변경**(enum) | `edit.write.set_enum` | ❌ | **✅ 씀** |
+| ⭐ **선언↔배선 교차검증**(미배선 슬롯 탐지) | `analysis.verse_source.cross_reference` | ❌ | **✅** (스펙 드리프트 자동 감지) |
+| 프로퍼티 값·트랜스폼 | `read_actor` | 표준값만 △ | ✅ (91% 디코드) |
+| 스칼라 값 변경 | `edit.write.set_scalar` · `edit.patch.patch_scalar_file`(백업+롤백) | 표준값 ✅ | ✅ (에디터 닫고) |
+| 레벨 인벤토리·검색·역참조·의존/영향 | `inspect_level`·`find`·`who_uses`·`audit` | 크로스파일 ❌ | ✅ |
+| 공간 분석(bounds·밀집·간격) | `analysis.spatial.*` | ❌ | ✅ |
+| 엔진 디바이스 카탈로그 | `engine_devices` | ❌ | ✅ (로컬 생성 시) |
+
+**대신 오프라인이 못 하는 것 (라이브 몫)**
+- 게임 **실행**(PIE)·런타임 상태·로그 → `uefn`
+- Verse **컴파일** → `unreal-mcp` BuildAll
+- **새 `@editable` 슬롯 배선 추가**(없던 걸 새로 잇기) → GUI (크기변경 쓰기 미구현)
+
+**운영 규칙**
+- 오프라인 **쓰기**는 **UEFN을 닫고** 한다(에디터가 파일을 잠금). 읽기는 켜져 있어도 됨.
+- 표준 배치·트랜스폼만 바꿀 거면 굳이 닫지 말고 **라이브 MCP**로.
+- Verse-VM 값·배선을 바꿀 땐 **닫은 김에 다른 오프라인 작업까지 몰아서** 한 번에.
 
 ## 2. 게임 설계 하네스 — `game-design-skill` (v0.3.0)
 > 출처: Claude Code Game Studios(MIT) 자료. **INTAKE/GDD/시스템 문서의 근거.**

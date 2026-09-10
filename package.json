@@ -1,0 +1,44 @@
+{
+  "name": "uefn-inspector",
+  "version": "0.1.0",
+  "description": "Offline UEFN (.uasset/.umap) analyzer & editor — reads/writes Verse-VM device settings and @editable bindings that live reflection cannot. Installs Claude Code slash skills + an MCP server.",
+  "bin": {
+    "uefn-inspector": "bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "game-loop-kit/",
+    "mcp_server.py",
+    "conftest.py",
+    "pytest.ini",
+    "cue4parse_cli/",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "uefn",
+    "unreal",
+    "fortnite",
+    "uasset",
+    "mcp",
+    "claude",
+    "claude-code",
+    "game-design",
+    "verse"
+  ],
+  "author": "b-hyoung",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/b-hyoung/uefn-inspector.git"
+  },
+  "homepage": "https://github.com/b-hyoung/uefn-inspector#readme",
+  "bugs": {
+    "url": "https://github.com/b-hyoung/uefn-inspector/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
