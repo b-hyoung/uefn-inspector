@@ -1,35 +1,35 @@
-# TASK-01.01 — LEVEL-A \<변주 이름\> (대조군)
+# TASK-01.02 — LEVEL-B 구조 변주
 
 - 부모: PLAN-01 (가설 H-01) · 상태: `todo`
-- **변주 조건:** 공간=\<...\> · 규칙=\<...\>  → `levels/LEVEL-A/build.md`
+- **변주 조건:** 공간=\<변경\> · 규칙/인원=기준  → `levels/LEVEL-B/build.md`
 - 목표: 이 조건에서 가설이 지지되는지 **측정 가능한 상태로** 만든다.
 
 > Task = 레벨 변주 1개. 아래 티켓들은 **빌드 → 측정 준비 → 플레이테스트 → 기록** 순.
 
 ---
 
-### TICKET-01.01.01 — 레벨 뼈대 구성   · status: `todo` · deps: —
+### TICKET-01.02.01 — 레벨 뼈대 구성   · status: `todo` · deps: TICKET-01.01.04 (대조군 먼저)
 - **목표:** 변주 조건대로 공간·디바이스 배치
 - **구조 수용** (uefn-inspector, 에디터 OFF):
   - `inspect_level` → 기대 디바이스·개수 존재
   - 공간 조건 확인: \<예: 벽 N개 이상, bounds/density가 조건에 부합 (spatial 분석)\>
 - **행동 수용:** PIE 진입 시 에러 없음(로드 성공)
-- **산출물:** 레벨 배치 · `levels/LEVEL-A/build.md` 갱신
+- **산출물:** 레벨 배치 · `levels/LEVEL-B/build.md` 갱신
 
-### TICKET-01.01.02 — 메카닉 배선   · status: `todo` · deps: 01.01.01
+### TICKET-01.02.02 — 메카닉 배선   · status: `todo` · deps: 01.01.01
 - **목표:** 가설의 메카닉이 이 레벨에서 작동하도록 Verse+디바이스 연결
 - **구조 수용:** `editable_bindings` → 선언된 슬롯 **전부 배선**(미배선 0), 설정값 = 변주 조건
 - **행동 수용:** PIE에서 메카닉 1회 발동이 로그로 확인
 - **산출물:** `verse/<file>.verse` · 배선
 - **비고:** 새 @editable 배선은 GUI 전용 → **정지게이트**
 
-### TICKET-01.01.03 — 측정 로그 심기   · status: `todo` · deps: 01.01.02
+### TICKET-01.02.03 — 측정 로그 심기   · status: `todo` · deps: 01.01.02
 - **목표:** FUN-HYPOTHESIS의 **자동 지표**를 수집 가능하게
 - **구조 수용:** `.verse`에 `[M]` 태그 Print가 지표별로 존재
 - **행동 수용:** PIE 1회 → `get_editor_log`에 지표 라인 **전부** 출력됨
-- **산출물:** Verse 로그 코드 · `levels/LEVEL-A/metrics.md` 표 준비
+- **산출물:** Verse 로그 코드 · `levels/LEVEL-B/metrics.md` 표 준비
 
-### TICKET-01.01.04 — 자동 실행 & 집계   · status: `todo` · deps: 01.01.03
+### TICKET-01.02.04 — 자동 실행 & 집계   · status: `todo` · deps: 01.01.03
 - **목표:** PIE 자동 실행 N회로 지표 수집 (사람 없음)
 - **구조 수용:** —(런타임 단계)
 - **행동 수용:** N회 실행 완료 · 로그에서 지표 파싱 성공 · `metrics.md` 집계 + `autoplay.md` 회차 기록

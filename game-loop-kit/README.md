@@ -5,13 +5,17 @@ UEFN 게임을 **A-Z 루프 엔지니어링**으로 구축하는 범용 템플�
 
 이 폴더를 게임 프로젝트 옆에 복사하고 `spec/`·`plan/`을 채운 뒤, LOOP.md 규약대로 루프를 돌린다.
 
-## 구조 = Plan → Task → Ticket
-- **Plan**(에픽/마일스톤) → **Task**(하위 묶음) → **Ticket**(루프가 한 번에 실행하는 원자 단위)
-- ID = `PLAN.TASK.TICKET` (예 `01.02.03`). 상태 롤업: Ticket → Task → Plan.
+## 구조 = 재미 가설 → 변주 레벨 → 티켓 (무인 실험 루프)
+- **Plan = 재미 가설 1개** → **Task = 변주 레벨 1개** → **Ticket = 그 레벨의 빌드·측정 단위**
+- **4레벨 1세트:** A(대조군) · B(**구조**) · C(**규칙**) · D(**인원수**) — 각 레벨은 **한 축만** 변경
+- **사람은 루프 안에 없다** — 자동 실행(PIE) + 로그 지표 + 규칙 기반 판정. 사람은 정지게이트에서만.
+- ID = `PLAN.TASK.TICKET` (예 `01.02.03`). 롤업: Ticket → Task → Plan → 실험 결론.
 
 ## 폴더
 ```
-spec/    무엇/왜 (진실의 원천)      GDD.md · systems/ · assets.md
+spec/    무엇/왜 + 재미 가설         INTAKE.md · FUN-HYPOTHESIS.md · GDD.md · systems/ · assets.md
+levels/  변주 레벨별 정의·측정        LEVEL-A~D/{build,autoplay,metrics}.md
+experiments/ 변주 비교·결론          EXP-NN-results.md
 plan/    무엇을 (계층 작업)          PLANS.md · PLAN-NN/PLAN.md · PLAN-NN/tasks/TASK-*.md
 loop/    어떻게 (실행·검증)          LOOP.md · verify/{structural,behavioral}.md · checks/
 state/   현재 상태·교훈              SNAPSHOT.md · lessons.md
