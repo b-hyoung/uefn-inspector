@@ -13,7 +13,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { execFileSync, spawnSync } = require('child_process');
+const { execFileSync, execSync, spawnSync } = require('child_process');
 
 const PKG = path.resolve(__dirname, '..');
 const KIT = path.join(PKG, 'game-loop-kit');
@@ -22,6 +22,23 @@ const SKILLS = ['uefn-game-loop', 'uefn-intake', 'uefn-level', 'uefn-review'];
 const SKILL_DEST = process.env.CLAUDE_SKILLS_DIR || path.join(os.homedir(), '.claude', 'skills');
 const SERVER = path.join(PKG, 'mcp_server.py');
 
+// mcp 2.x renamed FastMCP -> MCPServer; our server (and KirChuvakov's) use v1.
+const MCP_SPEC = 'mcp<2';
+const MCP_CHECK = 'import mcp.server.fastmcp';
+
+/**
+ * Run the `claude` CLI. On Windows it is a .cmd/.ps1 shim, which execFile()
+ * cannot execute directly — go through the shell there (quoting the args,
+ * since the shell re-parses the command line). Unchanged elsewhere.
+ */
+function claudeSync(args) {
+  if (process.platform !== 'win32') {
+    return execFileSync('claude', args, { stdio: 'pipe' });
+  }
+  const quoted = args.map((a) => (/[\s"&|<>^()]/.test(a) ? `"${a.replace(/"/g, '""')}"` : a));
+  return execSync(`claude ${quoted.join(' ')}`, { stdio: 'pipe' });
+}
+
 const c = {
   ok: (s) => console.log(`  \x1b[32m✓\x1b[0m ${s}`),
   warn: (s) => console.log(`  \x1b[33m!\x1b[0m ${s}`),
@@ -29,11 +46,31 @@ const c = {
   head: (s) => console.log(`\n\x1b[1m${s}\x1b[0m`),
 };
 
+/**
+ * Interpreters that are not necessarily on PATH: the repo's own .venv, and
+ * (on Windows) the standard per-user install under %LOCALAPPDATA%, newest
+ * version first. Only paths that exist are returned.
+ */
+function localPythons() {
+  const found = [];
+  if (process.platform === 'win32') {
+    found.push(path.join(PKG, '.venv', 'Scripts', 'python.exe'));
+    const base = path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Python');
+    let dirs = [];
+    try { dirs = fs.readdirSync(base).filter((d) => /^Python3\d+$/.test(d)); } catch (e) { /* none */ }
+    dirs.sort((a, b) => parseInt(b.slice(6), 10) - parseInt(a.slice(6), 10));
+    for (const d of dirs) found.push(path.join(base, d, 'python.exe'));
+  } else {
+    found.push(path.join(PKG, '.venv', 'bin', 'python'));
+  }
+  return found.filter((p) => fs.existsSync(p));
+}
+
 function findPython() {
   if (process.env.UEFN_PYTHON) return process.env.UEFN_PYTHON;
-  const candidates = process.platform === 'win32'
+  const candidates = localPythons().concat(process.platform === 'win32'
     ? ['python', 'py', 'python3']
-    : ['python3', 'python'];
+    : ['python3', 'python']);
   for (const cmd of candidates) {
     const r = spawnSync(cmd, ['-c', 'import sys; print(sys.version_info[0]*100+sys.version_info[1])'],
       { encoding: 'utf8' });
@@ -62,10 +99,10 @@ function installSkills() {
 }
 
 function ensureMcpDep(py) {
-  const r = spawnSync(py, ['-c', 'import mcp'], { encoding: 'utf8' });
+  const r = spawnSync(py, ['-c', MCP_CHECK], { encoding: 'utf8' });
   if (r.status === 0) return true;
-  c.warn('python package "mcp" missing — installing');
-  const i = spawnSync(py, ['-m', 'pip', 'install', '-q', 'mcp'], { stdio: 'inherit' });
+  c.warn(`python package "mcp" missing or incompatible — installing ${MCP_SPEC}`);
+  const i = spawnSync(py, ['-m', 'pip', 'install', '-q', MCP_SPEC], { stdio: 'inherit' });
   return i.status === 0;
 }
 
@@ -76,8 +113,7 @@ function registerMcp() {
   c.ok(`python: ${py}`);
   if (!ensureMcpDep(py)) { c.err('could not install the "mcp" package'); return; }
   try {
-    execFileSync('claude', ['mcp', 'add', 'uefn-inspector', '-s', 'user', '--', py, SERVER],
-      { stdio: 'pipe' });
+    claudeSync(['mcp', 'add', 'uefn-inspector', '-s', 'user', '--', py, SERVER]);
     c.ok('registered as "uefn-inspector" (user scope)');
   } catch (e) {
     const msg = String(e.stderr || e.message);
@@ -94,11 +130,13 @@ function doctor() {
   const py = findPython();
   py ? c.ok(`Python 3.11+: ${py}`) : c.err('Python 3.11+ not found');
   if (py) {
-    const m = spawnSync(py, ['-c', 'import mcp'], { encoding: 'utf8' });
-    m.status === 0 ? c.ok('python package: mcp') : c.warn('python package "mcp" not installed');
+    const m = spawnSync(py, ['-c', MCP_CHECK], { encoding: 'utf8' });
+    m.status === 0
+      ? c.ok('python package: mcp')
+      : c.warn(`python package "mcp" not installed or incompatible (needs ${MCP_SPEC})`);
   }
   try {
-    execFileSync('claude', ['--version'], { stdio: 'pipe' });
+    claudeSync(['--version']);
     c.ok('claude CLI');
   } catch { c.warn('claude CLI not found (skills still work; MCP needs manual registration)'); }
   fs.existsSync(path.join(SKILL_DEST, 'uefn-game-loop', 'SKILL.md'))
@@ -116,7 +154,7 @@ function uninstall() {
     if (fs.existsSync(dir)) { fs.rmSync(dir, { recursive: true, force: true }); c.ok(`removed /${name}`); }
   }
   try {
-    execFileSync('claude', ['mcp', 'remove', 'uefn-inspector'], { stdio: 'pipe' });
+    claudeSync(['mcp', 'remove', 'uefn-inspector']);
     c.ok('unregistered MCP server');
   } catch { c.warn('MCP server not registered (or claude CLI unavailable)'); }
 }

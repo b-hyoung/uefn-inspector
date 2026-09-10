@@ -20,13 +20,15 @@ def pytest_collection_modifyitems(config, items):
     skip = pytest.mark.skip(
         reason="no local UEFN fixtures (tests/fixtures/*.uasset) — see README"
     )
+    needs_fixtures: dict[str, bool] = {}
     for item in items:
-        src = item.fspath.purebasename
-        if src in {
-            "test_uasset", "test_level", "test_properties", "test_index",
-            "test_graph", "test_query", "test_settings", "test_analyze",
-            "test_m6", "test_m7b", "test_structure", "test_spatial",
-            "test_verse", "test_verse_source", "test_write",
-            "test_write_versevm", "test_patch", "test_rebuild", "test_cli",
-        }:
+        path = str(getattr(item, "path", None) or item.fspath)
+        if path not in needs_fixtures:
+            # A module needs fixtures if its source mentions the fixtures dir.
+            try:
+                text = Path(path).read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                text = ""
+            needs_fixtures[path] = "fixtures" in text
+        if needs_fixtures[path]:
             item.add_marker(skip)
