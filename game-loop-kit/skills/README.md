@@ -13,10 +13,13 @@
 > 인테이크는 루프 **밖의 준비가 아니라 안의 단계** — 가설이 기각되면 ①로 돌아온다.
 
 ## 설치
+저장소 루트에서:
 ```bash
-cp -r skills/uefn-* ~/.claude/skills/
+./install-skills.sh                    # macOS/Linux/Git Bash
+powershell -File install-skills.ps1    # Windows
 ```
-(이 저장소에서 작업 중이면 이미 설치돼 있음 — 여기 사본은 백업/배포용)
+KIT 경로를 **이 클론 위치로 자동 재작성**해서 `~/.claude/skills/`에 넣는다.
+설치 후 **Claude Code 재시작**해야 로드된다.
 
 > 스킬은 kit 문서를 **참조**한다(내용을 복제하지 않음). KIT 경로가 바뀌면 각 SKILL.md의
 > `KIT =` 경로를 수정한다.

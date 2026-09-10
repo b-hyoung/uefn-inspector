@@ -44,13 +44,26 @@ PYTHONPATH=src python -m uefn_inspector "<...>/<레벨>" --json
 ```
 > UEFN 프로젝트 경로는 보통 `문서(Documents)/FortniteProjects/<프로젝트>`.
 
-**3. MCP로 등록** (Claude 세션에서 도구로 호출)
+**3. 슬래시 스킬 설치** ⭐ — `/uefn-game-loop` 등으로 바로 시작
+```bash
+./install-skills.sh          # macOS/Linux/Git Bash
+powershell -File install-skills.ps1   # Windows
+```
+→ `~/.claude/skills/`에 설치(KIT 경로는 이 클론으로 자동 설정). **Claude Code 재시작** 후:
+| 슬래시 | 하는 일 |
+|---|---|
+| **`/uefn-game-loop`** | ⭐ 기본 진입점 — 루프 전체(①인테이크→②DOR→③분해→④레벨×4→⑤판정) |
+| `/uefn-intake` | 인테이크만 (어떤 게임·재미 어디서·장르팩·깊이) |
+| `/uefn-level` | 레벨 1개 3시간 빌드 |
+| `/uefn-review` | 적대적 리뷰 ("재미를 판단할 수 있나") |
+
+**4. MCP로 등록** (Claude 세션에서 도구로 호출)
 ```bash
 claude mcp add uefn-inspector -s user -- python <abs>/mcp_server.py
 ```
 등록 후 세션에서 `/mcp` → reconnect. 도구 7개가 뜬다.
 
-**4. (선택) 라이브러리로**
+**5. (선택) 라이브러리로**
 ```python
 import sys; sys.path.insert(0, "src")
 from uefn_inspector.core.uasset import read_package
@@ -58,7 +71,7 @@ from uefn_inspector.analysis.verse import verse_bindings
 print(verse_bindings(read_package("<placed_verse_device>.uasset")))   # @editable 배선
 ```
 
-**5. (선택) 엔진 디바이스 카탈로그** — `engine_devices` 도구용.
+**6. (선택) 엔진 디바이스 카탈로그** — `engine_devices` 도구용.
 저장소에 없다(Fortnite 파생물). 필요하면 `cue4parse_cli/README.md` 따라 직접 생성.
 
 ## 무엇이 되나 (요약 — 상세는 docs/CAPABILITIES.md)
