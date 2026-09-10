@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 from mcp.server.fastmcp import FastMCP  # noqa: E402
 
 from uefn_inspector.analysis.analyze import impact  # noqa: E402
+from uefn_inspector.capabilities import probe as _probe  # noqa: E402
 from uefn_inspector.cli import run  # noqa: E402
 from uefn_inspector.analysis.engine_catalog import search_engine_devices  # noqa: E402
 from uefn_inspector.model.index import build_index  # noqa: E402
@@ -27,6 +28,17 @@ from uefn_inspector.core.uasset import read_package  # noqa: E402
 from uefn_inspector.analysis.verse import verse_bindings  # noqa: E402
 
 mcp = FastMCP("uefn-inspector")
+
+
+@mcp.tool()
+def capabilities(sample_file: str = "") -> dict:
+    """What this tool can ACTUALLY do right now — every entry verified by running
+    it, not read from documentation. Call this before claiming something is or
+    isn't possible. Pass a placed-actor .uasset as `sample_file` for a full check
+    (bindings, property decode, size-changing edit); without it those report
+    "unverified". Also reports preconditions: editor open (blocks offline writes),
+    catalog present, live MCP reachable."""
+    return _probe(sample_file or None)
 
 
 @mcp.tool()
