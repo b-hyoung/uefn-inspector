@@ -3,3 +3,4 @@ __pycache__/
 .venv/
 tests/fixtures/
 .impeccable/
+data/engine_device_catalog.json

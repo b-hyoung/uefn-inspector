@@ -31,7 +31,9 @@
 ## 무엇이 되나 (요약 — 상세는 docs/CAPABILITIES.md)
 - **읽기(오프라인):** 인벤토리 · 검색 · where-used · 의존/순환/영향/고아 · census · 공간분석 · 프로퍼티 값(**91% 디코드**) · **Verse-VM 설정값·@editable 배선** · `.verse` 구조↔배선 교차검증
 - **쓰기(오프라인, UEFN 수용 검증됨):** 스칼라·enum·오브젝트참조 **동일크기 in-place**(백업+롤백). 크기변경 편집은 fixup 엔진(토대만)
-- **엔진 콘텐츠:** CUE4Parse CLI로 Fortnite 마운트 → 디바이스 카탈로그 1119 (심층값은 usmap 필요, 외부 대기)
+- **엔진 콘텐츠:** CUE4Parse CLI로 Fortnite 마운트 → 디바이스 카탈로그 (심층값은 usmap 필요)
+  ⚠️ 카탈로그(`data/engine_device_catalog.json`)는 **저장소에 없다** — Fortnite 파생물이라 재배포 안 함.
+  직접 생성: `cue4parse_cli/README.md`. **없어도 `engine_devices` 외 모든 도구는 동작한다.**
 - **천장/제약:** 크기변경 쓰기 미완 · usmap 외부 막힘 · Verse 코드 "의미" 해석은 범위 밖
 
 ## 모듈 지도 (`src/uefn_inspector/` — 레이어별 하위패키지)
@@ -80,3 +82,12 @@ uefn-inspector를 엔진 삼아 UEFN 게임을 **A-Z 루프**로 구축하는 �
 ## 원칙
 **범용** — 특정 게임에 안 묶임(경로·에셋 하드코딩 금지). NightSight/MyProject는 테스트·동기 예시일 뿐.
 **안전** — 기본 자산·원본 수정 금지, 쓰기는 백업 우선. (사용자 전역 규칙 준수)
+
+## 라이선스 · 고지
+**MIT** (코드·문서에 한함) — `LICENSE` 참조.
+
+이 프로젝트는 **Epic Games와 무관한 독립 도구**이며, 후원·보증받지 않았다.
+"Unreal", "UEFN", "Fortnite" 및 관련 자산의 권리는 Epic Games, Inc.에 있다.
+**저장소에 Epic 콘텐츠는 포함돼 있지 않다** — 도구는 사용자 머신에 이미 존재하는 파일을 읽을 뿐이다.
+사용자가 이 도구로 생성한 데이터(예: 엔진 디바이스 카탈로그)는 Epic 콘텐츠 파생물이므로
+이 라이선스가 적용되지 않으며 **재배포해서는 안 된다**. UEFN·Fortnite 사용은 Epic의 ToS/EULA를 따른다.
