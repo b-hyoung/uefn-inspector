@@ -5,7 +5,7 @@
 읽고, 값을 안전하게 수정한다. 기존 UEFN MCP(라이브 리플렉션)가 **못 하던** Verse-VM
 설정·`@editable` 배선까지 파일에서 직접 읽고 쓴다.
 
-- Python 3.11+ · 외부 파싱 의존성 없음(stdlib `struct`) · 68 tests green
+- Python 3.11+ · 외부 파싱 의존성 없음(stdlib `struct`) · 70 tests green
 - 실행: `<py> -m uefn_inspector <레벨/액터 디렉터리>`  (py = `C:/Users/ACE/AppData/Local/Programs/Python/Python311/python.exe`)
 
 ---
@@ -15,10 +15,10 @@
 | 방식 | 용도 | 상태 |
 |---|---|---|
 | **라이브러리 / CLI** | 지금 바로 분석·리포트 | ✅ 현재 |
-| **MCP 도구 래퍼** (권장 주 인터페이스) | 아무 Claude 세션에서 실시간 질의 (`ue_inspect_level` 등) | 🔜 M5 (계획) |
+| **MCP 도구 래퍼** (권장 주 인터페이스) | 아무 Claude 세션에서 실시간 질의 (`inspect_level`·`read_actor` 등 7개) | ✅ `mcp_server.py` |
 | **MD/JSON 리포트** | 스냅샷·핸드오프 (커밋·나중에 읽기) | ✅ CLI `--json` |
 
-**권장:** 분석들을 **MCP 도구로 노출**(M5)해 세션에서 호출 + 필요 시 MD/JSON 리포트로 스냅샷.
+**권장:** 분석들을 **MCP 도구로 노출**해 세션에서 호출 + 필요 시 MD/JSON 리포트로 스냅샷.
 기존 라이브 MCP(uefn/unreal)와 **상호보완**: 라이브 MCP=물리 배치 조작, uefn-inspector=오프라인 로직/값 읽기·쓰기.
 
 ## 빠른 시작
@@ -71,11 +71,11 @@ uefn-inspector를 엔진 삼아 UEFN 게임을 **A-Z 루프**로 구축하는 �
 - `docs/ROADMAP.md` — 완성 구조·마일스톤
 - `docs/BACKLOG.md` — 티켓 보드(자율 루프용)
 - `docs/capability-matrix.md` · `docs/context.md`(동기·범용성 원칙) · `docs/explainer.html`(시각 설명)
-- `cue4parse_cli/README.md` — 엔진 콘텐츠 추출 CLI(별도, D 드라이브)
+- `cue4parse_cli/README.md` — 엔진 디바이스 카탈로그 **직접 생성 가이드**(AES·config·코드·한계)
 
 ## 테스트
 ```bash
-<py> -m pytest -q     # 68 tests
+<py> -m pytest -q     # 70 tests
 ```
 > 픽스처(`tests/fixtures/`)는 사용자 프로젝트에서 복사한 UEFN 콘텐츠라 git 미포함(로컬 재현).
 
