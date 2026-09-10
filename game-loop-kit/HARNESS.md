@@ -33,7 +33,7 @@
 ## 1.5 ⭐ 오프라인으로 되는 것 (= 이 도구를 쓰는 이유)
 
 > **핵심:** 아래 ⭐ 항목들은 **라이브 MCP·에디터 Python 리플렉션이 못 한다.**
-> "GUI로만 가능"이라고 판단하기 전에 **반드시 이 표를 본다.** (2026-09-10 실측·UEFN 수용 검증됨)
+> ⚠️ **이 표도 낡을 수 있다 — 최종 판단은 `capabilities` MCP 도구**(지금 실행해 확인).
 
 | 하려는 것 | MCP 도구 / 라이브러리 | 라이브(uefn/unreal-mcp) | 오프라인(uefn-inspector) |
 |---|---|---|---|
@@ -41,6 +41,7 @@
 | ⭐ **`@editable` 배선 변경**(기존 슬롯 재연결) | `edit.write.set_object_ref` | ❌ | **✅ 씀** (UEFN 수용 확인) |
 | ⭐ **디바이스 설정값 읽기**(예 `Can Be Heard By`) | `read_actor` · `core.properties.decode_properties` | ❌ | **✅ 읽힘** |
 | ⭐ **디바이스 설정값 변경**(enum) | `edit.write.set_enum` | ❌ | **✅ 씀** |
+| ⭐ **새 `@editable` 슬롯 배선 추가** | `edit.add_binding.add_binding` | ❌ | **⚠️ 됨**(크기변경 — UEFN 수용 미검증, 사본 필수) |
 | ⭐ **선언↔배선 교차검증**(미배선 슬롯 탐지) | `analysis.verse_source.cross_reference` | ❌ | **✅** (스펙 드리프트 자동 감지) |
 | 프로퍼티 값·트랜스폼 | `read_actor` | 표준값만 △ | ✅ (91% 디코드) |
 | 스칼라 값 변경 | `edit.write.set_scalar` · `edit.patch.patch_scalar_file`(백업+롤백) | 표준값 ✅ | ✅ (에디터 닫고) |
@@ -51,7 +52,6 @@
 **대신 오프라인이 못 하는 것 (라이브 몫)**
 - 게임 **실행**(PIE)·런타임 상태·로그 → `uefn`
 - Verse **컴파일** → `unreal-mcp` BuildAll
-- **새 `@editable` 슬롯 배선 추가**(없던 걸 새로 잇기) → GUI (크기변경 쓰기 미구현)
 
 **운영 규칙**
 - 오프라인 **쓰기**는 **UEFN을 닫고** 한다(에디터가 파일을 잠금). 읽기는 켜져 있어도 됨.
