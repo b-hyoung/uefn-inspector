@@ -81,6 +81,7 @@
 | **스칼라 값 in-place 쓰기**(Float/Int/Double) | ✅ (사본 검증·테스트) | `write.set_scalar`: 16617→999 재파싱 확인, 패키지 온전 |
 | **백업+자동롤백 파일 패치 도구** | ✅ 테스트 | `patch.patch_scalar_file`: .bak 백업 후 수정, 깨지면 롤백 |
 | 동일 길이 이름/참조 치환 | ✅ 구조상 | 오프셋 안 밀림 |
+| **`@editable` 슬롯 → 타 액터 배선(오프라인)** | ⚠️ 구조 검증됨 / UEFN 수용: 에디터 세션 검증 진행 중 | `edit.wire.bind_editable`(= `edit.add_import` + `write.set_object_ref`/`rebuild.resize_export_data`): **SavedActor 형식** — Package·액터·클래스 import를 추가하고, 슬롯의 `__verse_0x…_<Slot>` 서브오브젝트 **export**에 `SavedActor` ObjectProperty(→ 액터 import, 29바이트 태그)를 씀. 이미 바인딩된 슬롯은 4바이트 in-place, 미바인딩 placeholder는 태그 삽입+리사이즈. (구 `<verse_class>_0` 래퍼 import 형식은 스톡 디바이스에서 레벨 리로드 시 해석 실패→placeholder로 되돌아감: 폐기.) UEFN이 직접 쓴 게이트 파일(45 exports/104 imports)에 같은 액터로 재배선 → 바이트 동일, 태그 제거 후 재배선 → 원본과 바이트 동일; 사본 필수 |
 | 다른 길이 치환(추가/삭제/리네임) | ❌ | 오프셋 fixup 엔진 필요(미구현) |
 | **UEFN 수용**(수정본을 에디터/퍼블리시가 받나) | ❓ 미검증 | name 해시·무결성 검증 → 라이브 실검증=**T7(파괴적, 승인 필요)** |
 

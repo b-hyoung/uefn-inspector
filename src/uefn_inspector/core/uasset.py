@@ -14,9 +14,27 @@ UE_PACKAGE_MAGIC = 0x9E2A83C1
 
 @dataclass
 class ObjectImport:
+    """One FObjectImport row (UE5 stride 40):
+
+        ClassPackage FName(8) | ClassName FName(8) | OuterIndex int32 |
+        ObjectName FName(8)   | PackageName FName(8) | bImportOptional int32
+
+    `object_name` is the FName *base* string as stored in the name table; the
+    FName Number (0 = none) is kept in `object_number` and rendered by
+    `full_name` the way UE does: Number=1 -> "<name>_0".
+    """
     class_package: str = ""
     class_name: str = ""
     object_name: str = ""
+    outer_index: int = 0       # FPackageIndex of the outer (0 = none / package root)
+    package_name: str = ""     # OFPA/external package the object lives in ("" = None)
+    optional: bool = False     # bImportOptional
+    object_number: int = 0     # raw FName Number of ObjectName (0 = unnumbered)
+
+    @property
+    def full_name(self) -> str:
+        return (f"{self.object_name}_{self.object_number - 1}"
+                if self.object_number > 0 else self.object_name)
 
 
 @dataclass
@@ -39,6 +57,7 @@ class Package:
     name_offset: int = 0
     names: list[str] = field(default_factory=list)
     import_count: int = 0
+    import_stride: int = 0
     imports: list[ObjectImport] = field(default_factory=list)
     export_count: int = 0
     exports: list[ObjectExport] = field(default_factory=list)
@@ -123,26 +142,39 @@ def _find_name_anchor(data: bytes, start: int) -> tuple[int, int, int, list[str]
     return None
 
 
-def _parse_imports(data: bytes, offset: int, count: int, export_offset: int,
-                   names: list[str]) -> list[ObjectImport]:
-    n = len(data)
-    # Import stride is fixed per package; derive it from the gap to the next
-    # table when exports follow imports, else fall back to the known 40.
-    stride = 40
+def _import_stride(offset: int, count: int, export_offset: int) -> int:
+    """Import stride is fixed per package; derive it from the gap to the next
+    table when exports follow imports, else fall back to the known 40."""
     if count > 0 and export_offset > offset:
         gap = export_offset - offset
         if gap % count == 0 and 28 <= gap // count <= 64:
-            stride = gap // count
+            return gap // count
+    return 40
+
+
+def _parse_imports(data: bytes, offset: int, count: int, stride: int,
+                   names: list[str]) -> list[ObjectImport]:
+    n = len(data)
     imports: list[ObjectImport] = []
     for k in range(count):
         o = offset + k * stride
-        if o + 24 > n:
+        if o + 28 > n:
             break
-        imports.append(ObjectImport(
+        imp = ObjectImport(
             class_package=_read_fname(data, o, names),
             class_name=_read_fname(data, o + 8, names),
+            outer_index=_i32(data, o + 16),
             object_name=_read_fname(data, o + 20, names),
-        ))
+            object_number=_i32(data, o + 24),
+        )
+        # stride-aware tail: PackageName (FName) and bImportOptional (int32)
+        # only exist on newer packages (UE5: 40 bytes).
+        if stride >= 36 and o + 36 <= n:
+            pn = _read_fname(data, o + 28, names)
+            imp.package_name = "" if pn == "None" else pn
+        if stride >= 40 and o + 40 <= n:
+            imp.optional = bool(_i32(data, o + 36))
+        imports.append(imp)
     return imports
 
 
@@ -231,8 +263,9 @@ def read_package(path: str | Path) -> Package:
     n = len(data)
     if 0 < import_offset < n and 0 <= import_count < 100000:
         pkg.import_count = import_count
+        pkg.import_stride = _import_stride(import_offset, import_count, export_offset)
         pkg.imports = _parse_imports(data, import_offset, import_count,
-                                     export_offset, pkg.names)
+                                     pkg.import_stride, pkg.names)
     if 0 < export_offset < n and 0 <= export_count < 100000:
         pkg.export_count = export_count
         pkg.export_offset = export_offset
