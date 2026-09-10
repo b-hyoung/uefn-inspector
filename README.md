@@ -21,12 +21,45 @@
 **권장:** 분석들을 **MCP 도구로 노출**해 세션에서 호출 + 필요 시 MD/JSON 리포트로 스냅샷.
 기존 라이브 MCP(uefn/unreal)와 **상호보완**: 라이브 MCP=물리 배치 조작, uefn-inspector=오프라인 로직/값 읽기·쓰기.
 
-## 빠른 시작
+## 시작하기 (클론 후)
+
+**1. 요구사항** — Python 3.11+ (파싱엔 외부 의존성 없음)
 ```bash
-# 레벨 인벤토리 (사람용 / JSON)
-<py> -m uefn_inspector "<프로젝트>/Content/__ExternalActors__/Level/<레벨>"
-<py> -m uefn_inspector "<...>/PointLevel" --json
+pip install mcp pytest      # MCP 서버용 + 테스트용 (분석만 할 거면 불필요)
 ```
+
+**2. 바로 써보기** — 자기 UEFN 프로젝트의 레벨을 분석
+```bash
+# 레벨 폴더 = <UEFN프로젝트>/Content/__ExternalActors__/Level/<레벨이름>
+PYTHONPATH=src python -m uefn_inspector "<...>/Content/__ExternalActors__/Level/<레벨>"
+PYTHONPATH=src python -m uefn_inspector "<...>/<레벨>" --json
+```
+출력 예:
+```
+레벨: PointLevel   (액터 67개)
+배치 디바이스:
+   46 x GrayBox_Solid_Wall_C
+    3 x Device_CRD_AudioPlayer_C
+참조 오디오: /MyProject/Audio/Heartbeat_Near ...
+```
+> UEFN 프로젝트 경로는 보통 `문서(Documents)/FortniteProjects/<프로젝트>`.
+
+**3. MCP로 등록** (Claude 세션에서 도구로 호출)
+```bash
+claude mcp add uefn-inspector -s user -- python <abs>/mcp_server.py
+```
+등록 후 세션에서 `/mcp` → reconnect. 도구 7개가 뜬다.
+
+**4. (선택) 라이브러리로**
+```python
+import sys; sys.path.insert(0, "src")
+from uefn_inspector.core.uasset import read_package
+from uefn_inspector.analysis.verse import verse_bindings
+print(verse_bindings(read_package("<placed_verse_device>.uasset")))   # @editable 배선
+```
+
+**5. (선택) 엔진 디바이스 카탈로그** — `engine_devices` 도구용.
+저장소에 없다(Fortnite 파생물). 필요하면 `cue4parse_cli/README.md` 따라 직접 생성.
 
 ## 무엇이 되나 (요약 — 상세는 docs/CAPABILITIES.md)
 - **읽기(오프라인):** 인벤토리 · 검색 · where-used · 의존/순환/영향/고아 · census · 공간분석 · 프로퍼티 값(**91% 디코드**) · **Verse-VM 설정값·@editable 배선** · `.verse` 구조↔배선 교차검증
@@ -75,9 +108,16 @@ uefn-inspector를 엔진 삼아 UEFN 게임을 **A-Z 루프**로 구축하는 �
 
 ## 테스트
 ```bash
-<py> -m pytest -q     # 70 tests
+python -m pytest -q
 ```
-> 픽스처(`tests/fixtures/`)는 사용자 프로젝트에서 복사한 UEFN 콘텐츠라 git 미포함(로컬 재현).
+- **새 클론:** 픽스처가 없으므로 대부분 **skip**된다(정상). 알고리즘 단위 테스트만 실행.
+- **전체(70개) 실행:** 자기 UEFN 프로젝트에서 파일을 `tests/fixtures/`로 복사하면 활성화된다.
+  ```
+  tests/fixtures/audioplayer.uasset · versedevice.uasset · small.uasset
+  tests/fixtures/level/{audioplayer,wall,classselector}.uasset
+  tests/fixtures/*.verse
+  ```
+> 픽스처는 Epic 콘텐츠라 저장소에 포함하지 않는다.
 
 ## 원칙
 **범용** — 특정 게임에 안 묶임(경로·에셋 하드코딩 금지). NightSight/MyProject는 테스트·동기 예시일 뿐.

@@ -4,3 +4,4 @@ __pycache__/
 tests/fixtures/
 .impeccable/
 data/engine_device_catalog.json
+app.db
