@@ -5,6 +5,9 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
 
 # UEFN Intake — 게임을 캐내기
 
+> 🔗 **이건 단축키다.** 전체 루프는 **`/uefn-game-loop`** 이 돈다 (①인테이크→②DOR→③분해→④레벨×4→⑤판정).
+> 이 스킬의 위치: **① 인테이크**. 기각되어 되돌아온 경우 포함. 끝나면 ②DOR 게이트로.
+
 **KIT** = `C:\Users\ACE\Desktop\bobs_project\uefn-inspector\game-loop-kit`
 
 시작 전에 **반드시 읽는다**: `KIT/spec/INTAKE.md`(질문지) · `KIT/spec/GENRE-PACKS.md`(장르 분기)

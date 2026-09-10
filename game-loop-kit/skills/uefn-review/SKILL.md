@@ -5,6 +5,9 @@ description: Adversarially review whether a UEFN game's fun can actually be judg
 
 # UEFN Adversarial Review — "재미를 판단할 수 있나"
 
+> 🔗 **이건 단축키다.** 전체 루프는 **`/uefn-game-loop`** 이 돈다 (①인테이크→②DOR→③분해→④레벨×4→⑤판정).
+> 이 스킬의 위치: **리뷰 (②게이트 / ④티켓·레벨 / ⑤결과 검증)**. 루프 안에서 자동으로도 돈다. 단독 호출은 특정 산출물만 공격할 때.
+
 **KIT** = `C:\Users\ACE\Desktop\bobs_project\uefn-inspector\game-loop-kit`
 읽는다: `KIT/loop/review/ADVERSARIAL.md` (전체 체크리스트·등급·되먹임)
 

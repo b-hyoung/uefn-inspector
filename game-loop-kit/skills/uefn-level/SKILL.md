@@ -5,6 +5,9 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 
 # UEFN Level Build — 3시간 레벨 1개
 
+> 🔗 **이건 단축키다.** 전체 루프는 **`/uefn-game-loop`** 이 돈다 (①인테이크→②DOR→③분해→④레벨×4→⑤판정).
+> 이 스킬의 위치: **④ 레벨 빌드 (1개)**. 4레벨 중 하나. 끝나면 다음 레벨 or ⑤판정으로.
+
 **KIT** = `C:\Users\ACE\Desktop\bobs_project\uefn-inspector\game-loop-kit`
 
 읽는다: `KIT/loop/LOOP.md` · `KIT/loop/TIMEBOX.md` · `KIT/loop/verify/*.md`

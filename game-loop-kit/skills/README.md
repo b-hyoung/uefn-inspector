@@ -4,10 +4,13 @@
 
 | 스킬 | 슬래시 | 하는 일 |
 |---|---|---|
-| `uefn-game-loop` | `/uefn-game-loop` | **허브** — 요청→진입점 라우팅, 절대규칙·도구·함정 |
-| `uefn-intake` | `/uefn-intake` | 인테이크 인터뷰(사람→컨셉→장르팩→루프→깊이파기) |
-| `uefn-level` | `/uefn-level` | 레벨 1개를 3시간 타임박스로 빌드·검증 |
-| `uefn-review` | `/uefn-review` | 적대적 리뷰 — "재미를 판단할 수 있나" 공격 |
+| **`uefn-game-loop`** | `/uefn-game-loop` | ⭐ **루프 실행자 — 기본 진입점.** ①인테이크→②DOR→③분해→④레벨×4→⑤판정 전체를 돈다 |
+| `uefn-intake` | `/uefn-intake` | *단축키* — ① 인테이크만 |
+| `uefn-level` | `/uefn-level` | *단축키* — ④ 레벨 1개만 |
+| `uefn-review` | `/uefn-review` | *단축키* — 리뷰만 (루프 안에서는 자동으로 돎) |
+
+> **전체를 돌 때는 `/uefn-game-loop` 하나면 된다.** 나머지 셋은 중간부터 들어올 때만.
+> 인테이크는 루프 **밖의 준비가 아니라 안의 단계** — 가설이 기각되면 ①로 돌아온다.
 
 ## 설치
 ```bash
