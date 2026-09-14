@@ -51,7 +51,7 @@ Python이 자동 탐지 안 되면 `UEFN_PYTHON=<python 경로>` 로 지정.
 | `/uefn-level` | 레벨 1개 3시간 빌드 |
 | `/uefn-review` | 적대적 리뷰 ("재미를 판단할 수 있나") |
 
-MCP 도구 9개: `capabilities` · `inspect_level` · `audit` · `find` · `who_uses` · **`read_actor`**(Verse-VM 값) · **`editable_bindings`**(@editable 배선 읽기) · **`bind_editable`**(@editable 배선 쓰기, 오프라인) · `engine_devices`
+MCP 도구 10개: `capabilities` · `inspect_level` · **`level_map`**(평면도·구역표) · `audit` · `find` · `who_uses` · **`read_actor`**(Verse-VM 값) · **`editable_bindings`**(@editable 배선 읽기) · **`bind_editable`**(@editable 배선 쓰기, 오프라인) · `engine_devices`
 
 ## 직접 써보기 (설치 없이)
 ```bash
@@ -101,7 +101,7 @@ edit/      쓰기(B)
 
 ## MCP 서버 (`mcp_server.py`)
 분석을 MCP 도구로 노출 — 아무 Claude 세션에서 호출. 도구:
-`capabilities` · `inspect_level` · `audit` · `find` · `who_uses` · `read_actor`(Verse-VM 값 포함) · `editable_bindings` · `engine_devices`
+`capabilities` · `inspect_level` · `level_map`(평면도·구역표·동선 템플릿) · `audit` · `find` · `who_uses` · `read_actor`(Verse-VM 값 포함) · `editable_bindings` · `engine_devices`
 · **`bind_editable(file, slot, actor_file)`** — 유일한 쓰기 도구. 에디터가 열려 있으면(리스너 :8765/:8000 응답) `blocked`로 거부하고 파일을 건드리지 않는다. `.bak` 자동 생성·실패 시 복원.
 ```bash
 claude mcp add uefn-inspector -s user -- <py> <abs>/mcp_server.py

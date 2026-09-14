@@ -76,3 +76,27 @@ def test_bind_editable_tool_reports_unknown_slot_without_touching_file(tmp_path,
     with pytest.raises(Exception):
         mod.bind_editable(str(dev), "Nope", str(light))
     assert dev.read_bytes() == before
+
+
+def test_level_map_tool_returns_map_zones_and_brief_template(monkeypatch):
+    from uefn_inspector.level import Level, PlacedActor
+    mod = _load_server()
+    fake = Level(name="L", actors=[
+        PlacedActor("Device_PlayerSpawner_C", "PS_UAID_1", (0.0, 0.0, 0.0)),
+        PlacedActor("Device_GuardSpawner_C", "GS_UAID_1", (3000.0, 0.0, 0.0)),
+        PlacedActor("Device_GuardSpawner_C", "GS_UAID_2", (3500.0, 500.0, 0.0)),
+        PlacedActor("GrayBox_Wall_C", "W_UAID_1", None),          # no location: listed, not mapped
+    ])
+    monkeypatch.setattr(mod, "_inspect_level", lambda path: fake)
+
+    out = mod.level_map("any/dir", cell=500)
+
+    assert out["actors"] == 4 and out["placed"] == 3
+    assert out["unplaced"] == ["GrayBox_Wall_C W_UAID_1"]
+    zones = {z["class"]: z for z in out["zones"]}
+    assert zones["Device_GuardSpawner_C"]["count"] == 2
+    assert zones["Device_GuardSpawner_C"]["centroid"] == (3250.0, 250.0, 0.0)
+    assert zones["Device_GuardSpawner_C"]["x_range"] == (3000.0, 3500.0)
+    assert out["extent"] == (3500.0, 500.0, 0.0)
+    assert out["legend"]["G"] == "Device_GuardSpawner_C" and "P" in out["map"]
+    assert set(out["brief_template"]) >= {"theme", "zones", "flow", "screenshots"}

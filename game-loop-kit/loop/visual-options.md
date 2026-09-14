@@ -19,7 +19,7 @@
 | 2 | 랜드스케이프 페인트(`MI_Fortnite_Customizable_01` 레이어) | GUI Landscape Mode | 십분 | 📄 | 지형이 있는 레벨만. 프로그램 접근 ❓ |
 | 2b | UEFN 모델링 모드(Extrude·Boolean·UV·LOD·베이크) | GUI | 십분~시간 | 📄 | 기둥·벽 등 단순 형태. 반입 없이 세션 유효(자체 자산) |
 | 3 | Fab 반입(UEFN 태그 자산) | UEFN 내 Fab 창(GUI) | 십분 | 📄 | 라이선스·메모리 확인. 반입 자체가 GUI → 루프 중엔 deferred |
-| 4 | 블렌더 경유 반입 | Blender MCP(ahujasid, :9876) → FBX/glTF → UEFN Import | 시간 | ❓ | 아래 "블렌더 파이프라인" |
+| 4 | 블렌더 경유 반입 | Blender MCP(ahujasid, :9876) → FBX/glTF → UEFN Import | 시간 | ❓ | 아래 "블렌더 파이프라인". 사용 여부는 DOR에서 묻고, 블렌더 실행·MCP 연결·API 키를 상태 도구로 확인한 뒤에만 |
 | 4a | └ CC0 라이브러리 | `search_polyhaven_assets`·`download_polyhaven_asset` | 분 | ❓ | 텍스처·HDRI·모델. 라이선스 문제 없음 |
 | 4b | └ Sketchfab | `search_sketchfab_models`·`download_sketchfab_model` | 분 | ❓ | 모델별 라이선스·폴리 수 확인 |
 | 4c | └ AI 생성 메시 | `generate_hyper3d_model_via_text/images`·`generate_hunyuan3d_model` | 십분/개 | ❓ | 리토폴·UV·폴리 감축 필수. 스타일 통일 어려움 |
