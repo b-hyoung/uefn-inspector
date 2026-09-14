@@ -29,6 +29,7 @@
 2. `state/lessons.md` 비주얼 절의 허용/거부 목록을 읽는다.
 3. 부족하면 라이브 `find_assets(folder_path=...)`로 폴더 단위 검색(전체 스캔은 플러그인 에러). 실측 폴더: `/Game/Playgrounds/Items/Props`(127개, 콘서트·비계·로드케이스·스피커), `/Game/Creative/Devices/Destruction_Object/Meshes/S_Cube`(허용 확인).
 4. 후보는 요소당 2~3개, 총 20개 이내로 자른다.
+5. 티켓 안에서는 `loop/visual-options.md`의 T0·T1·1c 경로만 쓴다. 그 이상(모델링 모드·Fab·블렌더·AI 생성)은 자산 티켓(ASSET-NN)으로 빼고 이번 레벨에서는 deferred로 기록한다.
 
 ### 3. 세션 유효성 스파이크 — 전부 깔기 전에
 에디터에 보이는 것과 세션 유효는 다르다(WF-25: 환경 메시 5종이 StartSession에서 Disallowed reference로 거부, 에디터엔 정상). 후보 메시 종류별 1개씩만 배치 → `save_actor` → StartSession → 거부 목록 확인 → 거부 자산 제거. 허용/거부 결과를 `state/lessons.md`에 누적한다. 이 단계를 건너뛰고 전부 깐 뒤 거부당하면 티켓 시간을 다 잃는다.
