@@ -34,13 +34,17 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 - **측정(티켓 3·4)은 못 뺀다.** 시간 부족하면 공간 디테일부터 컷. 측정 없으면 이 레벨은 무효.
 - 구간 3·4 초과 → **즉시 정지게이트**.
 - **오프라인 쓰기는 UEFN 닫고**(파일 잠금). 표준 배치/값은 라이브 MCP로 열어둔 채.
-- **GUI 전용 @editable 배선** 만나면 → 별도 티켓 `blocked` + 정지게이트.
+- **@editable 배선은 오프라인으로 한다** — MCP `bind_editable(디바이스파일, 슬롯, 액터파일)`(UEFN 닫고).
+  라이브 MCP가 거부("not valid ScriptDevice" 등)해도 **GUI 전용이라고 결론내리지 않는다** → `capabilities` 호출 → 오프라인 경로.
+  퍼블리시 수용만 미검증이므로 사본·`.bak` 유지. `capabilities`에도 없을 때만 `blocked` + 정지게이트.
 - **자동 구동 모드**(봇/시뮬)가 없으면 **A레벨에서 먼저 구축** — 없으면 무인 루프가 안 돈다.
 - 한 레벨에서 **축 두 개 이상 바꾸지 않는다**.
 
 ## 도구
-`mcp__uefn-inspector__*`(inspect_level·editable_bindings·read_actor·audit) ·
+`mcp__uefn-inspector__*`(capabilities·inspect_level·editable_bindings·read_actor·audit·**bind_editable**) ·
 `mcp__uefn__execute_python`/`get_editor_log` · unreal-mcp BuildAll
+**순서:** 배치·트랜스폼·BuildAll·PIE = 라이브 / Verse-VM 값·@editable 배선 = uefn-inspector(오프라인).
+라이브 실패 → `capabilities` → 오프라인 → 그래도 없을 때만 GUI.
 
 ## 끝나면
 `levels/LEVEL-X/{build,autoplay,metrics}.md` 갱신 · `state/session-log.md`에 시간 기록 ·
