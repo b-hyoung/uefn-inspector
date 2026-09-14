@@ -34,6 +34,13 @@ def _device_class(pkg: Package) -> str:
             imp_idx = -exp.class_index - 1
             if 0 <= imp_idx < len(pkg.imports):
                 return pkg.imports[imp_idx].object_name
+    # Template / Epic-authored actors have no _UAID_ suffix: take the export whose
+    # outer is an import (PersistentLevel) and whose class is an import.
+    for exp in pkg.exports:
+        if exp.outer_index < 0 and exp.class_index < 0:
+            imp_idx = -exp.class_index - 1
+            if 0 <= imp_idx < len(pkg.imports):
+                return pkg.imports[imp_idx].object_name
     # Fallback (heuristic) when the export/import maps did not parse.
     return next((n.split("_UAID_")[0] for n in pkg.names if "_UAID_" in n), "")
 
@@ -42,6 +49,8 @@ def inspect_actor(path: str | Path) -> PlacedActor:
     pkg = read_package(path)
     asset_refs = [n for n in pkg.names if n.startswith("/") and not n.startswith("/Script")]
     name = next((e.object_name for e in pkg.exports if "_UAID_" in e.object_name), "")
+    if not name:
+        name = next((e.object_name for e in pkg.exports if e.outer_index < 0 and e.class_index < 0), "")
     location = scale = rotation = None
     for e in pkg.exports:
         props = decode_properties(pkg, e)

@@ -31,7 +31,8 @@ DEFAULT_PROFILE: dict = {
     "occupancy_min": 0.15,          # occupied / bounding cells (cell = occupancy_cell_cm)
     "occupancy_max": 0.75,
     "occupancy_cell_cm": 500.0,
-    "required_class_substrings": ["Spawn"],
+    # each entry = alternatives; satisfied if ANY substring matches a placed class
+    "required_class_substrings": [["Spawn", "PlayerStart"]],
     "light_class_substrings": ["Light"],
 }
 
@@ -145,7 +146,9 @@ def design_lint(level: Level, profile: dict | None = None) -> dict:
 
     rots = [a.rotation for a in actors if a.rotation]
     if rots:
-        off = [r for r in rots if abs((r[2] % 90.0 + 90.0) % 90.0) > 1.0]
+        # decoded Rotator tuple is (pitch, yaw, roll) — yaw is index 1 (verified on a
+        # UEFN template: (0.0, 30.0, 0.0) / (0.0, 27.76, 0.0) for visibly turned props)
+        off = [r for r in rots if abs((r[1] % 90.0 + 90.0) % 90.0) > 1.0]
         os_ = len(off) / len(rots)
         checks.append(_check("rotation_variety", "축에서 벗어난 회전(yaw) 비율", "ok" if os_ >= P["off_grid_rotation_share_min"] else "fail",
                              round(os_, 2), f">= {P['off_grid_rotation_share_min']}",
@@ -155,10 +158,13 @@ def design_lint(level: Level, profile: dict | None = None) -> dict:
 
     # ---- function & light ----------------------------------------------------
     classes = [a.device_class for a in actors]
-    missing = [s for s in P["required_class_substrings"] if not any(s in c for c in classes)]
+    def _alts(item):
+        return list(item) if isinstance(item, (list, tuple)) else [item]
+    req = [_alts(x) for x in P["required_class_substrings"]]
+    missing = [alts for alts in req if not any(s in c for s in alts for c in classes)]
     checks.append(_check("function_elements", "필수 기능 요소 존재", "ok" if not missing else "fail",
-                         [s for s in P["required_class_substrings"] if s not in missing],
-                         f"all of {P['required_class_substrings']}", f"missing: {missing}" if missing else ""))
+                         ["|".join(a) for a in req if a not in missing],
+                         f"all of {['|'.join(a) for a in req]}", f"missing: {['|'.join(a) for a in missing]}" if missing else ""))
     lights = [c for c in classes if any(s in c for s in P["light_class_substrings"])]
     checks.append(_check("lighting", "광원 액터 수", "ok" if lights else "fail", len(lights), ">= 1",
                          ", ".join(sorted(set(lights))[:4])))

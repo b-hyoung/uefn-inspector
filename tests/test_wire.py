@@ -263,3 +263,14 @@ def test_bind_editable_with_actor_target_reuses_the_existing_actor_import(tmp_pa
     assert sum(m.object_name == "Device_PointLight_V2_C_UAID_AAAA000000000000"
                for m in after.imports) == 1
     assert verse_bindings(after)["Trigger"] == "Device_PointLight_V2_C_UAID_AAAA000000000000"
+
+
+def test_inspect_actor_classifies_template_actor_without_uaid(tmp_path):
+    """Epic/template actors carry no _UAID_ suffix; class comes from the export
+    under PersistentLevel."""
+    from _synth import actor_package
+    from uefn_inspector.level import inspect_actor
+    f = _place(tmp_path, "Proj/Content/__ExternalActors__/L/0/AA/X.uasset", actor_package())
+    a = inspect_actor(f)
+    assert a.device_class == "Device_PointLight_V2_C"
+    assert a.name == "Device_PointLight_V2_C_UAID_AAAA000000000000"

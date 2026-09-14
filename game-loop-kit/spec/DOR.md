@@ -40,6 +40,10 @@
 - [ ] `TIMEBOX.md` 배분 확인 · 레벨당 3시간(A레벨 4시간) 수용 가능
 - [ ] 3시간 초과 위험 지점 1~2개 사전 식별
 
+### 5.5 UEFN 프로젝트가 있음
+- [ ] 대상 프로젝트 존재(`Documents\Fortnite Projects\<이름>\<이름>.uefnproject`) — 없으면 `loop/recover.md` 절차 D로 생성(GUI 자동화 ✅). 템플릿은 `ISLAND-TEMPLATES.md` 측정 행을 근거로 결정 카드
+- [ ] `.uefnproject`에 python·toolsets 플래그 있음(unreal-mcp :8000) · 라이브 도구 응답 확인(`capabilities`)
+
 ### 6. 기획 루프가 끝났음 (`PLANNING-LOOP.md`)
 - [ ] 종이로 답할 수 있는 불확실성 0개 · 빌드 필요 목록은 비어 있지 않음(`state/uncertainty.md`)
 - [ ] R6 전면공격 3회 연속 Blocker 0 (`state/reviews/`)

@@ -15,6 +15,7 @@
 | R7 | `GetClientLogEntries`가 "No client log" | 서버측 `Print`는 에디터 로그에 남음 | `%LOCALAPPDATA%\UnrealEditorFortnite\Saved\Logs\UnrealEditorFortnite.log`를 `LogVerse: : [M]`로 grep |
 | R8 | `remove_from_scene`이 false, `AddEventBinding`이 null | 반환값이 결과가 아님. 디스크 반영 지연 수십 초~수 분 | 30~60초 뒤 오프라인 재검증(`inspect_level`·`ListEventBindings(target)`) |
 | R9 | 배치가 조용히 실패(20개 중 4개) | `add_to_scene_from_asset` 이름 중복 | 인덱스 이름(`V2B_cover_0`…)으로 재배치 |
+| R10 | UEFN 프로젝트가 없음(첫 실행·새 게임) | 프로젝트 미생성 | **절차 D**로 생성. DOR 전제조건이므로 보통 기획 루프 끝에 처리 |
 
 ## A. 런처 URI 재기동 (R1)
 1. `Start-Process "com.epicgames.launcher://apps/fn%3A1e8bda5cfbb641b9a9aea8bd62285f73%3AFortnite_Studio?action=launch&silent=true"` — 런처가 새 exchange code를 발급한다. UEFN exe 직접 실행은 1회용 코드라 불가.
@@ -28,6 +29,14 @@
 3. A의 1~3을 다시 수행. UEFN을 종료했다면 타일 더블클릭 후 프로젝트 로드까지 추가 대기.
 4. 로그인·리스너·:8000 셋 다 확인한 뒤 복귀. 실패하면 하드 실패로 종료 보고(질문이 아니라 보고).
 5. ❓ 런처만 죽였을 때 UEFN 세션 인증이 이어지는지는 미확인. 첫 실측 결과를 이 문서에 적는다.
+
+## D. 새 프로젝트 생성 (✅ 검증 2026-09-14, `loop/scripts/uefn_gui.ps1`)
+프로젝트 생성은 GUI만 있지만 좌표 자동화로 된다. lore.exe `repository create`는 버전관리 저장소 생성이라 해당 없음. 폴더 복제는 projectId가 Epic 서버 등록이라 불가.
+1. `Uefn-Launch` → `Uefn-Wait` → 홈 화면 스크린샷으로 "새 프로젝트" 좌표 확인 → 클릭. 프로젝트 브라우저가 **별도 창**으로 뜬다(기본 템플릿 심플, 위치 `Documents\Fortnite Projects`).
+2. 템플릿 선택(`ISLAND-TEMPLATES.md` 결정 카드대로) → 생성 클릭 → 새 폴더 등장(~10s) → 에디터 로드(~40s). 확인: `<이름>.uefnproject`의 `projectId`가 새 GUID, 로그 `Selected Project (Direct)`.
+3. 이름 입력은 아직 불안정(한글 IME·별창 포커스). 실패하면 기본 이름 `MyProject`로 생성된다. 이름이 중요하면 생성 후 사람에게 1회(기획 루프 안이면 카드, 밖이면 deferred).
+4. 생성 후 설정(에디터 닫고): `.uefnproject`에 `experimental.pythonExperimental.bEnablePythonForProject=true`, `toolsets.bEnableToolsetsForProject=true` 추가 → 다시 열면 unreal-mcp(:8000)이 뜬다. 이 PC에는 uefn 리스너(:8765) 파일이 없어 `execute_python`·`get_editor_log` 경로는 미설치 상태다.
+5. 실패 신호: 이름 검증 오류(빨간 경고)면 생성 버튼이 비활성 → 이름 칸을 비우고 재시도. 클릭이 안 먹으면 DPI(150%)·창 좌표 확인.
 
 ## C. raw HTTP 직접 호출 (R4)
 - unreal-mcp(:8000, MCP-over-HTTP): `initialize` → 응답 헤더 `Mcp-Session-Id` 보관 → `notifications/initialized` → `tools/call`. Shadow Bait `도구(우회산물)/uecall.ps1`이 이 절차를 구현했다.

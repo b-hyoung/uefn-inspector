@@ -17,7 +17,7 @@
 | 서버 | 종류 | 역할 |
 |---|---|---|
 | uefn-inspector | stdio(우리 도구) | 오프라인 전담(§1.5). `instructions`로 매 세션 시스템 프롬프트에 도구 분담이 주입된다 |
-| uefn (KirChuvakov) | stdio → UEFN 리스너 :8765 | 라이브 조작 · `execute_python` · `get_editor_log`(행동검증) · 액터/에셋/뷰포트 |
+| uefn (KirChuvakov) | stdio → UEFN 리스너 :8765 | 라이브 조작 · `execute_python` · `get_editor_log`(행동검증) · 액터/에셋/뷰포트. **이 PC(2026-09-14) 미설치** — 리스너 파일 없음, `claude mcp list`에도 없음 |
 | unreal-mcp (Epic) | http :8000 | Verse 컴파일(BuildAll) · 고정 툴셋. 에디터 ON 필요 |
 | git | stdio | 티켓 단위 커밋 |
 | blender-assets (ahujasid Blender MCP :9876) | stdio | 자산 티켓 전용(루프 밖): PolyHaven CC0·Sketchfab·Hyper3D/Hunyuan3D 생성 → FBX/glTF → UEFN 반입. 경로 표 `loop/visual-options.md` T4. 전제조건은 DOR에서 `get_scene_info`·`get_polyhaven_status`·`get_sketchfab_status`·`get_hyper3d_status`로 실행 확인 |

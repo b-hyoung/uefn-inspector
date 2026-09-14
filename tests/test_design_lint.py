@@ -42,7 +42,7 @@ def test_dressed_level_with_gallery_props_and_height_passes():
         prop, mat = props[i % len(props)], mats[i % len(mats)]
         actors.append(_a("StaticMeshActor", ((i % 6) * 800.0, (i // 6) * 800.0, (i % 3) * 250.0),
                          [f"{PROPS}/{prop}", f"/Game/Playgrounds/Materials/{mat}"],
-                         scale=(1.0, 1.0, 1.0), rot=(0.0, 0.0, 17.0 * i)))
+                         scale=(1.0, 1.0, 1.0), rot=(0.0, 17.0 * i, 0.0)))   # (pitch, yaw, roll)
     actors += [_a("Device_PlayerSpawner_C", (0.0, 0.0, 0.0)),
                _a("Device_PointLight_V2_C", (1000.0, 1000.0, 300.0))]
     out = design_lint(Level(name="dressed", actors=actors))
@@ -63,12 +63,24 @@ def test_missing_transform_data_reports_unverified_not_fail():
     assert "verticality" in out["unverified"] and "verticality" not in out["fail"]
 
 
+def test_player_start_counts_as_spawn_and_yaw_is_index_1():
+    """Measured on the UEFN 심플 template: FortPlayerStartCreative is the spawn, and
+    turned props decode as (pitch=0, yaw=30, roll=0)."""
+    actors = [_a("FortPlayerStartCreative", (0, 0, 0)), _a("Device_PointLight_V2_C", (0, 0, 400)),
+              _a("StaticMeshActor", (500, 0, 0), rot=(0.0, 30.0, 0.0)),
+              _a("StaticMeshActor", (1000, 0, 0), rot=(0.0, 90.0, 0.0))]
+    c = _by_id(design_lint(Level(name="t", actors=actors)))
+    assert c["function_elements"]["status"] == "ok"
+    assert c["rotation_variety"]["value"] == 0.5          # one of two rotations is off-grid
+
+
 def test_profile_overrides_thresholds_and_required_classes():
     actors = [_a("Device_GoalZone_C", (0, 0, 0)), _a("Device_PointLight_V2_C", (0, 0, 500))]
     strict = design_lint(Level(name="p", actors=actors),
                          profile={"required_class_substrings": ["Spawn", "Goal"], "graybox_share_max": 0.0})
     c = _by_id(strict)
     assert c["function_elements"]["status"] == "fail" and "Spawn" in c["function_elements"]["evidence"]
+    assert "Goal" not in c["function_elements"]["evidence"]   # Goal present, only Spawn missing
     assert strict["profile"]["graybox_share_max"] == 0.0 and DEFAULT_PROFILE["graybox_share_max"] == 0.20
 
 
