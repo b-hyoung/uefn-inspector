@@ -1,0 +1,372 @@
+<title>Game Loop Kit 지도</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#EEF1F5; --panel:#F8FAFC; --ink:#1B2430; --muted:#5B6675; --line:#C8D0DA;
+  --ask:#C9822B; --ask-soft:rgba(201,130,43,.10); --ask-line:rgba(201,130,43,.55);
+  --go:#1F8A8A; --go-soft:rgba(31,138,138,.10); --go-line:rgba(31,138,138,.55);
+  --block:#B4362F; --ok:#3A7D44; --chip:#E3E8EF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131A22; --panel:#1A222C; --ink:#E6EBF0; --muted:#98A4B3; --line:#33404E;
+    --ask:#E0A35A; --ask-soft:rgba(224,163,90,.12); --ask-line:rgba(224,163,90,.6);
+    --go:#4FB8B4; --go-soft:rgba(79,184,180,.12); --go-line:rgba(79,184,180,.6);
+    --block:#E06B62; --ok:#6FBF7A; --chip:#243040;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131A22; --panel:#1A222C; --ink:#E6EBF0; --muted:#98A4B3; --line:#33404E;
+  --ask:#E0A35A; --ask-soft:rgba(224,163,90,.12); --ask-line:rgba(224,163,90,.6);
+  --go:#4FB8B4; --go-soft:rgba(79,184,180,.12); --go-line:rgba(79,184,180,.6);
+  --block:#E06B62; --ok:#6FBF7A; --chip:#243040;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.6;padding-block:40px 80px;padding-inline:20px}
+.wrap{max-width:1160px;margin:0 auto;display:grid;gap:56px}
+h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.01em;margin:0 0 8px;text-wrap:balance}
+h2{font-size:20px;font-weight:600;margin:0 0 6px;text-wrap:balance}
+p{margin:0;max-width:68ch}
+.lede{color:var(--muted);font-size:16px;max-width:70ch}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.thesis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.thesis > div{padding:14px 16px;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.thesis .ask{border-color:var(--ask-line);background:var(--ask-soft)}
+.thesis .go{border-color:var(--go-line);background:var(--go-soft)}
+.thesis strong{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.thesis .ask strong{color:var(--ask)} .thesis .go strong{color:var(--go)}
+section{display:grid;gap:14px}
+figure{margin:0;padding:18px 18px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow-x:auto}
+figure svg{display:block;width:100%;max-width:100%;height:auto;color:var(--ink);font-family:"IBM Plex Sans KR",system-ui,sans-serif}
+figure .mono, .mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+figcaption{color:var(--muted);font-size:13px;margin-top:10px;max-width:80ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:12px;padding:2px 8px;border-radius:4px;background:var(--chip);color:var(--ink);white-space:nowrap}
+.chip.skill{border:1px solid var(--ask-line)} .chip.tool{border:1px solid var(--go-line)} .chip.gate{border:1px solid var(--block);color:var(--block)}
+/* timebox bar */
+.bar{display:flex;width:100%;border-radius:6px;overflow:hidden;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.bar > div{padding:10px 8px;border-right:1px solid var(--line);min-width:0}
+.bar > div:last-child{border-right:0}
+.bar b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar span{display:block;font-size:12px;color:var(--muted)}
+.gates{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.gates > div{font-size:12px;color:var(--muted);display:grid;gap:4px;align-content:start}
+.gates .chip{white-space:normal;font-size:11px;line-height:1.35}
+.two{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start}
+.list{display:grid;gap:8px;padding:0;margin:0;list-style:none;counter-reset:n}
+.list li{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start;font-size:14px}
+.list li::before{counter-increment:n;content:counter(n);font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--muted);padding-top:3px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.files{columns:2;column-gap:24px;font-size:13px;color:var(--muted)}
+.files div{break-inside:avoid;margin-bottom:6px}
+.files code{font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--ink);font-size:12px}
+@media (max-width:760px){
+  .thesis,.two{grid-template-columns:1fr}
+  .gates{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bar{flex-wrap:wrap} .bar > div{flex:1 1 30%}
+  .files{columns:1}
+}
+@media (prefers-reduced-motion: no-preference){ .bar > div{transition:background .2s} }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">uefn-inspector / game-loop-kit · 2026-09-14 기준 master</div>
+  <h1>Game Loop Kit 지도</h1>
+  <p class="lede">UEFN 게임을 무인으로 만들고·재고·판정하는 루프의 전체 동선. 어디까지 사용자에게 묻고, 어디부터 멈추지 않으며, 각 단계에서 어떤 스킬과 도구가 강제되는지를 한 장에 놓았다.</p>
+  <div class="thesis">
+    <div class="ask"><strong>DOR 전 — 묻는다</strong>기획 루프 R0~R7. 모든 질문은 AI가 <span class="mono">grilling</span>을 불러 결정 카드로 낸다. 시간 상한 없음, 종료는 조건 5개로만.</div>
+    <div class="go"><strong>DOR 후 — 멈추지 않는다 (규칙 0)</strong>③ 분해 → ④ 레벨×4 → ⑤ 판정. 막히면 <span class="mono">state/deferred.md</span>에 적고 보수적 가정으로 진행. 질문은 종료 보고 뒤 한 번에.</div>
+  </div>
+</header>
+
+<!-- ================= Figure 1: outer loop ================= -->
+<section>
+  <div>
+    <div class="eyebrow">Figure 1</div>
+    <h2>바깥 루프와 질문 경계</h2>
+    <p>②DOR 통과가 경계다. 왼쪽(주황)은 사용자와 대화하는 구간, 오른쪽(청록)은 사람이 없는 구간. ⑤의 결과가 어디로 되돌아가는지는 판정 종류가 정한다.</p>
+  </div>
+  <figure>
+    <svg viewBox="0 0 1200 430" role="img" aria-label="바깥 루프: 인테이크와 DOR은 질문 가능 구간, 분해·레벨 빌드·판정은 무정지 구간. 판정 결과 지지와 기각은 인테이크로, 애매는 분해로, 무효는 DOR로 돌아간다.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        <marker id="ar-ask" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ask)"/></marker>
+        <marker id="ar-go" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--go)"/></marker>
+      </defs>
+      <!-- zones -->
+      <rect x="0" y="20" width="470" height="330" rx="8" fill="var(--ask-soft)" stroke="var(--ask-line)" stroke-dasharray="4 4"/>
+      <rect x="490" y="20" width="710" height="330" rx="8" fill="var(--go-soft)" stroke="var(--go-line)" stroke-dasharray="4 4"/>
+      <text x="16" y="44" font-size="12" fill="var(--ask)" font-weight="600" letter-spacing="1">질문 가능 · 기획 루프</text>
+      <text x="506" y="44" font-size="12" fill="var(--go)" font-weight="600" letter-spacing="1">규칙 0 무정지 · 사람 없음</text>
+      <!-- DOR boundary -->
+      <line x1="480" y1="10" x2="480" y2="360" stroke="currentColor" stroke-width="2"/>
+      <text x="480" y="380" font-size="12" text-anchor="middle" font-weight="600">DOR 통과 = 마지막 질문 지점</text>
+      <text x="480" y="398" font-size="11" text-anchor="middle" fill="var(--muted)">이후 애매함은 deferred → 종료 보고에서 grilling 1회</text>
+
+      <!-- nodes y=110 h=90 -->
+      <g font-size="13">
+        <rect x="40" y="110" width="180" height="90" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/>
+        <text x="130" y="140" text-anchor="middle" font-weight="600">① 인테이크</text>
+        <text x="130" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">= 기획 루프 R0~R7</text>
+        <text x="130" y="178" text-anchor="middle" fill="var(--muted)" font-size="12">형태·비틀기·깊이·규칙·맵·플로우</text>
+
+        <rect x="270" y="110" width="180" height="90" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/>
+        <text x="360" y="140" text-anchor="middle" font-weight="600">② DOR 게이트</text>
+        <text x="360" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">5영역 + 기획 루프 종료 5조건</text>
+        <text x="360" y="178" text-anchor="middle" fill="var(--muted)" font-size="12">전면공격 3회 연속 Blocker 0</text>
+
+        <rect x="520" y="110" width="180" height="90" rx="6" fill="var(--panel)" stroke="var(--go)" stroke-width="1.5"/>
+        <text x="610" y="140" text-anchor="middle" font-weight="600">③ 분해</text>
+        <text x="610" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">Plan → Task(레벨 4) → Ticket</text>
+        <text x="610" y="178" text-anchor="middle" fill="var(--muted)" font-size="12">레벨마다 한 축만</text>
+
+        <rect x="750" y="110" width="200" height="90" rx="6" fill="var(--panel)" stroke="var(--go)" stroke-width="1.5"/>
+        <text x="850" y="140" text-anchor="middle" font-weight="600">④ 레벨 빌드 ×4</text>
+        <text x="850" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">A대조 · B구조 · C규칙 · D인원</text>
+        <text x="850" y="178" text-anchor="middle" fill="var(--muted)" font-size="12">각 180분 · 티켓 6종 (Figure 3)</text>
+
+        <rect x="1000" y="110" width="180" height="90" rx="6" fill="var(--panel)" stroke="var(--go)" stroke-width="1.5"/>
+        <text x="1090" y="140" text-anchor="middle" font-weight="600">⑤ 판정</text>
+        <text x="1090" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">B-A / C-A / D-A 판정식</text>
+        <text x="1090" y="178" text-anchor="middle" fill="var(--muted)" font-size="12">+ 4레벨 flow-report</text>
+      </g>
+      <!-- forward arrows -->
+      <g stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#ar)">
+        <line x1="220" y1="155" x2="266" y2="155"/>
+        <line x1="450" y1="155" x2="516" y2="155"/>
+        <line x1="700" y1="155" x2="746" y2="155"/>
+        <line x1="950" y1="155" x2="996" y2="155"/>
+      </g>
+      <text x="483" y="148" font-size="11" text-anchor="middle" fill="var(--muted)">착수</text>
+
+      <!-- return arrows (below) -->
+      <g fill="none" stroke-width="1.5">
+        <path d="M1090,200 L1090,330 L130,330 L130,204" stroke="var(--ask)" marker-end="url(#ar-ask)"/>
+        <path d="M1060,200 L1060,296 L360,296 L360,204" stroke="var(--ask)" marker-end="url(#ar-ask)" stroke-dasharray="5 4"/>
+        <path d="M1120,200 L1120,262 L610,262 L610,204" stroke="var(--go)" marker-end="url(#ar-go)"/>
+      </g>
+      <g font-size="11">
+        <text x="620" y="345" fill="var(--ask)">지지 → spec 확정 후 다음 가설 · 기각 → 대안 가설 재발굴 (둘 다 ①로)</text>
+        <text x="620" y="311" fill="var(--ask)">무효(리뷰 Blocker: 측정이 틀림) → ② 지표·임계값 수정 → 해당 레벨 재실행</text>
+        <text x="700" y="277" fill="var(--go)">애매(변주 부족) → ③ 축 하나만 바꾼 레벨 추가</text>
+      </g>
+      <!-- deferred lane -->
+      <rect x="520" y="60" width="660" height="30" rx="4" fill="none" stroke="var(--go-line)"/>
+      <text x="850" y="80" font-size="12" text-anchor="middle" fill="var(--go)">막힘 → state/deferred.md · 파괴적 작업·새 의존성은 실행 안 함 · 하드 실패(복구 2회 실패)만 조기 종료</text>
+    </svg>
+    <figcaption>①과 ②는 사용자와 대화하는 구간이고 ③~⑤는 사람 없이 돈다. 무효와 기각은 주황 구간으로 되돌아가므로 다시 질문할 수 있고, 애매는 청록 구간 안(③)에서 처리된다.</figcaption>
+  </figure>
+</section>
+
+<!-- ================= Figure 2: planning loop ================= -->
+<section>
+  <div>
+    <div class="eyebrow">Figure 2</div>
+    <h2>기획 루프 R0~R7 — 라운드마다 강제되는 스킬</h2>
+    <p>한 번 훑는 질문지가 아니라 종료 조건이 참일 때까지 도는 루프다. 라운드 아래의 칩이 그 라운드에서 AI가 반드시 호출하는 스킬이고, R6의 Blocker 종류가 어느 라운드로 되돌아갈지를 정한다.</p>
+  </div>
+  <figure>
+    <svg viewBox="0 0 1200 400" role="img" aria-label="기획 루프 R0 준비부터 R7 종료 판정까지 8개 라운드. R6 전면공격의 Blocker 종류에 따라 R1, R2, R3, R4·R5로 되돌아간다. R7은 종료 조건 5개가 전부 참일 때 DOR로 간다.">
+      <defs>
+        <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        <marker id="ar2-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--block)"/></marker>
+      </defs>
+      <rect x="0" y="0" width="1200" height="400" rx="8" fill="var(--ask-soft)"/>
+      <!-- nodes: 8 columns, x0=30, step 142, w=124, y=70 h=70 -->
+      <g font-size="12">
+        <g><rect x="30" y="70" width="124" height="70" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/><text x="92" y="95" text-anchor="middle" font-weight="600">R0 준비</text><text x="92" y="114" text-anchor="middle" fill="var(--muted)">용어집 · 참조 섬 3~5</text></g>
+        <g><rect x="172" y="70" width="124" height="70" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/><text x="234" y="95" text-anchor="middle" font-weight="600">R1 형태·비틀기</text><text x="234" y="114" text-anchor="middle" fill="var(--muted)">DESIGN-SPACE 표 안</text></g>
+        <g><rect x="314" y="70" width="124" height="70" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/><text x="376" y="95" text-anchor="middle" font-weight="600">R2 재미 깊이</text><text x="376" y="114" text-anchor="middle" fill="var(--muted)">4층·긴장·실패·지표</text></g>
+        <g><rect x="456" y="70" width="124" height="70" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/><text x="518" y="95" text-anchor="middle" font-weight="600">R3 규칙·수치</text><text x="518" y="114" text-anchor="middle" fill="var(--muted)">경계값·동시·이탈·근거</text></g>
+        <g><rect x="598" y="70" width="124" height="70" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/><text x="660" y="95" text-anchor="middle" font-weight="600">R4 맵</text><text x="660" y="114" text-anchor="middle" fill="var(--muted)">MAP-INTAKE 11문+팩</text></g>
+        <g><rect x="740" y="70" width="124" height="70" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/><text x="802" y="95" text-anchor="middle" font-weight="600">R5 플로우·종이</text><text x="802" y="114" text-anchor="middle" fill="var(--muted)">F1~F16 · 페르소나 15판</text></g>
+        <g><rect x="882" y="70" width="124" height="70" rx="6" fill="var(--panel)" stroke="var(--block)" stroke-width="1.5"/><text x="944" y="95" text-anchor="middle" font-weight="600">R6 전면공격</text><text x="944" y="114" text-anchor="middle" fill="var(--muted)">B-0 → B-8 → B-2 → …</text></g>
+        <g><rect x="1024" y="70" width="146" height="70" rx="6" fill="var(--panel)" stroke="var(--ask)" stroke-width="1.5"/><text x="1097" y="95" text-anchor="middle" font-weight="600">R7 종료 판정</text><text x="1097" y="114" text-anchor="middle" fill="var(--muted)">종이 가능 / 빌드 필요</text></g>
+      </g>
+      <g stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#ar2)">
+        <line x1="154" y1="105" x2="168" y2="105"/><line x1="296" y1="105" x2="310" y2="105"/><line x1="438" y1="105" x2="452" y2="105"/>
+        <line x1="580" y1="105" x2="594" y2="105"/><line x1="722" y1="105" x2="736" y2="105"/><line x1="864" y1="105" x2="878" y2="105"/><line x1="1006" y1="105" x2="1020" y2="105"/>
+      </g>
+      <!-- skill chips row y=160 -->
+      <g font-family="IBM Plex Mono, Consolas, monospace" font-size="10.5">
+        <rect x="30" y="152" width="124" height="20" rx="3" fill="var(--chip)"/><text x="92" y="166" text-anchor="middle">domain-modeling</text>
+        <rect x="30" y="176" width="124" height="20" rx="3" fill="var(--chip)"/><text x="92" y="190" text-anchor="middle">research (bg)</text>
+        <rect x="172" y="152" width="124" height="20" rx="3" fill="var(--chip)"/><text x="234" y="166" text-anchor="middle">brainstorming</text>
+        <rect x="172" y="176" width="124" height="20" rx="3" fill="var(--chip)"/><text x="234" y="190" text-anchor="middle">grilling</text>
+        <rect x="314" y="152" width="124" height="20" rx="3" fill="var(--chip)"/><text x="376" y="166" text-anchor="middle">grilling</text>
+        <rect x="456" y="152" width="124" height="20" rx="3" fill="var(--chip)"/><text x="518" y="166" text-anchor="middle">grilling</text>
+        <rect x="456" y="176" width="124" height="20" rx="3" fill="var(--chip)"/><text x="518" y="190" text-anchor="middle">domain-modeling (ADR)</text>
+        <rect x="598" y="152" width="124" height="20" rx="3" fill="var(--chip)"/><text x="660" y="166" text-anchor="middle">grilling</text>
+        <rect x="740" y="152" width="124" height="20" rx="3" fill="var(--chip)"/><text x="802" y="166" text-anchor="middle">AI 단독 · flow.md</text>
+        <rect x="740" y="176" width="124" height="20" rx="3" fill="var(--chip)"/><text x="802" y="190" text-anchor="middle">PERSONAS.md</text>
+        <rect x="882" y="152" width="124" height="20" rx="3" fill="var(--chip)"/><text x="944" y="166" text-anchor="middle">uefn-review</text>
+        <rect x="1024" y="152" width="146" height="20" rx="3" fill="var(--chip)"/><text x="1097" y="166" text-anchor="middle">AI 단독 · 요약 1p</text>
+      </g>
+      <!-- R6 return arrows -->
+      <g fill="none" stroke="var(--block)" stroke-width="1.3" marker-end="url(#ar2-b)">
+        <path d="M900,140 L900,250 L234,250 L234,144"/>
+        <path d="M915,140 L915,272 L376,272 L376,144" stroke-dasharray="5 4"/>
+        <path d="M930,140 L930,294 L518,294 L518,144"/>
+        <path d="M945,140 L945,316 L731,316 L731,144" stroke-dasharray="5 4"/>
+      </g>
+      <g font-size="11" fill="var(--block)">
+        <text x="250" y="246">네이티브성·형태 Blocker → R1</text>
+        <text x="392" y="268">판단가능성·측정 Blocker → R2</text>
+        <text x="534" y="290">스펙 구멍·수치 Blocker → R3</text>
+        <text x="750" y="312">맵·플로우 Blocker → R4·R5</text>
+      </g>
+      <!-- exit conditions -->
+      <g font-size="11.5">
+        <text x="30" y="352" font-weight="600">R7 → DOR 조건(전부 참):</text>
+        <text x="30" y="372" fill="var(--muted)">종이로 답할 불확실성 0(빌드 필요 목록은 비어 있지 않음) · R6 3회 연속 Blocker 0 · 미결 결정 카드 0 · 페르소나 15판 완료 · 사용자가 1p 요약 확인(마지막 질문)</text>
+      </g>
+      <!-- preflight -->
+      <text x="30" y="30" font-size="11.5" fill="var(--muted)">시작 직후 사전 점검: 스킬 목록에 grilling·domain-modeling·research·brainstorming·uefn-review 있는가 → 없으면 설치 카드 1장(node bin/cli.js plugins → 재시작) 또는 형식 수동 적용</text>
+    </svg>
+    <figcaption>사용자는 <span class="mono">/uefn-game-loop</span> 한 번으로 시작한다. 이후 스킬 호출은 전부 AI의 일이고, 질문은 grilling 형식의 결정 카드로만 간다.</figcaption>
+  </figure>
+</section>
+
+<!-- ================= Figure 3: level ticket timebox ================= -->
+<section>
+  <div>
+    <div class="eyebrow">Figure 3</div>
+    <h2>레벨 하나 = 180분 — 티켓과 그 티켓을 막는 게이트</h2>
+    <p>막대는 시간 배분이고, 아래 칩은 그 티켓이 <span class="mono">done</span>이 되기 위해 통과해야 하는 검증이다. 그레이박스만 놓거나 구조를 설명 못 하면 첫 티켓에서 걸린다.</p>
+  </div>
+  <figure>
+    <div class="bar" role="img" aria-label="레벨 180분 배분: 뼈대 30, 비주얼 30, 배선 35, 측정 로그 30, 자동 실행 30, 리뷰 20, 예비 5">
+      <div style="flex:30"><b>1 뼈대</b><span>30분</span></div>
+      <div style="flex:30"><b>1.5 비주얼</b><span>30분</span></div>
+      <div style="flex:35"><b>2 배선</b><span>35분</span></div>
+      <div style="flex:30"><b>3 측정 로그</b><span>30분</span></div>
+      <div style="flex:30"><b>4 자동 실행</b><span>30분</span></div>
+      <div style="flex:20"><b>5 리뷰</b><span>20분</span></div>
+      <div style="flex:5"><b>—</b><span>5</span></div>
+    </div>
+    <div class="gates" style="margin-top:12px">
+      <div>구조 설명서<span class="chip tool">level_map</span><span class="chip tool">design_lint 뼈대</span><span class="chip gate">flow ② 좌표</span></div>
+      <div>기존 자산으로<span class="chip tool">design_lint 전부</span><span class="chip gate">StartSession 통과</span><span class="chip gate">B-7 비주얼</span></div>
+      <div>오프라인 배선<span class="chip tool">bind_editable</span><span class="chip tool">editable_bindings 미배선 0</span></div>
+      <div>플로우 재료<span class="chip gate">[M] step= · meet= 태그</span></div>
+      <div>N회 실행<span class="chip tool">get_editor_log</span><span class="chip">metrics.md</span></div>
+      <div>빠른공격×4 + 전면<span class="chip gate">B-9 flow-report</span><span class="chip gate">재미 공백 → 수정 티켓</span></div>
+      <div>예비<span class="chip">복구 시간은 별도 계정</span></div>
+    </div>
+    <figcaption>구간 3·4(측정)를 예비까지 넘기면 레벨 <span class="mono">무효</span> 표시 후 다음 레벨. 행동검증 3회 실패도 같다. 사람은 부르지 않는다.</figcaption>
+  </figure>
+</section>
+
+<!-- ================= Figure 4: what happens when blocked ================= -->
+<section>
+  <div>
+    <div class="eyebrow">Figure 4</div>
+    <h2>막혔을 때 — 질문인가, deferred인가, 복구인가</h2>
+    <p>같은 "막힘"이라도 어디서 났는지와 종류에 따라 처리가 갈린다. 라이브 도구 거부는 불가의 증거가 아니라 오프라인 몫이라는 신호다.</p>
+  </div>
+  <div class="two">
+    <figure>
+      <svg viewBox="0 0 760 330" role="img" aria-label="막힘 처리 분기: 설계 판단이 필요하면 DOR 전에는 grilling으로 묻고 DOR 후에는 deferred로 기록해 진행한다. 라이브 도구가 거부하면 capabilities를 호출해 오프라인 경로를 확인하고, 그래도 없을 때만 GUI 필요로 deferred한다. 환경 장애는 recover.md 절차로 복구하고 2회 실패 시 하드 실패로 종료 보고한다.">
+        <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <g font-size="12">
+          <rect x="20" y="130" width="120" height="50" rx="6" fill="var(--panel)" stroke="currentColor"/><text x="80" y="160" text-anchor="middle" font-weight="600">막힘 발생</text>
+          <!-- three kinds -->
+          <rect x="200" y="30" width="150" height="50" rx="6" fill="var(--panel)" stroke="currentColor"/><text x="275" y="51" text-anchor="middle" font-weight="600">설계 판단 필요</text><text x="275" y="68" text-anchor="middle" fill="var(--muted)" font-size="11">선택지 2+ · 설계를 바꿈</text>
+          <rect x="200" y="140" width="150" height="50" rx="6" fill="var(--panel)" stroke="currentColor"/><text x="275" y="161" text-anchor="middle" font-weight="600">라이브 도구 거부</text><text x="275" y="178" text-anchor="middle" fill="var(--muted)" font-size="11">not valid ScriptDevice 등</text>
+          <rect x="200" y="250" width="150" height="50" rx="6" fill="var(--panel)" stroke="currentColor"/><text x="275" y="271" text-anchor="middle" font-weight="600">환경 장애</text><text x="275" y="288" text-anchor="middle" fill="var(--muted)" font-size="11">로그아웃·런처·프리즈·도구 소실</text>
+          <!-- outcomes -->
+          <rect x="430" y="10" width="140" height="40" rx="6" fill="var(--ask-soft)" stroke="var(--ask)"/><text x="500" y="35" text-anchor="middle" fill="var(--ask)" font-weight="600">DOR 전: grilling</text>
+          <rect x="430" y="60" width="140" height="40" rx="6" fill="var(--go-soft)" stroke="var(--go)"/><text x="500" y="85" text-anchor="middle" fill="var(--go)" font-weight="600">DOR 후: deferred</text>
+          <rect x="430" y="140" width="140" height="50" rx="6" fill="var(--go-soft)" stroke="var(--go)"/><text x="500" y="161" text-anchor="middle" fill="var(--go)" font-weight="600">capabilities 호출</text><text x="500" y="178" text-anchor="middle" fill="var(--muted)" font-size="11">HARNESS §1.5 대조</text>
+          <rect x="430" y="250" width="140" height="50" rx="6" fill="var(--panel)" stroke="currentColor"/><text x="500" y="271" text-anchor="middle" font-weight="600">recover.md A/B/C</text><text x="500" y="288" text-anchor="middle" fill="var(--muted)" font-size="11">URI 재기동 · 런처 재시작 · raw HTTP</text>
+          <rect x="610" y="120" width="130" height="40" rx="6" fill="var(--go-soft)" stroke="var(--go)"/><text x="675" y="145" text-anchor="middle" fill="var(--go)" font-weight="600">오프라인으로 진행</text>
+          <rect x="610" y="170" width="130" height="40" rx="6" fill="var(--panel)" stroke="var(--go)" stroke-dasharray="4 3"/><text x="675" y="195" text-anchor="middle" font-size="11.5">둘 다 없을 때만 GUI → deferred</text>
+          <rect x="610" y="250" width="130" height="50" rx="6" fill="var(--panel)" stroke="var(--block)"/><text x="675" y="271" text-anchor="middle" fill="var(--block)" font-weight="600">2회 연속 실패</text><text x="675" y="288" text-anchor="middle" fill="var(--muted)" font-size="11">하드 실패 → 종료 보고</text>
+        </g>
+        <g stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#ar4)">
+          <path d="M140,150 L170,150 L170,55 L196,55"/>
+          <line x1="140" y1="165" x2="196" y2="165"/>
+          <path d="M140,160 L170,160 L170,275 L196,275"/>
+          <path d="M350,50 L390,50 L390,30 L426,30"/>
+          <path d="M350,60 L390,60 L390,80 L426,80"/>
+          <line x1="350" y1="165" x2="426" y2="165"/>
+          <line x1="350" y1="275" x2="426" y2="275"/>
+          <path d="M570,158 L590,158 L590,140 L606,140"/>
+          <path d="M570,172 L590,172 L590,190 L606,190"/>
+          <line x1="570" y1="275" x2="606" y2="275"/>
+        </g>
+        <text x="590" y="132" font-size="10.5" fill="var(--muted)" text-anchor="end">표에 있음</text>
+        <text x="590" y="212" font-size="10.5" fill="var(--muted)" text-anchor="end">표에도 없음</text>
+        <text x="590" y="268" font-size="10.5" fill="var(--muted)" text-anchor="end">복구 성공 → 복귀</text>
+      </svg>
+      <figcaption>②를 건너뛴 "GUI 전용" 판정은 리뷰 Blocker다. 복구 소요 시간은 세션 로그의 초과 원인 열에 적고 예비에서 빼지 않는다.</figcaption>
+    </figure>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">deferred 한 건의 형식</div>
+      <ol class="list">
+        <li>무엇이 막혔나(티켓·단계)</li>
+        <li>왜(도구 출력·오류 문구 그대로)</li>
+        <li>택한 가정(보수적 기본값)과 이유</li>
+        <li>영향 범위(어느 레벨·지표가 흔들리나)</li>
+        <li>되돌리는 법</li>
+      </ol>
+      <p style="margin-top:14px;color:var(--muted);font-size:13px">종료 보고 순서: 결과 → 4레벨 flow-report → deferred 목록(우선순위) → 질문(grilling 라운드 1회).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Matrix ================= -->
+<section>
+  <div>
+    <div class="eyebrow">Matrix</div>
+    <h2>단계별 강제 스킬과 도구</h2>
+    <p>주황 테두리는 스킬(AI가 호출), 청록 테두리는 uefn-inspector MCP 도구(오프라인), 붉은 테두리는 통과해야 하는 게이트.</p>
+  </div>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th style="width:18%">단계</th><th>스킬 · 도구 · 게이트</th><th style="width:32%">멈춤 규칙</th></tr></thead>
+    <tbody>
+      <tr><td>사전 점검</td><td class="chips"><span class="chip">node bin/cli.js doctor</span><span class="chip">plugins</span></td><td>미설치면 설치 카드 1장(기획 전이라 허용) 또는 형식 수동 적용</td></tr>
+      <tr><td>① R0~R4</td><td class="chips"><span class="chip skill">grilling</span><span class="chip skill">domain-modeling</span><span class="chip skill">research</span><span class="chip skill">brainstorming</span><span class="chip tool">engine_devices</span><span class="chip tool">capabilities</span></td><td>질문 자유. 단, 전부 결정 카드 형식. 사실 확인은 AI가 찾는다</td></tr>
+      <tr><td>① R5</td><td class="chips"><span class="chip gate">flow.md F1~F16</span><span class="chip gate">PERSONAS 15판</span></td><td>AI 단독. 사용자 결정이 필요한 구멍만 카드로</td></tr>
+      <tr><td>① R6 · ②</td><td class="chips"><span class="chip skill">uefn-review</span><span class="chip gate">B-0 판단가능성</span><span class="chip gate">B-8 네이티브성</span><span class="chip gate">DOR §1~§6</span></td><td>3회 연속 Blocker 0 · 1p 요약 확인 = 마지막 질문</td></tr>
+      <tr><td>③ 분해</td><td class="chips"><span class="chip skill">writing-plans</span><span class="chip">DECOMPOSE.md</span></td><td>규칙 0 시작. 애매 → deferred</td></tr>
+      <tr><td>④ 티켓 1·1.5</td><td class="chips"><span class="chip tool">level_map</span><span class="chip tool">design_lint</span><span class="chip gate">flow ②</span><span class="chip gate">StartSession</span><span class="chip gate">B-7</span></td><td>그레이박스·설명 없음 = done 불가. 자산은 T0·T1·1c만, 그 이상은 자산 티켓</td></tr>
+      <tr><td>④ 티켓 2~4</td><td class="chips"><span class="chip tool">bind_editable</span><span class="chip tool">editable_bindings</span><span class="chip tool">read_actor</span><span class="chip">BuildAll · PIE · get_editor_log</span></td><td>오프라인 쓰기는 UEFN 닫고. 라이브 거부 → capabilities → 오프라인</td></tr>
+      <tr><td>④ 티켓 5 · 레벨 완료</td><td class="chips"><span class="chip skill">uefn-review</span><span class="chip gate">flow-report.md</span><span class="chip gate">B-9 설명 공격</span></td><td>재미 공백 → 수정 티켓 → 2회째 공백이면 레벨 무효</td></tr>
+      <tr><td>⑤ 판정</td><td class="chips"><span class="chip">FUN-HYPOTHESIS 판정식</span><span class="chip">EXP-NN-results</span></td><td>지지·기각 → ①(질문 재개) · 애매 → ③ · 무효 → ②</td></tr>
+      <tr><td>어디서든</td><td class="chips"><span class="chip">recover.md</span><span class="chip tool">capabilities</span></td><td>환경 장애는 절차로. 같은 절차 2회 실패만 하드 실패</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <div>
+    <div class="eyebrow">Files</div>
+    <h2>이 지도가 가리키는 문서</h2>
+  </div>
+  <div class="files">
+    <div><code>game-loop-kit/skills/uefn-game-loop/SKILL.md</code> — 진입점, 규칙 0·8·9·10</div>
+    <div><code>game-loop-kit/loop/LOOP.md</code> — 바깥 루프·한 반복·상태 값</div>
+    <div><code>game-loop-kit/spec/PLANNING-LOOP.md</code> — R0~R7·필수 스킬·종료 조건·사전 점검</div>
+    <div><code>game-loop-kit/spec/UEFN-DESIGN-SPACE.md</code> — 네이티브 형태 13종·비틀기·네이티브 지수</div>
+    <div><code>game-loop-kit/spec/INTAKE.md</code> · <code>MAP-INTAKE.md</code> · <code>GENRE-PACKS.md</code> — 질문지</div>
+    <div><code>game-loop-kit/spec/PERSONAS.md</code> · <code>DECISIONS.md</code> — 종이 플레이·결정 카드</div>
+    <div><code>game-loop-kit/spec/DOR.md</code> — 착수 게이트 §1~§6</div>
+    <div><code>game-loop-kit/loop/verify/flow.md</code> — F1~F16·다인 플로우·flow-report</div>
+    <div><code>game-loop-kit/loop/verify/structural.md</code> — 레시피 1~8(census·level_map·design_lint)</div>
+    <div><code>game-loop-kit/loop/visual.md</code> · <code>visual-options.md</code> — 비주얼 드레싱 루프·자산 경로 T0~T5</div>
+    <div><code>game-loop-kit/loop/review/ADVERSARIAL.md</code> — A 빠른공격 · B-0~B-9</div>
+    <div><code>game-loop-kit/loop/recover.md</code> · <code>TIMEBOX.md</code> — 복구 절차·시간 배분</div>
+    <div><code>game-loop-kit/HARNESS.md</code> — 서버·스킬 설치 실측·오프라인 표</div>
+    <div><code>mcp_server.py</code> — capabilities · level_map · design_lint · bind_editable 등 11개</div>
+  </div>
+</section>
+
+</div>

@@ -115,6 +115,7 @@ uefn-inspector를 엔진 삼아 UEFN 게임을 **A-Z 루프**로 구축하는 �
 ## 문서
 - **`CHANGELOG.md`** — `git pull` 후 **무엇이 바뀌었는지** (새 기능·해제된 한계·깨지는 변경)
 - `docs/CAPABILITIES.md` — 되는것/안되는것 확정표
+- `game-loop-kit/loop/LOOP-MAP.html` — 루프 전체 시각 지도(질문 경계·기획 라운드·티켓 게이트·막힘 처리)
 - `docs/ROADMAP.md` — 완성 구조·마일스톤
 - `docs/BACKLOG.md` — 티켓 보드(자율 루프용)
 - `docs/capability-matrix.md` · `docs/context.md`(동기·범용성 원칙) · `docs/explainer.html`(시각 설명)
