@@ -17,8 +17,11 @@ trailing "_<digits>" is split off `object_name` and stored in the Number field.
 The new row goes at the END of the import map so no existing FPackageIndex
 (export map, depends map, preload deps, property values) changes meaning.
 
-⚠️ EXPERIMENTAL. Structure round-trips through our reader; UEFN acceptance of
-a resized package is not verified. Operate on a copy and keep the .bak.
+Verification (reports/2026-09-10-blackout.md, FEAT-B / WF-15): re-creating the
+gate file's existing imports on a stripped copy is byte-identical to the UEFN
+original; packages resized through `wire.bind_editable` survived level reload
+and ran in a session. Publish acceptance is NOT verified (name hashes written
+as 0, no preload-dependency rows). Operate on a copy and keep the .bak.
 """
 from __future__ import annotations
 

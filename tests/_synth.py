@@ -37,7 +37,7 @@ def object_props(names: list[str], props: dict[str, int]) -> bytes:
 
 def build_package(names: list[str], imports: list[tuple], exports: list[tuple]) -> bytes:
     """imports: (class_package, class_name, outer_index, object_name, number, package_name)
-    exports: (object_name, class_index, outer_index, serial_bytes)"""
+    exports: (object_name, class_index, outer_index, serial_bytes[, fname_number])"""
     header = struct.pack("<IiiiiI", UE_PACKAGE_MAGIC, -8, 0, 522, 1018, 0)
     summary_len = 10 * 4 + 4 + 3 * 4          # 10 int fields, empty LocalizationId FString, 3 trailing
     name_off = len(header) + summary_len
@@ -52,11 +52,11 @@ def build_package(names: list[str], imports: list[tuple], exports: list[tuple]) 
         rows += fname(names, on, num) + fname(names, pn or "None") + struct.pack("<i", 0)
 
     ex_rows, serial, cur = b"", b"", serial_off
-    for on, cls, outer, blob in exports:
+    for on, cls, outer, blob, *num in exports:
         row = bytearray(EXPORT_STRIDE)
         struct.pack_into("<iii", row, 0, cls, 0, 0)
         struct.pack_into("<i", row, 12, outer)
-        row[16:24] = fname(names, on)
+        row[16:24] = fname(names, on, num[0] if num else 0)
         struct.pack_into("<qq", row, 28, len(blob), cur)
         ex_rows += bytes(row)
         serial += blob
@@ -125,3 +125,29 @@ def wrapper_form_package() -> bytes:
     exports = [("my_gate", -5, 0, slots),
                ("__verse_0x0000000B_Trigger", -5, 1, object_props(DEVICE_NAMES, {}))]
     return build_package(DEVICE_NAMES, DEVICE_IMPORTS, exports)
+
+
+# The bound light actor's OWN OFPA package, as a target for `actor_target()`:
+# PersistentLevel chain, the class import under its Package import, and the
+# actor export (class = that import, outer = PersistentLevel) whose FName
+# carries the UAID suffix in the Number field ("..._1" = Number 2).
+ACTOR_NAMES = [
+    "/Script/CoreUObject", "/Script/Engine", "/MyProject/MyProject",
+    "/CRD_PointLight/Device_PointLight_V2",
+    "Package", "World", "Level", "BlueprintGeneratedClass", "MyProject", "PersistentLevel",
+    "Device_PointLight_V2_C", "Device_PointLight_V2_C_UAID_AAAA000000000000",
+    "None", "ObjectProperty",
+]
+ACTOR_IMPORTS = [
+    ("/Script/CoreUObject", "Package", 0, "/MyProject/MyProject", 0, ""),                  # -1
+    ("/Script/Engine", "World", -1, "MyProject", 0, ""),                                   # -2
+    ("/Script/Engine", "Level", -2, "PersistentLevel", 0, ""),                             # -3
+    ("/Script/CoreUObject", "Package", 0, "/CRD_PointLight/Device_PointLight_V2", 0, ""),  # -4
+    ("/Script/Engine", "BlueprintGeneratedClass", -4, "Device_PointLight_V2_C", 0, ""),    # -5
+]
+
+
+def actor_package() -> bytes:
+    exports = [("Device_PointLight_V2_C_UAID_AAAA000000000000", -5, -3,
+                object_props(ACTOR_NAMES, {}), 2)]
+    return build_package(ACTOR_NAMES, ACTOR_IMPORTS, exports)
