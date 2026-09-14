@@ -25,7 +25,11 @@
 ## 사용자 시간 규칙
 - 라운드마다 사용자에게 가는 것은 **결정 카드**만이다. 카드 = grilling의 한 질문(제목·선택지·추천 답·트레이드오프·바꾸는 문서). 뻔한 것은 기본값으로 정하고 통보한다. 사실 확인은 사용자에게 시키지 않는다(research·capabilities·engine_devices로 AI가 찾는다).
 - 라운드 끝마다 한 페이지 요약을 갱신해 방향을 고칠 기회를 준다.
-- 사용자가 직접 부를 수 있는 진입점: `/grill-me`(라운드 강제 재개), `/to-questionnaire`(답 못 하는 결정을 질문지로), `/to-spec`(대화를 스펙으로 정리). AI가 자동 호출하는 것은 `grilling`·`domain-modeling`·`research`·`brainstorming`·`uefn-review`다.
+- **스킬 호출은 AI의 일이다.** 사용자는 `/uefn-game-loop` 한 번으로 시작하고 그 뒤 스킬 이름을 알 필요가 없다. AI 자동 호출 정책:
+  · R1~R4에서는 `grilling`이 **기본값**이다. 질문이 하나라도 있으면 grilling 형식으로 낸다(일반 질문으로 묻지 않는다).
+  · R0·R3의 용어·결정 기록은 `domain-modeling`, 외부 사실은 `research`, R1 발상은 `brainstorming`, R6은 `uefn-review`.
+  · 기획 루프 밖(③ 분해·④ 빌드·⑤ 판정)에서 애매한 것이 나오면: DOR 통과 **전**이면 grilling으로 되돌아가 묻고, 통과 **후**면 규칙 0에 따라 묻지 않고 `state/deferred.md`에 적어 종료 보고에서 grilling 라운드로 한 번에 묻는다.
+  · 사용자 전용 슬래시(`/grill-me` 등)는 있어도 되지만 절차의 일부가 아니다.
 
 ## 되돌아가기
 R6 Blocker의 종류가 복귀 지점을 정한다. 판단가능성·측정 → R2, 네이티브성·형태 → R1, 스펙 구멍·수치 → R3, 맵·플로우 → R4·R5. 복귀 후에는 R5·R6을 다시 돈다.
