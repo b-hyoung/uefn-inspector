@@ -10,7 +10,7 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 
 **KIT** = `C:\Users\ACE\Desktop\bobs_project\uefn-inspector\game-loop-kit`
 
-읽는다: `KIT/loop/LOOP.md` · `KIT/loop/TIMEBOX.md` · `KIT/loop/verify/*.md`
+읽는다: `KIT/loop/LOOP.md` · `KIT/loop/TIMEBOX.md` · `KIT/loop/visual.md` · `KIT/loop/verify/*.md`
 
 ## 착수 전
 - **`spec/DOR.md` 통과 확인** (특히 **판단 가능성**: 지표가 재미있는/없는 플레이를 구별하나)
@@ -19,12 +19,13 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 ## 티켓 4종 · 3시간 배분
 | # | 티켓 | 예산 | 통과 기준 |
 |---|---|---|---|
-| 1 | 레벨 뼈대(공간·배치) | 40분 | `inspect_level`로 기대 디바이스·개수, 공간조건 |
-| 2 | 메카닉 배선 | 40분 | `editable_bindings` **미배선 0** · 설정=변주조건 |
+| 1 | 레벨 뼈대(공간·배치) | 30분 | `inspect_level`로 기대 디바이스·개수, 공간조건 |
+| 1.5 | **비주얼 드레싱**(기존 머티리얼·프롭, 절차 `loop/visual.md`) | 30분 | `structural.md` 6): 기본 머티리얼 표면 ≤20% · 고유 머티리얼 ≥6 · 고유 메시 ≥8 · 기능 요소(목표·위험·경로·안전) 시각 구별 · StartSession 통과(Disallowed 0) |
+| 2 | 메카닉 배선 | 35분 | `editable_bindings` **미배선 0** · 설정=변주조건 |
 | 3 | 측정 로그 심기 | 30분 | PIE 로그에 지표별 `[M]` 라인 **전부** 출력 |
 | 4 | 자동 실행·집계 | 30분 | N회 실행 → `metrics.md` 채워짐 |
 | 5 | 적대적 빠른공격 ×4 + 전면 ×1 | 20분 | Blocker 0 |
-| — | 예비 | 20분 | |
+| — | 예비 | 5분 | |
 
 ## 매 티켓
 구현 → **구조검증**(uefn-inspector, 에디터 OFF) → **행동검증**(BuildAll→PIE→`get_editor_log`)
@@ -32,7 +33,8 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 
 ## 절대 규칙
 - **규칙 0 — 무정지.** 이 스킬은 DOR 통과 이후의 작업이므로 사람에게 묻지 않고 끝까지 간다. 막히면 `state/deferred.md`에 기록(무엇·왜·가정·영향)하고 보수적 가정으로 진행하거나 그 티켓만 `deferred`로 두고 다음 티켓으로. 파괴적 작업·새 의존성은 실행하지 않고 deferred. 질문은 레벨 보고 끝에 한 번에.
-- **측정(티켓 3·4)은 못 뺀다.** 시간 부족하면 공간 디테일부터 컷. 측정 없으면 이 레벨은 무효.
+- **측정(티켓 3·4)은 못 뺀다.** 시간 부족하면 비주얼 밀도부터 줄이되 티켓 1.5의 최소 기준은 유지한다. 측정 없으면 이 레벨은 무효.
+- **비주얼은 기존 자산으로**(규칙 8). 그레이박스 상태로 레벨 `done` 불가. 새 에셋 제작·외부 반입은 deferred. 세션 유효성(StartSession)이 수용 기준이다.
 - 구간 3·4 초과가 예비까지 소진하면 → 레벨 `무효` 표시 후 다음 레벨(사람 호출 없음).
 - **오프라인 쓰기는 UEFN 닫고**(파일 잠금). 표준 배치/값은 라이브 MCP로 열어둔 채.
 - **@editable 배선은 오프라인으로 한다** — MCP `bind_editable(디바이스파일, 슬롯, 액터파일)`(UEFN 닫고).

@@ -35,9 +35,10 @@
 | 선언↔배선 교차검증 | `analysis.verse_source.cross_reference` | ❌ | ✅ |
 | 인벤토리·검색·역참조·영향 | `inspect_level` · `find` · `who_uses` · `audit` | 크로스파일 ❌ | ✅ |
 | 공간 분석 | `analysis.spatial.*` | ❌ | ✅ |
+| 비주얼 census(머티리얼·메시 사용량, 그레이박스 비율) | `analysis.analyze.material_usage` · `mesh_usage` | ❌ | ✅ (세션 유효성은 라이브 StartSession만 판정) |
 | 엔진 디바이스 카탈로그 | `engine_devices` | ❌ | ✅ 로컬 생성 시(`cue4parse_cli/README.md`) |
 
-오프라인이 못 하는 것(라이브 몫): 게임 실행(PIE)·런타임 상태·로그 → `uefn`. Verse 컴파일 → `unreal-mcp` BuildAll. 액터 최초 배치 → 라이브 `PlaceDevice`.
+오프라인이 못 하는 것(라이브 몫): 게임 실행(PIE)·런타임 상태·로그 → `uefn`. Verse 컴파일 → `unreal-mcp` BuildAll. 액터·프롭 최초 배치 → 라이브 `PlaceDevice`·`add_to_scene_from_asset`. 프롭·머티리얼 탐색 → 라이브 `find_assets(folder_path=...)`(전체 스캔은 플러그인 에러). 세션 유효성 → StartSession(Disallowed reference).
 
 운영 규칙
 - 오프라인 쓰기는 UEFN을 닫고 한다(파일 잠금). 읽기는 켜져 있어도 된다.
