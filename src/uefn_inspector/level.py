@@ -15,6 +15,8 @@ class PlacedActor:
     name: str = ""
     location: tuple | None = None
     asset_refs: list[str] = field(default_factory=list)
+    scale: tuple | None = None       # RelativeScale3D, when serialized (non-default only)
+    rotation: tuple | None = None    # RelativeRotation (pitch, yaw, roll order as decoded)
 
 
 @dataclass
@@ -40,14 +42,18 @@ def inspect_actor(path: str | Path) -> PlacedActor:
     pkg = read_package(path)
     asset_refs = [n for n in pkg.names if n.startswith("/") and not n.startswith("/Script")]
     name = next((e.object_name for e in pkg.exports if "_UAID_" in e.object_name), "")
-    location = None
+    location = scale = rotation = None
     for e in pkg.exports:
-        loc = decode_properties(pkg, e).get("RelativeLocation")
+        props = decode_properties(pkg, e)
+        loc = props.get("RelativeLocation")
         if isinstance(loc, tuple) and len(loc) == 3:
             location = loc
+            sc, ro = props.get("RelativeScale3D"), props.get("RelativeRotation")
+            scale = sc if isinstance(sc, tuple) and len(sc) == 3 else None
+            rotation = ro if isinstance(ro, tuple) and len(ro) == 3 else None
             break
     return PlacedActor(device_class=_device_class(pkg), name=name,
-                       location=location, asset_refs=asset_refs)
+                       location=location, asset_refs=asset_refs, scale=scale, rotation=rotation)
 
 
 def inspect_level(path: str | Path) -> Level:

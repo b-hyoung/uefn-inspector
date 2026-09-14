@@ -19,7 +19,8 @@ def test_mcp_server_registers_expected_tools():
     mod = _load_server()
     tools = set(mod.mcp._tool_manager._tools.keys())
     assert {"inspect_level", "find", "who_uses", "read_actor",
-            "editable_bindings", "engine_devices", "bind_editable"} <= tools
+            "editable_bindings", "engine_devices", "bind_editable",
+            "level_map", "design_lint"} <= tools
 
 
 def test_mcp_server_ships_offline_first_instructions():
