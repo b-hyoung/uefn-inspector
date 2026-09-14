@@ -30,13 +30,29 @@
 4. 로그인·리스너·:8000 셋 다 확인한 뒤 복귀. 실패하면 하드 실패로 종료 보고(질문이 아니라 보고).
 5. ❓ 런처만 죽였을 때 UEFN 세션 인증이 이어지는지는 미확인. 첫 실측 결과를 이 문서에 적는다.
 
-## D. 새 프로젝트 생성 (✅ 검증 2026-09-14, `loop/scripts/uefn_gui.ps1`)
-프로젝트 생성은 GUI만 있지만 좌표 자동화로 된다. lore.exe `repository create`는 버전관리 저장소 생성이라 해당 없음. 폴더 복제는 projectId가 Epic 서버 등록이라 불가.
-1. `Uefn-Launch` → `Uefn-Wait` → 홈 화면 스크린샷으로 "새 프로젝트" 좌표 확인 → 클릭. 프로젝트 브라우저가 **별도 창**으로 뜬다(기본 템플릿 심플, 위치 `Documents\Fortnite Projects`).
-2. 템플릿 선택(`ISLAND-TEMPLATES.md` 결정 카드대로) → 생성 클릭 → 새 폴더 등장(~10s) → 에디터 로드(~40s). 확인: `<이름>.uefnproject`의 `projectId`가 새 GUID, 로그 `Selected Project (Direct)`.
-3. 이름 입력은 아직 불안정(한글 IME·별창 포커스). 실패하면 기본 이름 `MyProject`로 생성된다. 이름이 중요하면 생성 후 사람에게 1회(기획 루프 안이면 카드, 밖이면 deferred).
-4. 생성 후 설정(에디터 닫고): `.uefnproject`에 `experimental.pythonExperimental.bEnablePythonForProject=true`, `toolsets.bEnableToolsetsForProject=true` 추가 → 다시 열면 unreal-mcp(:8000)이 뜬다. 이 PC에는 uefn 리스너(:8765) 파일이 없어 `execute_python`·`get_editor_log` 경로는 미설치 상태다.
-5. 실패 신호: 이름 검증 오류(빨간 경고)면 생성 버튼이 비활성 → 이름 칸을 비우고 재시도. 클릭이 안 먹으면 DPI(150%)·창 좌표 확인.
+## D. 새 프로젝트 생성·준비 (✅ end-to-end 검증 2026-09-14, `loop/scripts/uefn_gui.ps1`)
+프로젝트 생성은 GUI만 제공되지만 좌표 자동화로 끝까지 된다. `lore.exe repository create`는 버전관리 저장소 생성이라 해당 없고, 폴더 복제는 projectId가 Epic 서버 등록이라 불가하다. 아래는 실행해 확인한 순서와 소요다.
+
+| # | 동작 | 함수 | 실측 |
+|---|---|---|---|
+| 1 | 런처 URI로 UEFN 기동 | `Uefn-Launch` | 프로세스 등장 ~5초 |
+| 2 | 홈 화면 대기 → 스크린샷으로 좌표 확인 | `Uefn-Wait` · `Uefn-Shot` | 창 등장 60~300초(콜드 스타트는 300초 가까이) |
+| 3 | "새 프로젝트" 클릭 → 프로젝트 브라우저(**별도 창**) | `Uefn-Click` | 즉시 |
+| 4 | 템플릿 선택(결정 카드) · 스크롤 | `Uefn-Click` · `Uefn-Wheel` | 기본값은 "심플" |
+| 5 | "생성" 클릭 → 폴더 생성 | `Uefn-Click` | 폴더 ~10초, 에디터 로드 ~40초 |
+| 6 | 에디터 종료 | `Uefn-CloseEditor` | ~10초 |
+| 7 | `.uefnproject`에 python·toolsets 플래그 | `Uefn-EnableProjectFlags` | `.bak` 남김, JSON 유효성 확인됨 |
+| 8 | 재기동 → 홈에서 프로젝트 타일 **더블클릭** | `Uefn-Launch` · `Uefn-Click -Double` | 로드 ~300초 |
+| 9 | unreal-mcp 확인 | `Uefn-PortOpen 8000` | ✅ 열림. MCP 핸드셰이크 성공, 도구 `list_toolsets`·`describe_toolset`·`call_tool` |
+
+확인 신호: `<이름>.uefnproject`의 `projectId`가 새 GUID · 에디터 로그 `Selected Project (Direct)` · 창 제목에 프로젝트 이름 · 포트 8000 응답.
+
+함정(전부 실측)
+- **DPI 150% 모니터**: PowerShell은 DPI 비인식이라 창 좌표(논리)와 화면 캡처(물리)가 어긋난다. 스크립트가 `SetProcessDPIAware()`를 먼저 호출한다.
+- **최소화된 창**: `GetWindowRect`가 (-32000,-32000)을 돌려줘 클릭이 화면 밖으로 나간다. `Uefn-Click`이 복원 후 rect를 다시 읽고, 그래도 음수면 예외를 던진다.
+- **한글 IME**: `SendKeys`로 보낸 영문이 자모로 들어가 이름 검증에 걸린다. 이름은 클립보드(`^v`)로 넣되 브라우저 별창 포커스 문제로 아직 불안정(❓) — 실패하면 기본 이름 `MyProject`로 생성되므로 그대로 진행하고 deferred에 적는다.
+- **좌표는 머신별**이다. 이 PC(창 2294×1626) 기준값은 스크립트 주석에 있고, 다른 PC에서는 `Uefn-Shot`으로 다시 잡아 `state/env.md`에 기록한다.
+- 이 PC에는 uefn 리스너(:8765) 파일이 없어 `execute_python`·`get_editor_log` 경로는 미설치다. 행동검증이 필요하면 리스너 설치가 선행 조건이다.
 
 ## C. raw HTTP 직접 호출 (R4)
 - unreal-mcp(:8000, MCP-over-HTTP): `initialize` → 응답 헤더 `Mcp-Session-Id` 보관 → `notifications/initialized` → `tools/call`. Shadow Bait `도구(우회산물)/uecall.ps1`이 이 절차를 구현했다.

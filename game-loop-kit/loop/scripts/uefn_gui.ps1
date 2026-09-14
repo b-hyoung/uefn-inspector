@@ -92,7 +92,10 @@ function Uefn-Shot([string]$name = "shot.png", [double]$scale = 0.5) {
 # x,y are WINDOW-relative coords at FULL resolution (multiply screenshot coords by 1/scale)
 function Uefn-Click([int]$x, [int]$y, [switch]$Double, [switch]$Right) {
   $w = Uefn-Main; if (-not $w) { throw "no UEFN window" }
+  # 최소화된 창은 rect가 (-32000,-32000) -> 복원 후 rect를 다시 읽는다(실측 함정)
+  [Win32U]::ShowWindow($w.H, 9) | Out-Null; Start-Sleep -Milliseconds 400
   $r = New-Object Win32U+RECT; [Win32U]::GetWindowRect($w.H, [ref]$r) | Out-Null
+  if ($r.Left -le -30000 -or $r.Top -le -30000) { throw "window is minimized/offscreen ($($r.Left),$($r.Top)) - restore it first" }
   $ax = $r.Left + $x; $ay = $r.Top + $y
   [Win32U]::SetForegroundWindow($w.H) | Out-Null; Start-Sleep -Milliseconds 200
   [Win32U]::SetCursorPos($ax, $ay) | Out-Null; Start-Sleep -Milliseconds 150
@@ -110,7 +113,8 @@ function Uefn-Key([string]$keys) { $w = Uefn-Main; [Win32U]::SetForegroundWindow
 function Uefn-Projects { Get-ChildItem "$env:USERPROFILE\Documents\Fortnite Projects" -Directory | Select-Object Name, LastWriteTime }
 
 function Uefn-Wheel([int]$x,[int]$y,[int]$notches){
-  $w = Uefn-Main; $r = New-Object Win32U+RECT; [Win32U]::GetWindowRect($w.H,[ref]$r) | Out-Null
+  $w = Uefn-Main; [Win32U]::ShowWindow($w.H, 9) | Out-Null; Start-Sleep -Milliseconds 300
+  $r = New-Object Win32U+RECT; [Win32U]::GetWindowRect($w.H,[ref]$r) | Out-Null
   [Win32U]::SetCursorPos($r.Left+$x,$r.Top+$y) | Out-Null; Start-Sleep -Milliseconds 150
   for($i=0;$i -lt [Math]::Abs($notches);$i++){ $d = if($notches -lt 0){[uint32]4294967176}else{[uint32]120}; [Win32U]::mouse_event(0x0800,0,0,$d,[UIntPtr]::Zero); Start-Sleep -Milliseconds 120 }
 }
@@ -127,3 +131,30 @@ function Uefn-Launch {
 #   (템플릿 선택: 그리드 첫 칸 780,475 / 휠 스크롤 Uefn-Wheel 1025 750 -5)
 #   Uefn-Click 1932 1337        # 생성 → Documents\Fortnite Projects\<이름> 생성(~10s), 에디터 로드(~40s)
 #   이름 변경(❓미안정): Set-Clipboard "이름"; Uefn-Click 1737 1230; Uefn-Key "{END}{BS 30}"; Uefn-Key "^v"
+
+function Uefn-CloseEditor([int]$graceSeconds = 20) {
+  # 새 프로젝트/저장 완료 상태에서만 쓴다. WM_CLOSE 후 남으면 강제 종료.
+  $p = Get-Process -Name UnrealEditorFortnite* -ErrorAction SilentlyContinue
+  if (-not $p) { return "not running" }
+  $p | ForEach-Object { $_.CloseMainWindow() | Out-Null }
+  $t0 = Get-Date; while ((Get-Process -Name UnrealEditorFortnite* -ErrorAction SilentlyContinue) -and ((Get-Date)-$t0).TotalSeconds -lt $graceSeconds) { Start-Sleep -Seconds 2 }
+  if (Get-Process -Name UnrealEditorFortnite* -ErrorAction SilentlyContinue) { Stop-Process -Name UnrealEditorFortnite* -Force; Start-Sleep -Seconds 3; return "killed" }
+  "closed"
+}
+
+function Uefn-EnableProjectFlags([string]$uefnproject) {
+  # unreal-mcp(:8000)·에디터 Python이 뜨도록 experimental 플래그를 넣는다. 에디터가 닫힌 상태에서만.
+  if (Get-Process -Name UnrealEditorFortnite* -ErrorAction SilentlyContinue) { throw "close the editor first" }
+  $raw = Get-Content $uefnproject -Raw -Encoding UTF8
+  $j = $raw | ConvertFrom-Json
+  if (-not $j.dataSets) { $j | Add-Member -NotePropertyName dataSets -NotePropertyValue ([pscustomobject]@{}) }
+  if (-not $j.dataSets.experimental) { $j.dataSets | Add-Member -NotePropertyName experimental -NotePropertyValue ([pscustomobject]@{ version = 1 }) }
+  $e = $j.dataSets.experimental
+  if (-not $e.pythonExperimental) { $e | Add-Member -NotePropertyName pythonExperimental -NotePropertyValue ([pscustomobject]@{ bEnablePythonForProject = $true }) } else { $e.pythonExperimental.bEnablePythonForProject = $true }
+  if (-not $e.toolsets) { $e | Add-Member -NotePropertyName toolsets -NotePropertyValue ([pscustomobject]@{ bEnableToolsetsForProject = $true }) } else { $e.toolsets.bEnableToolsetsForProject = $true }
+  Copy-Item $uefnproject "$uefnproject.bak" -Force
+  ($j | ConvertTo-Json -Depth 12) | Set-Content $uefnproject -Encoding UTF8
+  "flags set (backup: $uefnproject.bak)"
+}
+
+function Uefn-PortOpen([int]$port) { $c = New-Object Net.Sockets.TcpClient; try { $c.Connect('127.0.0.1',$port); $true } catch { $false } finally { $c.Dispose() } }

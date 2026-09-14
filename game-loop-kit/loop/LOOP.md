@@ -33,6 +33,7 @@
 - 자동 실행이 불가능한 메카닉은 자동 구동 모드 구현 티켓을 먼저 만든다.
 
 ## 한 반복
+0. 전제 — ②.5가 끝나 프로젝트가 열려 있고 `capabilities`가 ok다. 아니면 ②.5부터.
 1. 선택 — `plan/PLANS.md` → 우선 Plan → Task → 맨 위 `todo` 티켓(의존성 충족) → `doing`.
 2. 설계 — 수용기준을 보고 Verse 코드 + 디바이스 배치/배선 결정.
 3. 구현 — Verse: `verse/<file>.verse`. 디바이스: 표준 배치·값은 라이브 MCP, Verse-VM 값·@editable 배선은 uefn-inspector 오프라인(에디터 OFF, 백업). 배선은 `bind_editable`.
@@ -47,6 +48,9 @@
 
 ## 착수 전 게이트
 `spec/DOR.md` 통과 필수(판단 가능성 포함). 미통과면 인테이크로 복귀. 이 게이트가 마지막 질문 지점이다.
+
+## ②.5 프로젝트 준비 (DOR 직후, 자동 — 사람 없음)
+`loop/recover.md` 절차 D를 그대로 실행한다. 순서: ① 대상 프로젝트 존재 확인(`Documents\Fortnite Projects\<이름>`) → 없으면 `Uefn-Launch` → 홈 스크린샷 → 새 프로젝트 → 결정 카드의 템플릿 선택 → 생성 → 폴더·projectId 확인 ② `Uefn-CloseEditor` → `Uefn-EnableProjectFlags`(python·toolsets) → `Uefn-Launch` → 홈에서 프로젝트 타일 더블클릭 → 에디터 로드 ③ `capabilities`로 unreal-mcp(:8000)·오프라인 도구 응답 확인 → `state/env.md`에 좌표·프로젝트 경로 기록 ④ 실패는 recover 규칙(같은 절차 2회 실패 = 하드 실패). 이름 입력이 실패하면 기본 이름으로 진행하고 deferred에 적는다.
 
 ## 바깥 루프 한 사이클 (실험)
 1. 가설 선택 — H-NN(지표·판정규칙·변주축).

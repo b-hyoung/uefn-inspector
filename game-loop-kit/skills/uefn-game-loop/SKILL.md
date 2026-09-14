@@ -21,7 +21,7 @@ description: Run the whole UEFN game loop end-to-end — intake (what game / whe
 
 ## THE LOOP
 ```
-①인테이크 → ②DOR게이트 → ③분해 → ④레벨×4 → ⑤판정 → (기각/애매/무효 시 해당 지점으로 복귀)
+①인테이크 → ②DOR게이트 → ②.5프로젝트 준비(자동) → ③분해 → ④레벨×4 → ⑤판정 → (기각/애매/무효 시 해당 지점으로 복귀)
 ```
 
 ### ① 인테이크 = 기획 루프  📄 `spec/PLANNING-LOOP.md`(R0~R7·필수 스킬·종료 조건) · `spec/UEFN-DESIGN-SPACE.md` · `spec/INTAKE.md` · `spec/GENRE-PACKS.md`
@@ -41,6 +41,9 @@ description: Run the whole UEFN game loop end-to-end — intake (what game / whe
 
 ### ② DOR 게이트  📄 `spec/DOR.md`
 5영역 체크 + 적대적 전면공격 1회(B-0 판단가능성 우선). Blocker 0이어야 착수. 미통과면 ①로 복귀. **여기가 마지막 질문 지점이다.** 자산 경로(블렌더·Fab·AI 생성 사용 여부)도 여기서 묻고, 쓰기로 했으면 전제조건(블렌더 실행·MCP 연결·Sketchfab/Hyper3D 키)을 상태 도구로 실행 확인한다.
+
+### ②.5 프로젝트 준비 (자동)  📄 `loop/recover.md` 절차 D · `loop/scripts/uefn_gui.ps1`
+프로젝트가 없으면 만든다: 런처 기동 → 홈 스크린샷 → 새 프로젝트 → 결정 카드의 템플릿 → 생성 → 닫고 `.uefnproject` 플래그(python·toolsets) → 재기동 → 타일 더블클릭 → `capabilities` 확인. 스크린샷을 보고 좌표를 정하는 것은 AI의 일이며 좌표는 `state/env.md`에 남긴다. 규칙 0 구간이므로 묻지 않는다(이름 실패는 기본 이름 + deferred).
 
 ### ③ 분해  📄 `plan/DECOMPOSE.md`
 Plan(가설 1개) → Task(레벨 4개: A대조·B구조·C규칙·D인원) → Ticket(레벨당 4종). 레벨마다 한 축만 변경. 각 티켓에 구조수용·행동수용 기입.
