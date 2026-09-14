@@ -204,3 +204,62 @@ def test_bind_editable_rolls_back_on_failure(tmp_path, monkeypatch):
         bind_editable(f, "Trigger", **TRIGGER)      # imports were already added...
     assert f.read_bytes() == device_package()       # ...and rolled back with them
     assert (tmp_path / "dev.uasset.bak").read_bytes() == device_package()
+
+
+# ---- actor_target: derive bind_editable's arguments from the actor's own file --
+
+def _place(tmp_path, rel, blob):
+    f = tmp_path / rel
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_bytes(blob)
+    return f
+
+
+def test_actor_target_reads_name_class_and_ofpa_package_from_actor_file(tmp_path):
+    from _synth import LIGHT_PKG, actor_package
+    from uefn_inspector.edit.wire import actor_target
+    f = _place(tmp_path, "Proj/Content/__ExternalActors__/MyProject/0/EC/LIGHTPKG.uasset",
+               actor_package())
+    t = actor_target(f)
+    assert t == dict(
+        actor_name="Device_PointLight_V2_C_UAID_AAAA000000000000_1",   # FName Number kept
+        actor_class_package="/CRD_PointLight/Device_PointLight_V2",
+        actor_class_name="Device_PointLight_V2_C",
+        actor_package_name=LIGHT_PKG,   # mount from the level's package, path from Content/
+    )
+
+
+def test_actor_target_needs_package_name_outside_a_content_folder(tmp_path):
+    from _synth import actor_package
+    from uefn_inspector.edit.wire import actor_target
+    f = _place(tmp_path, "LIGHTPKG.uasset", actor_package())
+    with pytest.raises(WireError, match="package_name"):
+        actor_target(f)
+    t = actor_target(f, package_name="/MyProject/__ExternalActors__/X/Y/Z")
+    assert t["actor_package_name"] == "/MyProject/__ExternalActors__/X/Y/Z"
+
+
+def test_actor_target_rejects_a_package_without_an_actor(tmp_path):
+    from uefn_inspector.edit.wire import actor_target
+    f = _place(tmp_path, "Proj/Content/notanactor.uasset", b"\x00" * 64)
+    with pytest.raises(WireError):
+        actor_target(f)
+
+
+def test_bind_editable_with_actor_target_reuses_the_existing_actor_import(tmp_path):
+    from _synth import actor_package
+    from uefn_inspector.edit.wire import actor_target
+    dev = _place(tmp_path, "Proj/Content/__ExternalActors__/MyProject/0/AA/DEV.uasset",
+                 device_package())
+    light = _place(tmp_path, "Proj/Content/__ExternalActors__/MyProject/0/EC/LIGHTPKG.uasset",
+                   actor_package())
+    before = read_package(dev)
+    bind_editable(dev, "Trigger", **actor_target(light))
+    after = read_package(dev)
+    # -7 already describes this actor: reused, not duplicated. Only the class
+    # imports (Package + BlueprintGeneratedClass) the synthetic device lacked are new.
+    assert saved_actor(after, "Trigger") == LIGHT_ACTOR_INDEX
+    assert after.import_count == before.import_count + 2
+    assert sum(m.object_name == "Device_PointLight_V2_C_UAID_AAAA000000000000"
+               for m in after.imports) == 1
+    assert verse_bindings(after)["Trigger"] == "Device_PointLight_V2_C_UAID_AAAA000000000000"

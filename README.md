@@ -51,7 +51,7 @@ Python이 자동 탐지 안 되면 `UEFN_PYTHON=<python 경로>` 로 지정.
 | `/uefn-level` | 레벨 1개 3시간 빌드 |
 | `/uefn-review` | 적대적 리뷰 ("재미를 판단할 수 있나") |
 
-MCP 도구 7개: `inspect_level` · `audit` · `find` · `who_uses` · **`read_actor`**(Verse-VM 값) · **`editable_bindings`**(@editable 배선) · `engine_devices`
+MCP 도구 9개: `capabilities` · `inspect_level` · `audit` · `find` · `who_uses` · **`read_actor`**(Verse-VM 값) · **`editable_bindings`**(@editable 배선 읽기) · **`bind_editable`**(@editable 배선 쓰기, 오프라인) · `engine_devices`
 
 ## 직접 써보기 (설치 없이)
 ```bash
@@ -71,11 +71,13 @@ PYTHONPATH=src python -m uefn_inspector "<...>" --json
 ## 무엇이 되나 (요약 — 상세는 docs/CAPABILITIES.md)
 - **읽기(오프라인):** 인벤토리 · 검색 · where-used · 의존/순환/영향/고아 · census · 공간분석 · 프로퍼티 값(**91% 디코드**) · **Verse-VM 설정값·@editable 배선** · `.verse` 구조↔배선 교차검증
 - **쓰기(오프라인):** 스칼라·enum·오브젝트참조 **동일크기 in-place**(백업+롤백, **UEFN 수용 검증됨**)
-  · **새 `@editable` 슬롯 배선 추가**(크기변경 + 오프셋 fixup, ⚠️ UEFN 수용 미검증 — 사본으로)
+  · **`@editable` 슬롯 → 타 액터 배선**(`bind_editable`: import 추가 + SavedActor 태그 삽입, 크기변경 fixup.
+  ✅ 구조·리로드·런타임 검증 / ⚠️ 퍼블리시 수용 미검증 — 사본으로. `reports/2026-09-10-blackout.md` WF-15)
+  · **새 `@editable` 슬롯 추가**(`add_binding`: 슬롯 export 복제, ⚠️ UEFN 수용 미검증 — 사본으로)
 - **엔진 콘텐츠:** CUE4Parse CLI로 Fortnite 마운트 → 디바이스 카탈로그 (심층값은 usmap 필요)
   ⚠️ 카탈로그(`data/engine_device_catalog.json`)는 **저장소에 없다** — Fortnite 파생물이라 재배포 안 함.
   직접 생성: `cue4parse_cli/README.md`. **없어도 `engine_devices` 외 모든 도구는 동작한다.**
-- **천장/제약:** 크기변경 쓰기 미완 · usmap 외부 막힘 · Verse 코드 "의미" 해석은 범위 밖
+- **천장/제약:** 크기변경 쓰기는 import 추가·슬롯 배선·슬롯 복제까지(임의 프로퍼티 추가/삭제/리네임은 미구현) · 퍼블리시 수용 미검증 · usmap 외부 막힘 · Verse 코드 "의미" 해석은 범위 밖
 
 ## 모듈 지도 (`src/uefn_inspector/` — 레이어별 하위패키지)
 ```
@@ -93,12 +95,14 @@ analysis/  분석
   verse_source.py .verse 구조분석+교차검증          engine_catalog.py  엔진 카탈로그 검색
 edit/      쓰기(B)
   write.py  값 in-place 쓰기   patch.py  백업+롤백 파일패치   rebuild.py  크기변경 fixup(토대)
+  add_import.py  import 행 추가(크기변경)   wire.py  @editable 슬롯→타 액터 배선(SavedActor)   add_binding.py  슬롯 복제
 (top)      level.py  인벤토리·audit·diff    cli.py  CLI    __main__.py
 ```
 
 ## MCP 서버 (`mcp_server.py`)
 분석을 MCP 도구로 노출 — 아무 Claude 세션에서 호출. 도구:
-`inspect_level` · `audit` · `find` · `who_uses` · `read_actor`(Verse-VM 값 포함) · `editable_bindings` · `engine_devices`
+`capabilities` · `inspect_level` · `audit` · `find` · `who_uses` · `read_actor`(Verse-VM 값 포함) · `editable_bindings` · `engine_devices`
+· **`bind_editable(file, slot, actor_file)`** — 유일한 쓰기 도구. 에디터가 열려 있으면(리스너 :8765/:8000 응답) `blocked`로 거부하고 파일을 건드리지 않는다. `.bak` 자동 생성·실패 시 복원.
 ```bash
 claude mcp add uefn-inspector -s user -- <py> <abs>/mcp_server.py
 ```

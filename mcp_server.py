@@ -26,6 +26,8 @@ from uefn_inspector.core.properties import decode_properties  # noqa: E402
 from uefn_inspector.analysis.query import search, where_used  # noqa: E402
 from uefn_inspector.core.uasset import read_package  # noqa: E402
 from uefn_inspector.analysis.verse import verse_bindings  # noqa: E402
+from uefn_inspector.capabilities import _editor_running  # noqa: E402
+from uefn_inspector.edit.wire import actor_target, bind_editable as _bind_editable  # noqa: E402
 
 mcp = FastMCP("uefn-inspector")
 
@@ -84,6 +86,31 @@ def editable_bindings(file: str) -> dict:
     """@editable device bindings of a placed Verse device (slot -> bound actor).
     Reads the wiring the editor GUI made — unreadable via live reflection."""
     return verse_bindings(read_package(file))
+
+
+@mcp.tool()
+def bind_editable(file: str, slot: str, actor_file: str, actor_package_name: str = "") -> dict:
+    """OFFLINE WRITE — wire the @editable `slot` of the placed Verse device in
+    `file` to the actor saved in `actor_file` (another OFPA .uasset): what the
+    Details panel does in the GUI, without the GUI. Writes UEFN's own SavedActor
+    form; takes `<file>.bak` first and restores it on any failure. Refuses
+    ("blocked") while a UEFN/MCP listener is up, because the editor holds the
+    files. Verified: structure, level-reload persistence, runtime behaviour
+    (reports/2026-09-10-blackout.md WF-15). NOT verified: publish acceptance —
+    work on a copy. `actor_package_name` overrides the derived OFPA package path
+    (/<Mount>/__ExternalActors__/...) when the actor file is not under Content/."""
+    open_, why = _editor_running()
+    if open_:
+        return {"status": "blocked", "file": file, "slot": slot,
+                "detail": "UEFN editor appears to be OPEN — project files are locked; "
+                          "close the editor before writing",
+                "evidence": why}
+    target = actor_target(actor_file, package_name=actor_package_name or None)
+    _bind_editable(file, slot, **target)
+    return {"status": "ok", "file": file, "slot": slot, "target": target,
+            "bindings": verse_bindings(read_package(file)),
+            "backup": str(Path(file).with_suffix(Path(file).suffix + ".bak")),
+            "note": "publish acceptance not verified — keep the .bak"}
 
 
 @mcp.tool()

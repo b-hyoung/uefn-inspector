@@ -34,7 +34,11 @@ A fresh placeholder sub-object serializes only non-default properties, so it
 has no `SavedActor` tag at all (`00 | None | 00000000`); binding it inserts
 the tag right before the terminating "None" and resizes the export.
 
-⚠️ 구조 검증됨 / UEFN 수용: 에디터 세션 검증 진행 중. Work on a copy, keep the .bak.
+Verification status (field report reports/2026-09-10-blackout.md, WF-15 / FEAT-C):
+  ✅ structure (byte-identical to the UEFN-written gate file), level reload
+     persistence, runtime behaviour in a session (vis_range applied, guards spawned)
+  ⚠️ NOT verified: publish/upload acceptance — name hashes are written as 0 and no
+     preload-dependency entries are added. Work on a copy, keep the .bak.
 """
 from __future__ import annotations
 
@@ -92,6 +96,60 @@ def _slot_export(pkg: Package, slot: str) -> int:
                     "not a stock-device sub-object; unsupported")
             raise WireError(f"slot {slot} has no sub-object export (value {value!r})")
     raise WireError(f"slot property not found on any export: {slot}")
+
+
+def _mount_point(pkg: Package, level: int) -> str | None:
+    """"/MyProject" from the PersistentLevel -> World -> Package import chain."""
+    world = pkg.imports[-level - 1].outer_index
+    if world >= 0:
+        return None
+    root = pkg.imports[-world - 1].outer_index
+    if root >= 0:
+        return None
+    name = pkg.imports[-root - 1].object_name.strip("/")
+    return "/" + name.split("/")[0] if name else None
+
+
+def actor_target(actor_file: str | Path, *, package_name: str | None = None) -> dict:
+    """The `bind_editable` target arguments, read from the actor's OWN OFPA file.
+
+    actor_name          the actor export (class = an import, outer = PersistentLevel)
+                        with its FName Number rendered back ("..._1977124380")
+    actor_class_*       that class import and the Package import it hangs under
+    actor_package_name  `package_name` when given; otherwise derived as the level's
+                        mount point ("/MyProject") + the file's path below its
+                        `Content/` folder, without extension
+    """
+    p = Path(actor_file)
+    pkg = read_package(p)
+    if pkg.warnings or not pkg.exports or not pkg.imports:
+        raise WireError(f"{p.name}: not a readable actor package ({pkg.warnings or 'empty'})")
+    level = _level_import(pkg)
+    cands = [k for k, e in enumerate(pkg.exports) if e.class_index < 0 and e.outer_index == level]
+    cands += [k for k, e in enumerate(pkg.exports) if e.class_index < 0 and e.outer_index == 0]
+    if not cands:
+        raise WireError(f"{p.name}: no actor export under PersistentLevel")
+    k = cands[0]
+    e = pkg.exports[k]
+    cls = pkg.imports[-e.class_index - 1]
+    cls_pkg = (pkg.imports[-cls.outer_index - 1].object_name if cls.outer_index < 0
+               else cls.class_package)
+    data = p.read_bytes()
+    number = struct.unpack_from("<i", data, pkg.export_offset + k * pkg.export_stride + 20)[0]
+    name = f"{e.object_name}_{number - 1}" if number > 0 else e.object_name
+
+    if package_name is None:
+        mount = _mount_point(pkg, level)
+        parts = p.with_suffix("").parts
+        content = [i for i, part in enumerate(parts) if part == "Content"]
+        if mount is None or not content:
+            raise WireError(
+                f"{p.name}: cannot derive the OFPA package path (needs the level's mount "
+                "point and a Content/ folder in the file path) — pass package_name=")
+        package_name = mount + "/" + "/".join(parts[content[-1] + 1:])
+
+    return dict(actor_name=name, actor_class_package=cls_pkg,
+                actor_class_name=cls.object_name, actor_package_name=package_name)
 
 
 def saved_actor_tag(data: bytes, pkg: Package, package_index: int) -> bytes:
