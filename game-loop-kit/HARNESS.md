@@ -1,124 +1,66 @@
-# HARNESS — 이 kit이 쓰는 MCP·스킬 목록 (실측 2026-09-10)
+# HARNESS — 이 kit이 쓰는 MCP·스킬 (실측 2026-09-14)
 
-루프 각 단계에서 **무엇을 호출해 쓰는지**의 색인. 없는 건 안 쓴다.
+루프 각 단계에서 무엇을 호출하는지의 색인. 없는 것은 쓰지 않는다.
 
-## ⛔ 이 문서를 읽는 규율 — "안 되는 걸 된다고 하지 마라"
+## 규율 — 안 되는 것을 된다고 하지 않는다
+0. 이 문서보다 `capabilities` MCP 도구가 우선이다. 각 능력을 지금 실행해 ok/blocked/unavailable/unverified를 근거와 함께 돌려준다. 문서와 다르면 도구가 맞고, 문서를 고친다.
+1. 표에 없으면 "된다"고 말하지 않는다. 모르면 "미검증"이라 말하고 확인한다.
+2. 확인은 실행이다. MCP는 `claude mcp list` 후 실제 호출, 라이브러리는 실제 파일로 1회 실행, 설치물은 `node bin/cli.js doctor`.
+3. "가능"과 "지금 이 환경에서 가능"은 다르다. 서버 꺼짐(unreal-mcp), 파일 없음(엔진 카탈로그), 에디터 열림(오프라인 쓰기)은 지금은 불가다.
+4. 실패는 실패로 보고한다. 우회로를 찾되 됐다고 말하지 않는다.
+5. 표가 틀리면 즉시 고치고 근거(실행 결과)와 날짜를 적는다.
+6. "안 된다"고 말하기 전에도 같다. 라이브 호출 거부/실패("not valid ScriptDevice", 타입 거부, 설정 미저장) → 즉시 `capabilities` 호출 + §1.5 대조 → 있으면 오프라인으로 진행(쓰기는 UEFN 닫고) → 둘 다 없을 때만 "GUI 필요"이며 `capabilities` 결과를 근거로 첨부한다. 라이브 거부는 불가의 증거가 아니라 오프라인 몫이라는 신호다. ②를 건너뛴 GUI 판정은 리뷰 Blocker.
 
-이 표가 **틀리면 루프 전체가 잘못된 전제 위에서 돈다.** 그래서:
+잘못된 가능성 주장은 실험 결과 무효이며 리뷰 Blocker 사유다.
 
-0. ⭐ **이 문서보다 `capabilities` MCP 도구가 우선이다.** 그 도구는 각 능력을 **지금 실행**해
-   ok/blocked/unavailable/unverified를 **근거와 함께** 돌려준다. **문서와 다르면 도구가 맞다**(문서를 고쳐라).
-1. **표에 없으면 "된다"고 말하지 않는다.** 모르면 **"미검증"** 이라고 말하고 확인부터 한다.
-2. **확인 방법은 실행이다** — 추측·기억·문서 표현이 아니라 **실제 호출**로 확인한다.
-   - MCP 도구: `claude mcp list`로 연결 확인 → 실제 호출
-   - 라이브러리: 실제 파일로 한 번 돌려본다
-   - 설치물: `node bin/cli.js doctor`
-3. **"가능"과 "이 환경에서 지금 가능"은 다르다.** 서버가 꺼져 있거나(unreal-mcp),
-   파일이 없거나(엔진 카탈로그), 에디터가 켜져 있으면(오프라인 쓰기) **지금은 불가**다.
-4. **실패하면 실패라고 보고한다.** 우회로를 찾되, **됐다고 말하지 않는다.**
-5. **표가 틀린 걸 발견하면 즉시 고친다** — 근거(실행 결과)와 날짜를 함께 적는다.
-6. ⭐ **"안 된다"고 말하기 전에도 같은 규율이다 — 라이브 실패 → 오프라인 확인 순서:**
-   ① 라이브 MCP 호출이 거부/실패("not valid ScriptDevice", 타입 거부, 설정이 저장 안 됨)
-   → ② **즉시 `capabilities` 호출** + 아래 §1.5 오프라인 표 대조
-   → ③ 표에 있으면 **오프라인(uefn-inspector)으로 진행** (쓰기는 UEFN 닫고)
-   → ④ 표에도 `capabilities`에도 없을 때만 "GUI 필요/blocked" — **그 `capabilities` 결과를 근거로 첨부**한다.
-   라이브 거부 메시지는 불가의 증거가 아니라 **"오프라인 몫"이라는 신호**다. ②를 건너뛴 "GUI 전용" 판정은 리뷰 Blocker.
-
-> 이 kit의 판정(DOR·리뷰·실현가능성)은 전부 "무엇이 가능한가"에 기대고 있다.
-> **잘못된 가능성 주장 = 실험 결과 무효.** 리뷰의 Blocker 사유가 된다.
-
-## 1. MCP 서버 (등록됨)
-| 서버 | 종류 | 루프에서의 역할 |
+## 1. MCP 서버
+| 서버 | 종류 | 역할 |
 |---|---|---|
-| **uefn-inspector** | stdio(우리 도구) | **오프라인 전담** — 아래 §1.5 표가 핵심 |
-| **uefn** (KirChuvakov) | stdio → UEFN 리스너 | **라이브 조작**·`execute_python`(임의 unreal)·`get_editor_log`(**행동검증**)·액터/에셋/뷰포트 |
-| **unreal-mcp** (Epic 공식) | http :8000 | UEFN 내장 MCP — Verse 컴파일(BuildAll)·고정 툴셋 (에디터 ON 필요) |
-| git | stdio | 커밋·이력 (티켓 단위 커밋) |
-| sqlite · n8n · blender · unrealclaude | — | 이 kit 범위 밖(다른 작업용) |
+| uefn-inspector | stdio(우리 도구) | 오프라인 전담(§1.5). `instructions`로 매 세션 시스템 프롬프트에 도구 분담이 주입된다 |
+| uefn (KirChuvakov) | stdio → UEFN 리스너 :8765 | 라이브 조작 · `execute_python` · `get_editor_log`(행동검증) · 액터/에셋/뷰포트 |
+| unreal-mcp (Epic) | http :8000 | Verse 컴파일(BuildAll) · 고정 툴셋. 에디터 ON 필요 |
+| git | stdio | 티켓 단위 커밋 |
 
-## 1.5 ⭐ 오프라인으로 되는 것 (= 이 도구를 쓰는 이유)
+## 1.5 오프라인으로 되는 것 — uefn-inspector를 쓰는 이유
+라이브 MCP·에디터 Python 리플렉션이 못 하는 것이다. 최종 판단은 `capabilities`.
 
-> **핵심:** 아래 ⭐ 항목들은 **라이브 MCP·에디터 Python 리플렉션이 못 한다.**
-> ⚠️ **이 표도 낡을 수 있다 — 최종 판단은 `capabilities` MCP 도구**(지금 실행해 확인).
-
-| 하려는 것 | MCP 도구 / 라이브러리 | 라이브(uefn/unreal-mcp) | 오프라인(uefn-inspector) |
+| 하려는 것 | 도구 | 라이브 | 오프라인 |
 |---|---|---|---|
-| ⭐ **`@editable` 배선 읽기** (어느 슬롯이 뭐에 연결됐나) | `editable_bindings` · `analysis.verse.verse_bindings` | ❌ 못 읽음(Verse VM 내부) | **✅ 읽힘** |
-| ⭐ **`@editable` 배선 변경**(기존 슬롯 재연결) | `edit.write.set_object_ref` | ❌ | **✅ 씀** (UEFN 수용 확인) |
-| ⭐ **디바이스 설정값 읽기**(예 `Can Be Heard By`) | `read_actor` · `core.properties.decode_properties` | ❌ | **✅ 읽힘** |
-| ⭐ **디바이스 설정값 변경**(enum) | `edit.write.set_enum` | ❌ | **✅ 씀** |
-| ⭐ **새 `@editable` 슬롯 배선 추가** | `edit.add_binding.add_binding` | ❌ | **⚠️ 됨**(크기변경 — UEFN 수용 미검증, 사본 필수) |
-| ⭐ **`@editable` 슬롯 → 타 액터 배선(오프라인)** | MCP `bind_editable` · `edit.wire.bind_editable` | ❌ | **✅ 구조·리로드 영속·런타임 검증됨 / ⚠️ 퍼블리시 수용 미검증**(`reports/2026-09-10-blackout.md` WF-15. SavedActor 형식: 타 OFPA 패키지 액터를 import로 추가하고 슬롯 서브오브젝트 export의 `SavedActor`가 그 import를 가리키게 함 — 미바인딩 슬롯은 태그 삽입=크기변경, 사본 필수. 래퍼 import 형식은 폐기) |
-| ⭐ **선언↔배선 교차검증**(미배선 슬롯 탐지) | `analysis.verse_source.cross_reference` | ❌ | **✅** (스펙 드리프트 자동 감지) |
-| 프로퍼티 값·트랜스폼 | `read_actor` | 표준값만 △ | ✅ (91% 디코드) |
-| 스칼라 값 변경 | `edit.write.set_scalar` · `edit.patch.patch_scalar_file`(백업+롤백) | 표준값 ✅ | ✅ (에디터 닫고) |
-| 레벨 인벤토리·검색·역참조·의존/영향 | `inspect_level`·`find`·`who_uses`·`audit` | 크로스파일 ❌ | ✅ |
-| 공간 분석(bounds·밀집·간격) | `analysis.spatial.*` | ❌ | ✅ |
-| 엔진 디바이스 카탈로그 | `engine_devices` | ❌ | ✅ (로컬 생성 시) |
+| @editable 배선 읽기 | `editable_bindings` | ❌ | ✅ |
+| @editable 슬롯 → 타 액터 배선(최초·변경) | MCP `bind_editable` · `edit.wire.bind_editable` | ❌ | ✅ 구조·리로드·런타임 검증 / ⚠️ 퍼블리시 수용 미검증(`reports/2026-09-10-blackout.md` WF-15). 사본 필수 |
+| 기존 슬롯 재연결(동일 크기) | `edit.write.set_object_ref` | ❌ | ✅ UEFN 수용 확인 |
+| 디바이스 설정값 읽기(Verse-VM) | `read_actor` | ❌ | ✅ |
+| 설정값 변경(enum·스칼라) | `edit.write.set_enum` · `set_scalar` · `patch.patch_scalar_file` | 표준값만 | ✅ 에디터 닫고 |
+| 새 @editable 슬롯 추가 | `edit.add_binding.add_binding` | ❌ | ⚠️ 크기변경, UEFN 수용 미검증 |
+| 선언↔배선 교차검증 | `analysis.verse_source.cross_reference` | ❌ | ✅ |
+| 인벤토리·검색·역참조·영향 | `inspect_level` · `find` · `who_uses` · `audit` | 크로스파일 ❌ | ✅ |
+| 공간 분석 | `analysis.spatial.*` | ❌ | ✅ |
+| 엔진 디바이스 카탈로그 | `engine_devices` | ❌ | ✅ 로컬 생성 시(`cue4parse_cli/README.md`) |
 
-**대신 오프라인이 못 하는 것 (라이브 몫)**
-- 게임 **실행**(PIE)·런타임 상태·로그 → `uefn`
-- Verse **컴파일** → `unreal-mcp` BuildAll
+오프라인이 못 하는 것(라이브 몫): 게임 실행(PIE)·런타임 상태·로그 → `uefn`. Verse 컴파일 → `unreal-mcp` BuildAll. 액터 최초 배치 → 라이브 `PlaceDevice`.
 
-**운영 규칙**
-- 오프라인 **쓰기**는 **UEFN을 닫고** 한다(에디터가 파일을 잠금). 읽기는 켜져 있어도 됨.
-- 표준 배치·트랜스폼만 바꿀 거면 굳이 닫지 말고 **라이브 MCP**로.
-- Verse-VM 값·배선을 바꿀 땐 **닫은 김에 다른 오프라인 작업까지 몰아서** 한 번에.
-- **도구 분담 한 줄:** 배치·트랜스폼·BuildAll·PIE·로그 = 라이브 / Verse-VM 값·@editable 배선(`bind_editable`) = 오프라인.
-  이 분담은 MCP 서버 `instructions`로 매 세션 시스템 프롬프트에도 들어간다(스킬을 안 불러도 적용).
+운영 규칙
+- 오프라인 쓰기는 UEFN을 닫고 한다(파일 잠금). 읽기는 켜져 있어도 된다.
+- 표준 배치·트랜스폼은 라이브로. Verse-VM 값·배선은 닫은 김에 몰아서 오프라인으로.
+- 분담 한 줄: 배치·트랜스폼·BuildAll·PIE·로그 = 라이브 / Verse-VM 값·@editable 배선 = 오프라인.
 
-## 2. 게임 설계 하네스 — `game-design-skill` (v0.3.0)
-> 출처: Claude Code Game Studios(MIT) 자료. **INTAKE/GDD/시스템 문서의 근거.**
+## 2. 설계·프로세스 하네스
+| 하네스 | 용도 | 쓰는 것 |
+|---|---|---|
+| `game-design-skill` v0.3.0 (Claude Code Game Studios, MIT) | INTAKE/GDD/시스템 문서의 근거 | `brainstorm` · `map-systems` · `design-system` · `design-review` · `balance-check` · `scope-check` · `playtest-report` · `propagate-design-change` · 템플릿 `game-concept`·`game-pillars`·`systems-index`·`game-design-document` |
+| `ai-native-game-design` v0.2.0 | 런타임 AI 개입 메카닉 | `ai-native-game-design.md` · `ai-npc-design.md` |
+| `narsha-adk` v0.9.12 | 개념 참고만(UE C++/라이브 전제) | `ue-audit` · `ue-impact` · `ue-diff` · `ue-validate` · `ue-plan-review` |
+| `superpowers` v5.0.7 | 티켓 실행 규율 | `brainstorming` · `writing-plans` · `executing-plans` · `test-driven-development` · `systematic-debugging` · `verification-before-completion` |
+| 기타 | — | `elements-of-style`(문서) · `impeccable`(UI) · `mattpocock-skills:grilling`(설계 심문) |
 
-**워크플로(질문·절차)**
-`brainstorm`(인테이크 뼈대) · `map-systems`(컨셉→시스템 분해) · `design-system`(시스템 GDD 작성)
-`quick-design`(소규모 변경) · `design-review` · `review-all-gdds` · `consistency-check`
-`balance-check` · `scope-check` · `content-audit` · `propagate-design-change`
-`prototype` · `playtest-report` · `ux-design` · `ux-review`
-
-**템플릿(문서 뼈대)**
-`game-concept` · `game-pillars` · `player-journey` · `systems-index` · `game-design-document`
-`economy-model` · `difficulty-curve` · `prototype-report` · `ux-spec` · `hud-design`
-`interaction-pattern-library` · `level-design-document` · `accessibility-requirements`
-
-**전문 에이전트 렌즈**
-`game-designer` · `systems-designer` · `creative-director` · `economy-designer`
-`level-designer` · `ux-designer` · `accessibility-specialist` · `prototyper` · `live-ops-designer`
-
-**규칙/출처**
-`rule-design-docs` · `authoritative-sources`(MDA·SDT·Bartle 등 인용 기준) · `provenance`
-
-## 3. AI 네이티브 게임 설계 — `ai-native-game-design` (v0.2.0)
-`ai-native-game-design.md` · `ai-npc-design.md` — 런타임 AI가 개입하는 메카닉 설계 시 참조.
-
-## 4. UE 분석 하네스 — `narsha-adk` (v0.9.12, 40 스킬)
-> **주의:** 대부분 **UE C++/에디터 라이브** 전제라 UEFN에는 그대로 안 맞는다.
-> **개념 참고용**으로만: `ue-audit`·`ue-impact`·`ue-asset-discovery`·`ue-diff`·`ue-validate`·
-> `ue-plan-review`·`game-design-intelligence`. (UEFN 실행은 uefn-inspector로 대체)
-
-## 5. 프로세스 하네스 — `superpowers` (v5.0.7)
-`brainstorming`(설계 전 요구 정리) · `writing-plans` · `executing-plans` ·
-`test-driven-development` · `systematic-debugging` · `requesting-code-review` ·
-`verification-before-completion` · `dispatching-parallel-agents`
-→ **티켓 실행 규율**(TDD·검증)과 계획 수립에 사용.
-
-## 6. 기타
-- `elements-of-style` — 문서 문장 다듬기 (GDD/티켓 가독성)
-- `impeccable` — UI/시각 결과물 필요 시
-- `mattpocock-skills` — `diagnosing-bugs`·`tdd`·`domain-modeling`·`grilling`(설계 압박테스트)
-
----
-
-## 루프 단계 ↔ 하네스 매핑
+## 3. 루프 단계 ↔ 하네스
 | 단계 | 쓰는 것 |
 |---|---|
-| **spec 채우기(인테이크)** | game-design-skill `workflow-brainstorm` + `template-game-concept/pillars` → `spec/INTAKE.md` |
-| **시스템 분해** | `workflow-map-systems` → `spec/systems/` + `template-systems-index` |
-| **시스템 규칙 작성** | `workflow-design-system` + `template-game-design-document` |
-| **티켓 배분** | `DECOMPOSE.md`(이 kit) + superpowers `writing-plans` |
-| **구현** | uefn MCP(라이브) · uefn-inspector(오프라인 쓰기) · superpowers `TDD` |
-| **구조검증** | **uefn-inspector** (`loop/verify/structural.md`) |
-| **행동검증** | uefn `get_editor_log`+PIE · unreal-mcp BuildAll (`loop/verify/behavioral.md`) |
-| **밸런스·스코프 점검** | `workflow-balance-check` · `workflow-scope-check` |
-| **플레이테스트 반영** | `workflow-playtest-report` → `state/lessons.md` |
-| **설계 변경 전파** | `workflow-propagate-design-change` + `consistency-check` |
+| 인테이크 | game-design `brainstorm` + `game-concept`/`pillars` 템플릿 → `spec/INTAKE.md` |
+| 시스템 분해·규칙 | `map-systems` · `design-system` → `spec/systems/` |
+| 티켓 배분 | `plan/DECOMPOSE.md` + superpowers `writing-plans` |
+| 구현 | uefn MCP(라이브) · uefn-inspector(오프라인 쓰기) · superpowers TDD |
+| 구조검증 | uefn-inspector(`loop/verify/structural.md`) |
+| 행동검증 | uefn `get_editor_log` + PIE · unreal-mcp BuildAll(`loop/verify/behavioral.md`) |
+| 밸런스·스코프 | `balance-check` · `scope-check` |
+| 플레이테스트 반영·설계 변경 전파 | `playtest-report` → `state/lessons.md` · `propagate-design-change` |

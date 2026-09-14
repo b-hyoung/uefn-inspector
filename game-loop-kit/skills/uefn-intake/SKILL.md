@@ -25,7 +25,8 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
    가장 불확실한 층 · **팩 필수질문 4개**
 6. **Phase 4~6** — 기둥/안티기둥 · 플레이어/MVP · **티켓 해상도**
 7. **UEFN 실현가능성** ⭐ — `KIT/spec/UEFN-FEASIBILITY.md`로 핵심 메카닉 등급 판정.
-   🔴가 코어면 **기획을 바꾼다**(같은 재미, 다른 수단). 🟡은 대체 설계 확정, ⚫은 GUI 티켓.
+   🔴가 코어면 **기획을 바꾼다**(같은 재미, 다른 수단). 🟡은 대체 설계 확정, ⚫은 deferred 티켓(`capabilities`로 확인한 뒤에만).
+8. **마지막 질문 지점** — 여기와 ②DOR까지만 사람에게 묻는다. 착수 후 루프는 묻지 않고 끝까지 돈다(LOOP 규칙 0). 종료 보고에서 받고 싶은 정보를 지금 확인한다.
 
 ## 산출 (문서에 기록)
 `spec/FUN-DEPTH.md`(D-NN) → `spec/FUN-HYPOTHESIS.md`(H-NN, 지표는 팩에서 선별) →
