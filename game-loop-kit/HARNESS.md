@@ -20,7 +20,7 @@
 | uefn (KirChuvakov) | stdio → UEFN 리스너 :8765 | 라이브 조작 · `execute_python` · `get_editor_log`(행동검증) · 액터/에셋/뷰포트 |
 | unreal-mcp (Epic) | http :8000 | Verse 컴파일(BuildAll) · 고정 툴셋. 에디터 ON 필요 |
 | git | stdio | 티켓 단위 커밋 |
-| blender-assets (ahujasid Blender MCP :9876) | stdio | 자산 티켓 전용(루프 밖): PolyHaven CC0·Sketchfab·Hyper3D/Hunyuan3D 생성 → FBX/glTF → UEFN 반입. 경로 표 `loop/visual-options.md` T4 |
+| blender-assets (ahujasid Blender MCP :9876) | stdio | 자산 티켓 전용(루프 밖): PolyHaven CC0·Sketchfab·Hyper3D/Hunyuan3D 생성 → FBX/glTF → UEFN 반입. 경로 표 `loop/visual-options.md` T4. 전제조건은 DOR에서 `get_scene_info`·`get_polyhaven_status`·`get_sketchfab_status`·`get_hyper3d_status`로 실행 확인 |
 
 ## 1.5 오프라인으로 되는 것 — uefn-inspector를 쓰는 이유
 라이브 MCP·에디터 Python 리플렉션이 못 하는 것이다. 최종 판단은 `capabilities`.
@@ -35,7 +35,7 @@
 | 새 @editable 슬롯 추가 | `edit.add_binding.add_binding` | ❌ | ⚠️ 크기변경, UEFN 수용 미검증 |
 | 선언↔배선 교차검증 | `analysis.verse_source.cross_reference` | ❌ | ✅ |
 | 인벤토리·검색·역참조·영향 | `inspect_level` · `find` · `who_uses` · `audit` | 크로스파일 ❌ | ✅ |
-| 공간 분석 | `analysis.spatial.*` | ❌ | ✅ |
+| 공간 분석 · **레벨 평면도·구역표**(구조 설명서) | `level_map` · `analysis.spatial.ascii_map` | ❌ | ✅ |
 | 비주얼 census(머티리얼·메시 사용량, 그레이박스 비율) | `analysis.analyze.material_usage` · `mesh_usage` | ❌ | ✅ (세션 유효성은 라이브 StartSession만 판정) |
 | 엔진 디바이스 카탈로그 | `engine_devices` | ❌ | ✅ 로컬 생성 시(`cue4parse_cli/README.md`) |
 

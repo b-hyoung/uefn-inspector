@@ -25,7 +25,8 @@ from uefn_inspector.capabilities import probe as _probe  # noqa: E402
 from uefn_inspector.cli import run  # noqa: E402
 from uefn_inspector.analysis.engine_catalog import search_engine_devices  # noqa: E402
 from uefn_inspector.model.index import build_index  # noqa: E402
-from uefn_inspector.level import audit_level  # noqa: E402
+from uefn_inspector.level import audit_level, inspect_level as _inspect_level  # noqa: E402
+from uefn_inspector.analysis.spatial import ascii_map, spatial_extent  # noqa: E402
 from uefn_inspector.core.properties import decode_properties  # noqa: E402
 from uefn_inspector.analysis.query import search, where_used  # noqa: E402
 from uefn_inspector.core.uasset import read_package  # noqa: E402
@@ -79,6 +80,43 @@ def audit(path: str) -> dict:
     """OFFLINE health summary of a level from its files: device counts, duplicate
     actor names, leftover/orphan actors, warnings. Safe while the editor is open."""
     return audit_level(path)
+
+
+@mcp.tool()
+def level_map(path: str, cell: float = 500.0) -> dict:
+    """OFFLINE. Top-down text map + zone table of a level directory, so the
+    structure can be EXPLAINED, not just listed: which classes sit where
+    (centroid, x/y range, count), overall extent, unplaced actors, and a
+    `brief_template` for levels/LEVEL-X/build.md (theme / zones / flow /
+    screenshots). Required by ticket 1 acceptance (structure brief). `cell` =
+    map cell size in cm (500 = 5 m)."""
+    lvl = _inspect_level(path)
+    placed = [(a.device_class or "?", tuple(a.location)) for a in lvl.actors if a.location]
+    out = ascii_map(placed, cell=cell)
+    by_class: dict[str, list[tuple]] = {}
+    for cls, loc in placed:
+        by_class.setdefault(cls, []).append(loc)
+    zones = []
+    for cls, locs in sorted(by_class.items(), key=lambda kv: -len(kv[1])):
+        n = len(locs)
+        xs, ys, zs = [l[0] for l in locs], [l[1] for l in locs], [l[2] for l in locs]
+        zones.append({"class": cls, "count": n,
+                      "centroid": (sum(xs) / n, sum(ys) / n, sum(zs) / n),
+                      "x_range": (min(xs), max(xs)), "y_range": (min(ys), max(ys))})
+    return {
+        "level": lvl.name, "actors": len(lvl.actors), "placed": len(placed),
+        "unplaced": [f"{a.device_class} {a.name}".strip() for a in lvl.actors if not a.location],
+        "extent": spatial_extent([loc for _, loc in placed]),
+        "map": out["map"], "legend": out["legend"], "cell": out["cell"], "bounds": out["bounds"],
+        "zones": zones,
+        "brief_template": {
+            "theme": "1 line: what this place is (backstage, flooded factory...) and its palette",
+            "zones": "one row per zone: name / purpose (goal, danger, route, safe, boundary) / map symbol / assets used",
+            "flow": "spawn -> first decision -> goal -> exit, in map coordinates; where the tension peaks",
+            "screenshots": "3 viewport shots: spawn view, goal view, top-down; under levels/LEVEL-X/visual/",
+        },
+        "warnings": lvl.warnings,
+    }
 
 
 @mcp.tool()

@@ -33,3 +33,4 @@ def test_density_grid_buckets():
 def test_property_census_on_level():
     c = property_census(build_index(LEVEL_DIR))
     assert c.get("RelativeLocation", 0) > 0
+
