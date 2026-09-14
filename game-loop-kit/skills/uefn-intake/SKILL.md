@@ -10,7 +10,19 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
 
 **KIT** = `C:\Users\ACE\Desktop\bobs_project\uefn-inspector\game-loop-kit`
 
-시작 전에 **반드시 읽는다**: `KIT/spec/UEFN-DESIGN-SPACE.md`(UEFN이 잘 만드는 형태·시스템) · `KIT/spec/INTAKE.md`(질문지) · `KIT/spec/GENRE-PACKS.md`(장르 분기)
+시작 전에 **반드시 읽는다**: `KIT/spec/PLANNING-LOOP.md`(라운드·필수 스킬·종료 조건) · `KIT/spec/UEFN-DESIGN-SPACE.md` · `KIT/spec/INTAKE.md` · `KIT/spec/GENRE-PACKS.md` · `KIT/spec/PERSONAS.md`
+
+## 실행 방식 — 라운드제, 필수 스킬
+인테이크는 한 번 훑는 질문지가 아니라 `PLANNING-LOOP.md`의 R0~R7을 도는 루프다. 라운드에 들어가면 **"Using <스킬> to <목적>"** 을 선언하고 그 스킬을 그대로 따른다.
+| R | 스킬 | AI의 일 |
+|---|---|---|
+| 0 | `mattpocock-skills:domain-modeling` · `mattpocock-skills:research` | 용어집 `CONTEXT.md` · 참조 섬 3~5개 조사 |
+| 1 | `superpowers:brainstorming` → `mattpocock-skills:grilling` | 형태 1개·비틀기 1개·왜 UEFN인가 → GDD §0 |
+| 2·3·4 | `mattpocock-skills:grilling`(+3은 `domain-modeling`) | 재미 깊이 / 규칙·수치(경계값·동시발생·이탈·근거) / 맵 |
+| 5 | AI 단독 (`flow.md` · `PERSONAS.md`) | 플로우 표 F1~F16 · 페르소나 15판 |
+| 6 | `uefn-review` | 전면공격 B-0~B-9, 3회 연속 Blocker 0 |
+| 7 | AI 단독 | 불확실성 두 목록 · 한 페이지 요약 · 종료 조건 |
+grilling 형식(프론티어 질문 전부 + 번호 + 추천 답)이 결정 카드다. 답은 `DECISIONS.md`에 ADR로 남긴다. 아래 Phase 순서는 R1~R4 안에서 묻는 내용이다.
 
 ## 실행 순서
 
@@ -41,4 +53,5 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
 - 장르 관습을 **값으로 가정하지 않는다**(질문의 안내자일 뿐).
 - **디테일은 형태 안에서 판다.** 형태와 비틀기가 정해진 뒤에야 팩 필수 질문·깊이 파기를 던진다. 형태 없이 "무슨 게임 만들래"로 시작하지 않는다.
 - 끝에 **네이티브 지수**(DESIGN-SPACE §4: 스톡 디바이스 비율 ≥70%, 파이프라인 개조 0, 표 안 형태, 왜 UEFN인가)를 계산해 GDD §0에 적는다.
-- 끝나면 `spec/DOR.md`로 착수 가능 여부를 점검한다.
+- 종료는 `PLANNING-LOOP.md` 종료 조건 5개가 전부 참일 때만. 그 뒤 `spec/DOR.md`.
+- 시간 상한 없음. 라운드 수·시간은 `state/session-log.md`에 적는다. 종이로 답할 수 있는 것을 빌드로 미루지 않는다.

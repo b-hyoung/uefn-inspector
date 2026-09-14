@@ -53,4 +53,4 @@ B-3 측정 · B-4 실험(축 2개 변경·표본·인과) · B-5 스코프.
 - 모든 지적은 **구체적 실패 시나리오**로 ("밸런스 이상" ❌ / "A만 쓰면 B가 무의미" ⭕).
 - 근거 없는 수치·관습 금지. 모르면 **"측정 필요"**.
 - **고치지 않는다** — 발견·등급만. 수정은 루프의 일.
-- 깊은 심문이 필요하면 `mattpocock-skills:grilling`(design tree·frontier·라운드) 방식 사용.
+- 깊은 심문이 필요하면 `mattpocock-skills:grilling`(design tree·frontier·라운드)을 호출한다(설치 확인 2026-09-14). 기획 루프 R6에서는 이 스킬이 리뷰어이고, Blocker는 `PLANNING-LOOP.md` 되돌아가기 표대로 라운드로 복귀시킨다.
