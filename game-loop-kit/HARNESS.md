@@ -20,6 +20,7 @@
 | uefn (KirChuvakov) | stdio → UEFN 리스너 :8765 | 라이브 조작 · `execute_python` · `get_editor_log`(행동검증) · 액터/에셋/뷰포트 |
 | unreal-mcp (Epic) | http :8000 | Verse 컴파일(BuildAll) · 고정 툴셋. 에디터 ON 필요 |
 | git | stdio | 티켓 단위 커밋 |
+| blender-assets (ahujasid Blender MCP :9876) | stdio | 자산 티켓 전용(루프 밖): PolyHaven CC0·Sketchfab·Hyper3D/Hunyuan3D 생성 → FBX/glTF → UEFN 반입. 경로 표 `loop/visual-options.md` T4 |
 
 ## 1.5 오프라인으로 되는 것 — uefn-inspector를 쓰는 이유
 라이브 MCP·에디터 Python 리플렉션이 못 하는 것이다. 최종 판단은 `capabilities`.
