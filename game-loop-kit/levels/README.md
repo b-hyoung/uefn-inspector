@@ -4,7 +4,7 @@
 
 ```
 LEVEL-A/
-  build.md      이 레벨의 구성(공간·규칙 설정값) + 빌드 상태
+  build.md      이 레벨의 구성(공간·규칙 설정값·비주얼 census) + 빌드 상태
   autoplay.md   자동 실행 기록(사람 없음)
   metrics.md    자동 지표 수집 결과(Verse 로그 파싱)
 ```

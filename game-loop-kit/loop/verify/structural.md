@@ -30,6 +30,19 @@ assert xref["unwired"] == []   # 선언됐는데 미배선인 슬롯 = 버그
 ### 5) 참조/무결성
 `who_uses(path, 에셋)` · `audit(레벨)` → 깨진 참조·중복·경고.
 
+### 6) 비주얼 census (규칙 8) ⭐
+```python
+from uefn_inspector.model.index import build_index
+from uefn_inspector.analysis.analyze import material_usage, mesh_usage
+idx = build_index("<레벨 디렉터리>")
+mats, meshes = material_usage(idx), mesh_usage(idx)      # {에셋: [쓰는 액터...]}
+default = [m for m in mats if m.endswith(("WorldGridMaterial", "M_Basic_Wall", "M_Basic_Floor"))]
+cube = [m for m in meshes if m.endswith("/S_Cube")]
+share = sum(len(meshes[m]) for m in cube) / max(1, sum(map(len, meshes.values())))
+assert share <= 0.20 and len(mats) >= 6 and len(meshes) >= 8, (share, len(mats), len(meshes))
+```
+기본값(20%·6·8)은 예시이며 `spec/GDD.md §0`에서 게임별로 확정한다. 세션 유효성은 오프라인으로 못 잰다 → 라이브 StartSession 결과(Disallowed reference 0)를 `levels/LEVEL-X/build.md`에 기록.
+
 ## 수용 판정
 티켓의 **구조 수용** 항목을 위 레시피 결과와 대조 → 전부 일치해야 통과.
 불일치 = 구현 수정 후 재검증(에디터 OFF 상태 유지).

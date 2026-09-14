@@ -18,7 +18,14 @@
 - @editable 배선: \<slot -> target\>
 - 설정값: \<...\>
 
+## 비주얼 (규칙 8 — 기존 자산으로)
+- 사용 갤러리/폴더: \<예: /Game/Playgrounds/Items/Props\>
+- 고유 머티리얼 / 고유 메시 / S_Cube 비율: \<n / n / n%\>
+- 기능 요소 시각 구별(목표·위험·경로·안전): \<무엇을 무엇으로\>
+- StartSession 결과: \<통과 / Disallowed 목록\>
+
 ## 빌드 체크
+- [ ] 비주얼 census 통과 + StartSession 통과
 - [ ] 구조검증 통과 (inspect_level / editable_bindings / 교차검증)
 - [ ] Verse 컴파일 통과
 - [ ] 측정 로그 심어짐 (metrics.md 지표별)
