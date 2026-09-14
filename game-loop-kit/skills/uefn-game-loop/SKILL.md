@@ -21,9 +21,9 @@ description: Run the whole UEFN game loop end-to-end — intake (what game / whe
 ①인테이크 → ②DOR게이트 → ③분해 → ④레벨×4 → ⑤판정 → (기각/애매/무효 시 해당 지점으로 복귀)
 ```
 
-### ① 인테이크  📄 `spec/INTAKE.md` · `spec/GENRE-PACKS.md`
-사람 → 컨셉 → 형태 적합성(0단계) → 장르팩 → 코어루프 → 깊이 파기 → 팩 질문 → 기둥·MVP·티켓 해상도.
-- 형태 먼저 판정한다. 🟡(2D·턴제·카드·리듬)은 UEFN식 번역 확정 후 진행, 🔴(RTS·클릭커·대규모)은 사용자 결정.
+### ① 인테이크  📄 `spec/UEFN-DESIGN-SPACE.md` · `spec/INTAKE.md` · `spec/GENRE-PACKS.md`
+사람 → **형태 1개 + 비틀기 1개(DESIGN-SPACE 표 안에서)** → 컨셉 → 장르팩 → 코어루프 → 깊이 파기 → 팩 질문 → 기둥·MVP·티켓 해상도 → 네이티브 지수.
+- 코어 형태는 DESIGN-SPACE §2 표에서만 고른다. 표 밖(2D·턴제·RTS·클릭커)은 연출 요소로만 허용하고 흉내 비용을 말한다.
 - 한 번에 하나씩 대화한다. 중층(판단)·심층(숙련)이 없으면 되묻는다.
 - 산출: `FUN-DEPTH.md` D-NN → `FUN-HYPOTHESIS.md` H-NN(지표·판정식·반증조건) → `GDD`·`systems`·`assets`.
 
