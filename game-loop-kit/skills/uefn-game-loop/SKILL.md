@@ -14,7 +14,7 @@ description: Run the whole UEFN game loop end-to-end — intake (what game / whe
 - 파괴적 작업(원본 덮기·삭제·기본자산 변경)과 새 외부 의존성 설치는 실행하지 않고 deferred로 기록한 뒤 우회한다.
 - 행동검증 3회 실패는 해당 레벨을 `무효`로 표시하고 다음 레벨로 간다. GUI 전용으로 보이는 작업은 `capabilities` 확인 후에만 deferred로 둔다.
 - 종료 후 보고 순서: 결과 → deferred 목록(우선순위·가정·되돌리는 법) → 질문. 질문은 이때 한 번에 한다.
-- 조기 종료는 루프를 더 돌릴 수 없는 하드 실패(에디터 복구 불가, 4레벨 타임박스 소진)뿐이며, 그 경우도 질문이 아니라 종료 보고다.
+- 환경 장애(로그아웃 `Play command not available`·런처 재기동·프리즈·MCP 도구 소실)는 `loop/recover.md`대로 자동 복구한다. 조기 종료는 하드 실패(같은 복구 절차 2회 연속 실패, 4레벨 타임박스 소진)뿐이며, 그 경우도 질문이 아니라 종료 보고다.
 
 ## THE LOOP
 ```

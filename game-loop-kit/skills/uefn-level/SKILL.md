@@ -10,7 +10,7 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 
 **KIT** = `C:\Users\ACE\Desktop\bobs_project\uefn-inspector\game-loop-kit`
 
-읽는다: `KIT/loop/LOOP.md` · `KIT/loop/TIMEBOX.md` · `KIT/loop/visual.md` · `KIT/loop/visual-options.md` · `KIT/loop/verify/*.md`
+읽는다: `KIT/loop/LOOP.md` · `KIT/loop/TIMEBOX.md` · `KIT/loop/visual.md` · `KIT/loop/visual-options.md` · `KIT/loop/recover.md` · `KIT/loop/verify/*.md`
 
 ## 착수 전
 - **`spec/DOR.md` 통과 확인** (특히 **판단 가능성**: 지표가 재미있는/없는 플레이를 구별하나)
