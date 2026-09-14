@@ -48,23 +48,24 @@
 - 분담 한 줄: 배치·트랜스폼·BuildAll·PIE·로그 = 라이브 / Verse-VM 값·@editable 배선 = 오프라인.
 - 라이브 쪽 장애(로그아웃·런처·프리즈·도구 소실)는 `loop/recover.md`. 세션 전과 60분마다 `is_valkyrie_logged_in()` 확인.
 
-## 2. 설계·프로세스 하네스
-| 하네스 | 용도 | 쓰는 것 |
-|---|---|---|
-| `game-design-skill` v0.3.0 (Claude Code Game Studios, MIT) | INTAKE/GDD/시스템 문서의 근거 | `brainstorm` · `map-systems` · `design-system` · `design-review` · `balance-check` · `scope-check` · `playtest-report` · `propagate-design-change` · 템플릿 `game-concept`·`game-pillars`·`systems-index`·`game-design-document` |
-| `ai-native-game-design` v0.2.0 | 런타임 AI 개입 메카닉 | `ai-native-game-design.md` · `ai-npc-design.md` |
-| `narsha-adk` v0.9.12 | 개념 참고만(UE C++/라이브 전제) | `ue-audit` · `ue-impact` · `ue-diff` · `ue-validate` · `ue-plan-review` |
-| `superpowers` v5.0.7 | 티켓 실행 규율 | `brainstorming` · `writing-plans` · `executing-plans` · `test-driven-development` · `systematic-debugging` · `verification-before-completion` |
-| 기타 | — | `elements-of-style`(문서) · `impeccable`(UI) · `mattpocock-skills:grilling`(설계 심문) |
+## 2. 설계·프로세스 하네스 (설치 실측 2026-09-14, 이 PC)
+| 하네스 | 설치 | 기획 루프에서 필수인 스킬 | 그 외 |
+|---|---|---|---|
+| `mattpocock-skills` 1.2.3 (claude-plugins-official) | ✅ | `grilling`(R1~R4 결정 카드) · `domain-modeling`(R0·R3 용어집·ADR) · `research`(R0 참조 조사) | 사용자 진입점 `/grill-me` · `/to-questionnaire` · `/to-spec` · `/to-tickets`(모델 자동 호출 불가) · `prototype` · `tdd` · `code-review` |
+| `superpowers` 6.3.0 | ✅ | `brainstorming`(R1) · `writing-plans`(③ 분해) | `executing-plans` · `test-driven-development` · `systematic-debugging` · `verification-before-completion` |
+| 이 kit `uefn-*` | ✅ | `uefn-review`(R6 · 티켓·레벨 리뷰) | `uefn-intake` · `uefn-level` · `uefn-game-loop` |
+| `narsha-adk` 0.13.7 | ✅ | — | `game-design-intelligence`·`gameplay-flow-doc`는 NarshaMCP + UE C++ 프로젝트 전용 → UEFN에 안 맞음. 개념 참고만 |
+| `game-design-skill` (Claude Code Game Studios) · `ai-native-game-design` | ❌ 미설치(다른 PC 기록) | — | 필수로 걸지 않는다. 설치되면 R1·R3 보조로 검토 |
+| `impeccable` 4.0.4 · `codex` | ✅ | — | UI 결과물 · 2차 진단 |
 
 ## 3. 루프 단계 ↔ 하네스
 | 단계 | 쓰는 것 |
 |---|---|
-| 인테이크 | game-design `brainstorm` + `game-concept`/`pillars` 템플릿 → `spec/INTAKE.md` |
-| 시스템 분해·규칙 | `map-systems` · `design-system` → `spec/systems/` |
+| 인테이크(기획 루프) | `spec/PLANNING-LOOP.md` R0~R7: `domain-modeling`·`research` → `brainstorming`·`grilling` → `uefn-review` |
+| 시스템 분해·규칙 | R3 `grilling` + `domain-modeling`(ADR) → `spec/systems/` · `DECISIONS.md` |
 | 티켓 배분 | `plan/DECOMPOSE.md` + superpowers `writing-plans` |
 | 구현 | uefn MCP(라이브) · uefn-inspector(오프라인 쓰기) · superpowers TDD |
 | 구조검증 | uefn-inspector(`loop/verify/structural.md`) |
 | 행동검증 | uefn `get_editor_log` + PIE · unreal-mcp BuildAll(`loop/verify/behavioral.md`) |
-| 밸런스·스코프 | `balance-check` · `scope-check` |
-| 플레이테스트 반영·설계 변경 전파 | `playtest-report` → `state/lessons.md` · `propagate-design-change` |
+| 밸런스·스코프 | R5 페르소나 극단값 판(`PERSONAS.md`) · B-5 스코프 공격 |
+| 플레이테스트 반영·설계 변경 전파 | `flow-report.md` → `state/lessons.md` · 스펙 변경은 `DECISIONS.md` 철회 카드 + 영향 티켓 재작성 |

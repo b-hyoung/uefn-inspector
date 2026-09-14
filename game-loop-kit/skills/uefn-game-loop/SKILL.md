@@ -21,7 +21,8 @@ description: Run the whole UEFN game loop end-to-end — intake (what game / whe
 ①인테이크 → ②DOR게이트 → ③분해 → ④레벨×4 → ⑤판정 → (기각/애매/무효 시 해당 지점으로 복귀)
 ```
 
-### ① 인테이크  📄 `spec/UEFN-DESIGN-SPACE.md` · `spec/INTAKE.md` · `spec/GENRE-PACKS.md`
+### ① 인테이크 = 기획 루프  📄 `spec/PLANNING-LOOP.md`(R0~R7·필수 스킬·종료 조건) · `spec/UEFN-DESIGN-SPACE.md` · `spec/INTAKE.md` · `spec/GENRE-PACKS.md`
+라운드제. 시간 상한 없음, 종료는 조건으로만(종이 질문 0 · 전면공격 3회 연속 Blocker 0 · 미결 카드 0 · 페르소나 15판 · 사용자 확인). 라운드마다 필수 스킬을 선언하고 따른다(`grilling`·`domain-modeling`·`research`·`brainstorming`·`uefn-review`). 유일하게 사용자에게 묻는 구간이며 결정 카드로만 묻는다.
 사람 → **형태 1개 + 비틀기 1개(DESIGN-SPACE 표 안에서)** → 컨셉 → 장르팩 → 코어루프 → 깊이 파기 → 팩 질문 → **맵 인테이크(`MAP-INTAKE.md`) → 플로우 검증(`loop/verify/flow.md`, fail 0)** → 기둥·MVP·티켓 해상도 → 네이티브 지수.
 - 코어 형태는 DESIGN-SPACE §2 표에서만 고른다. 표 밖(2D·턴제·RTS·클릭커)은 연출 요소로만 허용하고 흉내 비용을 말한다.
 - 한 번에 하나씩 대화한다. 중층(판단)·심층(숙련)이 없으면 되묻는다.
