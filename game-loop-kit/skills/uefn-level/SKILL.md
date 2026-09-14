@@ -31,12 +31,13 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 → **빠른 공격 3문항**(`loop/review/ADVERSARIAL.md` A절) → 통과해야 `done`
 
 ## 절대 규칙
+- **규칙 0 — 무정지.** 이 스킬은 DOR 통과 이후의 작업이므로 사람에게 묻지 않고 끝까지 간다. 막히면 `state/deferred.md`에 기록(무엇·왜·가정·영향)하고 보수적 가정으로 진행하거나 그 티켓만 `deferred`로 두고 다음 티켓으로. 파괴적 작업·새 의존성은 실행하지 않고 deferred. 질문은 레벨 보고 끝에 한 번에.
 - **측정(티켓 3·4)은 못 뺀다.** 시간 부족하면 공간 디테일부터 컷. 측정 없으면 이 레벨은 무효.
-- 구간 3·4 초과 → **즉시 정지게이트**.
+- 구간 3·4 초과가 예비까지 소진하면 → 레벨 `무효` 표시 후 다음 레벨(사람 호출 없음).
 - **오프라인 쓰기는 UEFN 닫고**(파일 잠금). 표준 배치/값은 라이브 MCP로 열어둔 채.
 - **@editable 배선은 오프라인으로 한다** — MCP `bind_editable(디바이스파일, 슬롯, 액터파일)`(UEFN 닫고).
   라이브 MCP가 거부("not valid ScriptDevice" 등)해도 **GUI 전용이라고 결론내리지 않는다** → `capabilities` 호출 → 오프라인 경로.
-  퍼블리시 수용만 미검증이므로 사본·`.bak` 유지. `capabilities`에도 없을 때만 `blocked` + 정지게이트.
+  퍼블리시 수용만 미검증이므로 사본·`.bak` 유지. `capabilities`에도 없을 때만 `deferred`(멈추지 않고 다음 티켓).
 - **자동 구동 모드**(봇/시뮬)가 없으면 **A레벨에서 먼저 구축** — 없으면 무인 루프가 안 돈다.
 - 한 레벨에서 **축 두 개 이상 바꾸지 않는다**.
 
