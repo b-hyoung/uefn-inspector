@@ -15,14 +15,15 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 ## 착수 전
 - **`spec/DOR.md` 통과 확인** (특히 **판단 가능성**: 지표가 재미있는/없는 플레이를 구별하나)
 - 이 레벨이 바꾸는 **축 하나** 확인 (A대조/B구조/C규칙/D인원) → `levels/LEVEL-X/build.md`
+- `spec/MAP.md` 구역표·동선을 `build.md` 구조 절에 옮겨 적고 시작한다(뼈대는 이 표를 좌표로 옮기는 작업이다)
 
 ## 티켓 4종 · 3시간 배분
 | # | 티켓 | 예산 | 통과 기준 |
 |---|---|---|---|
-| 1 | 레벨 뼈대(공간·배치) | 30분 | `inspect_level` 기대 디바이스·개수 + **구조 설명서**(`level_map` 평면도·구역표·동선·스크린샷 3장, `build.md` 구조 절). 설명서 없으면 `done` 불가. `design_lint` 뼈대 기준(verticality·occupancy·function_elements) fail 0 |
+| 1 | 레벨 뼈대(공간·배치) | 30분 | `inspect_level` 기대 디바이스·개수 + **구조 설명서**(`level_map` 평면도·구역표·동선·스크린샷 3장, `build.md` 구조 절). 설명서 없으면 `done` 불가. `design_lint` 뼈대 기준(verticality·occupancy·function_elements) fail 0. **플로우 검증 ②**(`loop/verify/flow.md`, 자리를 `level_map` 좌표로, F7 실측) fail 0 |
 | 1.5 | **비주얼 드레싱**(기존 머티리얼·프롭, 절차 `loop/visual.md`) | 30분 | `design_lint` **fail 0**(그레이박스 ≤20% · 메시 ≥8 · 머티리얼 ≥6 · 출처 폴더 ≥1 · 한 메시 ≤50% · 판 ≤30% · 회전 이탈 ≥10% · 광원 ≥1) · 기능 요소(목표·위험·경로·안전) 시각 구별 · StartSession 통과(Disallowed 0) |
 | 2 | 메카닉 배선 | 35분 | `editable_bindings` **미배선 0** · 설정=변주조건 |
-| 3 | 측정 로그 심기 | 30분 | PIE 로그에 지표별 `[M]` 라인 **전부** 출력 |
+| 3 | 측정 로그 심기 | 30분 | PIE 로그에 지표별 `[M]` 라인 **전부** 출력 + 단계 태그(`step=Sn`)·만남 이벤트(`meet=`) — 없으면 플로우 리포트 불가 |
 | 4 | 자동 실행·집계 | 30분 | N회 실행 → `metrics.md` 채워짐 |
 | 5 | 적대적 빠른공격 ×4 + 전면 ×1 | 20분 | Blocker 0 |
 | — | 예비 | 5분 | |
@@ -51,5 +52,6 @@ description: Build one UEFN variation level inside the 3-hour timebox — skelet
 라이브 실패 → `capabilities` → 오프라인 → 그래도 없을 때만 GUI.
 
 ## 끝나면
+- **플로우 리포트** `levels/LEVEL-X/flow-report.md`(`loop/verify/flow.md` §6): 실제 플로우 vs 계획, 만남, 줄별 재미를 로그 근거로 설명. 설명 안 되는 줄 = 재미 공백 → 수정 티켓 → 재실행(2회째도 공백이면 레벨 무효). 이게 없으면 레벨 `done` 아님.
 `levels/LEVEL-X/{build,autoplay,metrics}.md` 갱신 · `state/session-log.md`에 시간 기록 ·
 Task 완료 시 **전면 공격**(B-0 판단가능성부터) → 4레벨 다 되면 `experiments/EXP-NN-results.md` 비교

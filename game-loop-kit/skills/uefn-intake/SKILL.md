@@ -22,6 +22,8 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
 4. **Phase 3 코어 루프** — 30초/5분/세션/진행 각각의 **재미 원천**
 5. **Phase 3.5 깊이 파기** ⭐ — 4층(감각→**판단**→**숙련**→이야기) · 긴장 대립쌍 · 실패모드 ·
    가장 불확실한 층 · **팩 필수질문 4개**
+5.5. **Phase 3.7 맵 인테이크** ⭐ — `KIT/spec/MAP-INTAKE.md`: 구역 5종·첫 결정 지점·긴장 최고점 자리·순환/수직·랜드마크·시야·스폰 기하·경계·구조 축 변수 + 팩별 질문 → `spec/MAP.md`. 답마다 "이 자리를 쓰는 규칙"을 붙인다.
+5.7. **플로우 검증** ⭐ — `KIT/loop/verify/flow.md`: 맵 구역 × 규칙 × 플레이어 플로우 표(S0 스폰 → 첫 결정 → 긴장 최고점 → 목표 → 종료)를 채우고 F1~F10 대조. fail 0이어야 DOR.
 6. **Phase 4~6** — 기둥/안티기둥 · 플레이어/MVP · **티켓 해상도**
 7. **UEFN 실현가능성** ⭐ — `KIT/spec/UEFN-FEASIBILITY.md`로 핵심 메카닉 등급 판정.
    🔴가 코어면 **기획을 바꾼다**(같은 재미, 다른 수단). 🟡은 대체 설계 확정, ⚫은 deferred 티켓(`capabilities`로 확인한 뒤에만).
@@ -29,7 +31,7 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
 
 ## 산출 (문서에 기록)
 `spec/FUN-DEPTH.md`(D-NN) → `spec/FUN-HYPOTHESIS.md`(H-NN, 지표는 팩에서 선별) →
-`spec/GDD.md`·`spec/systems/`·`spec/assets.md` → 그다음 `plan/DECOMPOSE.md`로 배분
+`spec/GDD.md`·`spec/systems/`·`spec/assets.md` · `spec/MAP.md`(플로우 매트릭스 포함) → 그다음 `plan/DECOMPOSE.md`로 배분
 
 ## 규율
 - **한 번에 하나씩** 대화로. 체크리스트 낭독 금지.
