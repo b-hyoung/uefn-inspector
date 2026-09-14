@@ -22,6 +22,15 @@ def test_mcp_server_registers_expected_tools():
             "editable_bindings", "engine_devices", "bind_editable"} <= tools
 
 
+def test_mcp_server_ships_offline_first_instructions():
+    """The leash: the host injects `instructions` into every session's system
+    prompt, so it must name the gate (`capabilities`) and the write tool."""
+    mod = _load_server()
+    text = mod.mcp.instructions
+    assert text and "capabilities" in text and "bind_editable" in text
+    assert "GUI only" in text and "not valid ScriptDevice" in text
+
+
 def _layout(tmp_path):
     dev = tmp_path / "Proj/Content/__ExternalActors__/MyProject/0/AA/DEV.uasset"
     light = tmp_path / "Proj/Content/__ExternalActors__/MyProject/0/EC/LIGHTPKG.uasset"
