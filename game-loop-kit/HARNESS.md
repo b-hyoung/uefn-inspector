@@ -51,7 +51,7 @@
 ## 2. 설계·프로세스 하네스 (설치 실측 2026-09-14, 이 PC)
 | 하네스 | 설치 | 기획 루프에서 필수인 스킬 | 그 외 |
 |---|---|---|---|
-| `mattpocock-skills` 1.2.3 (claude-plugins-official) | ✅ | `grilling`(R1~R4 결정 카드) · `domain-modeling`(R0·R3 용어집·ADR) · `research`(R0 참조 조사) | 사용자 진입점 `/grill-me` · `/to-questionnaire` · `/to-spec` · `/to-tickets`(모델 자동 호출 불가) · `prototype` · `tdd` · `code-review` |
+| `mattpocock-skills` 1.2.3 (claude-plugins-official) | ✅ | `grilling`(R1~R4 결정 카드) · `domain-modeling`(R0·R3 용어집·ADR) · `research`(R0 참조 조사) | AI가 호출한다(사용자는 `/uefn-game-loop` 한 번). `/grill-me` 등 사용자 전용 슬래시는 절차에 넣지 않음 · `prototype` · `tdd` · `code-review` |
 | `superpowers` 6.3.0 | ✅ | `brainstorming`(R1) · `writing-plans`(③ 분해) | `executing-plans` · `test-driven-development` · `systematic-debugging` · `verification-before-completion` |
 | 이 kit `uefn-*` | ✅ | `uefn-review`(R6 · 티켓·레벨 리뷰) | `uefn-intake` · `uefn-level` · `uefn-game-loop` |
 | `narsha-adk` 0.13.7 | ✅ | — | `game-design-intelligence`·`gameplay-flow-doc`는 NarshaMCP + UE C++ 프로젝트 전용 → UEFN에 안 맞음. 개념 참고만 |
