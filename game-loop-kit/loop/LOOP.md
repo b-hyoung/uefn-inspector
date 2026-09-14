@@ -35,7 +35,7 @@
 2. 설계 — 수용기준을 보고 Verse 코드 + 디바이스 배치/배선 결정.
 3. 구현 — Verse: `verse/<file>.verse`. 디바이스: 표준 배치·값은 라이브 MCP, Verse-VM 값·@editable 배선은 uefn-inspector 오프라인(에디터 OFF, 백업). 배선은 `bind_editable`.
 3.5. 비주얼 — `loop/visual.md` 순서대로(의도→자산 조사→세션 유효성 스파이크→드레싱→조명→검증). 그레이박스는 뼈대 단계까지만. 수용은 비주얼 census + StartSession 통과.
-4. 구조검증 — uefn-inspector(에디터 OFF). 배치·배선·설정이 수용기준과 일치하는지, 선언↔배선 교차검증. 레시피 `loop/verify/structural.md`.
+4. 구조검증 — uefn-inspector(에디터 OFF). 뼈대·비주얼 티켓 뒤에는 `design_lint`(`structural.md` 8)도 돌린다. fail이 있으면 `done` 불가. 배치·배선·설정이 수용기준과 일치하는지, 선언↔배선 교차검증. 레시피 `loop/verify/structural.md`.
 5. 행동검증 — BuildAll → PIE → `get_editor_log`. 레시피 `loop/verify/behavioral.md`.
 6. 적대적 빠른공격 — `loop/review/ADVERSARIAL.md` A절 3문항. Blocker면 `done` 불가.
 7. 완료 — 셋 다 통과 → `done` → 롤업 → `SNAPSHOT` 갱신 → 다음 티켓. Task 완료 시 전면공격 1회.

@@ -36,6 +36,7 @@
 | 선언↔배선 교차검증 | `analysis.verse_source.cross_reference` | ❌ | ✅ |
 | 인벤토리·검색·역참조·영향 | `inspect_level` · `find` · `who_uses` · `audit` | 크로스파일 ❌ | ✅ |
 | 공간 분석 · **레벨 평면도·구역표**(구조 설명서) | `level_map` · `analysis.spatial.ascii_map` | ❌ | ✅ |
+| **디자인 린트**(그레이박스·자산 다양성·출처·높이·점유·판·회전·광원) | `design_lint` · `analysis.design_lint` | ❌ | ✅ 중간 점검용 |
 | 비주얼 census(머티리얼·메시 사용량, 그레이박스 비율) | `analysis.analyze.material_usage` · `mesh_usage` | ❌ | ✅ (세션 유효성은 라이브 StartSession만 판정) |
 | 엔진 디바이스 카탈로그 | `engine_devices` | ❌ | ✅ 로컬 생성 시(`cue4parse_cli/README.md`) |
 

@@ -27,6 +27,7 @@ from uefn_inspector.analysis.engine_catalog import search_engine_devices  # noqa
 from uefn_inspector.model.index import build_index  # noqa: E402
 from uefn_inspector.level import audit_level, inspect_level as _inspect_level  # noqa: E402
 from uefn_inspector.analysis.spatial import ascii_map, spatial_extent  # noqa: E402
+from uefn_inspector.analysis.design_lint import design_lint as _design_lint  # noqa: E402
 from uefn_inspector.core.properties import decode_properties  # noqa: E402
 from uefn_inspector.analysis.query import search, where_used  # noqa: E402
 from uefn_inspector.core.uasset import read_package  # noqa: E402
@@ -117,6 +118,19 @@ def level_map(path: str, cell: float = 500.0) -> dict:
         },
         "warnings": lvl.warnings,
     }
+
+
+@mcp.tool()
+def design_lint(path: str, profile: dict | None = None) -> dict:
+    """OFFLINE, MID-LOOP design check of a level directory: is it designed or just
+    boxed? Measures greybox share, distinct meshes/materials, whether assets were
+    pulled in from galleries (source folders), one-mesh dominance, height bands
+    (flat plane?), occupancy, flat-scaled props, axis-aligned rotation share,
+    required function classes (e.g. Spawn) and lights. Each check: ok / fail /
+    unverified + value + threshold + evidence. Run after the skeleton ticket and
+    after the visual ticket; a `fail` blocks `done`. `profile` overrides
+    thresholds (see analysis.design_lint.DEFAULT_PROFILE; fix per game in GDD §0)."""
+    return _design_lint(_inspect_level(path), profile)
 
 
 @mcp.tool()
