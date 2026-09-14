@@ -5,6 +5,7 @@
  *   npx uefn-inspector install     install slash skills + register the MCP server
  *   npx uefn-inspector skills      skills only
  *   npx uefn-inspector mcp         MCP registration only
+  npx uefn-inspector plugins     required Claude Code plugins (grilling etc.)
  *   npx uefn-inspector doctor      check the environment
  *   npx uefn-inspector uninstall   remove what install added
  */
@@ -25,6 +26,15 @@ const SERVER = path.join(PKG, 'mcp_server.py');
 // mcp 2.x renamed FastMCP -> MCPServer; our server (and KirChuvakov's) use v1.
 const MCP_SPEC = 'mcp<2';
 const MCP_CHECK = 'import mcp.server.fastmcp';
+
+// Claude Code plugins the planning loop calls as MANDATORY skills (PLANNING-LOOP.md).
+// Without them /uefn-game-loop stalls at the first grilling round.
+const REQUIRED_PLUGINS = [
+  { name: 'mattpocock-skills', market: 'claude-plugins-official',
+    why: 'grilling / domain-modeling / research (planning rounds R0-R4)' },
+  { name: 'superpowers', market: 'superpowers-marketplace',
+    why: 'brainstorming (R1) / writing-plans (decomposition)' },
+];
 
 /**
  * Run the `claude` CLI. On Windows it is a .cmd/.ps1 shim, which execFile()
@@ -80,6 +90,37 @@ function findPython() {
     }
   }
   return null;
+}
+
+/** Installed Claude Code plugins, as `name@marketplace` -> enabled? */
+function installedPlugins() {
+  const out = {};
+  let text;
+  try { text = claudeSync(['plugin', 'list']).toString(); } catch { return null; }
+  let cur = null;
+  for (const line of text.split(/\r?\n/)) {
+    const m = line.match(/^\s*[❯>*-]?\s*([\w.-]+@[\w.-]+)\s*$/);
+    if (m) { cur = m[1]; out[cur] = true; continue; }
+    if (cur && /Status:/.test(line)) out[cur] = !/disabled/i.test(line);
+  }
+  return out;
+}
+
+function ensurePlugins() {
+  c.head('Required Claude Code plugins');
+  const have = installedPlugins();
+  if (have === null) { c.warn('claude CLI not found — install plugins manually (see below)'); }
+  for (const p of REQUIRED_PLUGINS) {
+    const key = `${p.name}@${p.market}`;
+    if (have && have[key] === true) { c.ok(`${key} — ${p.why}`); continue; }
+    if (have && have[key] === false) { c.warn(`${key} installed but DISABLED — enable: claude plugin enable ${key}`); continue; }
+    try {
+      claudeSync(['plugin', 'install', key]);
+      c.ok(`installed ${key} — ${p.why}`);
+    } catch (e) {
+      c.err(`could not install ${key} — run manually:  claude plugin install ${key}`);
+    }
+  }
 }
 
 function installSkills() {
@@ -142,6 +183,14 @@ function doctor() {
   fs.existsSync(path.join(SKILL_DEST, 'uefn-game-loop', 'SKILL.md'))
     ? c.ok(`skills installed: ${SKILL_DEST}`)
     : c.warn('skills not installed yet');
+  const have = installedPlugins();
+  for (const p of REQUIRED_PLUGINS) {
+    const key = `${p.name}@${p.market}`;
+    if (have === null) { c.warn(`plugin ${key}: unknown (claude CLI unavailable)`); continue; }
+    if (have[key] === true) c.ok(`plugin ${key}`);
+    else if (have[key] === false) c.warn(`plugin ${key} disabled — claude plugin enable ${key}`);
+    else c.err(`plugin ${key} MISSING — /uefn-game-loop planning rounds need it:  node bin/cli.js plugins`);
+  }
   fs.existsSync(path.join(PKG, 'data', 'engine_device_catalog.json'))
     ? c.ok('engine device catalog present')
     : c.warn('engine catalog absent — `engine_devices` disabled (see cue4parse_cli/README.md)');
@@ -175,7 +224,8 @@ const cmd = (process.argv[2] || 'install').toLowerCase();
 if (['-h', '--help', 'help'].includes(cmd)) { usage(); process.exit(0); }
 
 switch (cmd) {
-  case 'install': installSkills(); registerMcp(); break;
+  case 'install': installSkills(); registerMcp(); ensurePlugins(); break;
+  case 'plugins': ensurePlugins(); break;
   case 'skills': installSkills(); break;
   case 'mcp': registerMcp(); break;
   case 'doctor': doctor(); break;
@@ -183,7 +233,7 @@ switch (cmd) {
   default: usage(); process.exit(1);
 }
 
-if (['install', 'skills', 'mcp'].includes(cmd)) {
+if (['install', 'skills', 'mcp', 'plugins'].includes(cmd)) {
   console.log('\n\x1b[1mNext:\x1b[0m restart Claude Code, then run \x1b[36m/uefn-game-loop\x1b[0m');
   console.log('      (MCP tools appear after `/mcp` reconnect or a restart)\n');
 }

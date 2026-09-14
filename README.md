@@ -37,6 +37,7 @@ node bin/cli.js install        # 스킬 4종 + MCP 서버 등록 (Python·mcp �
 | `node bin/cli.js install` | 스킬 + MCP (권장) |
 | `node bin/cli.js skills` | 슬래시 스킬만 |
 | `node bin/cli.js mcp` | MCP 등록만 |
+| `node bin/cli.js plugins` | 기획 루프 필수 플러그인(mattpocock-skills: grilling 등, superpowers) 설치 |
 | `node bin/cli.js doctor` | 환경 점검(Python·mcp·claude CLI·설치 상태) |
 | `node bin/cli.js uninstall` | 되돌리기 |
 

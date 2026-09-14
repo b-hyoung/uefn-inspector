@@ -1,7 +1,14 @@
 # PLANNING-LOOP — 기획 루프 (라운드제, 필수 스킬 지정)
 
 목적: 기획을 한 번 훑는 질문지가 아니라 **라운드를 도는 루프**로 만든다. 종이로 답할 수 있는 것은 전부 여기서 답하고, 빌드가 필요한 것만 실험 가설로 남긴다. 기획 루프 안에서는 사용자에게 얼마든지 묻는다(규칙 0의 경계는 DOR 통과). 시간 상한은 없다. 종료는 시간이 아니라 아래 조건으로만 한다.
-필수 스킬은 이 PC에 설치된 것만 쓴다(실측 2026-09-14: `mattpocock-skills` 1.2.3, `superpowers` 6.3.0, 이 kit의 `uefn-*`). 단계에 들어가면 **"Using <스킬> to <목적>"** 을 선언하고 그 스킬 절차를 그대로 따른다. 스킬이 없으면 임의로 대체하지 않고 `capabilities`처럼 "미설치"로 보고한다.
+필수 스킬은 이 PC에 설치된 것만 쓴다(실측 2026-09-14: `mattpocock-skills` 1.2.3, `superpowers` 6.3.0, 이 kit의 `uefn-*`). 단계에 들어가면 **"Using <스킬> to <목적>"** 을 선언하고 그 스킬 절차를 그대로 따른다.
+
+## 사전 점검 — 필수 스킬이 없을 때 (R0 첫 행동)
+1. 세션의 스킬 목록에서 `mattpocock-skills:grilling`·`domain-modeling`·`research`·`superpowers:brainstorming`·`uefn-review`가 보이는지 확인한다. 문서가 아니라 목록이 근거다.
+2. 하나라도 없으면 기획 단계이므로 사용자에게 **설치 카드 1장**을 낸다: 원인(플러그인 미설치 또는 비활성) · 명령 `node bin/cli.js plugins`(또는 `claude plugin install mattpocock-skills@claude-plugins-official`) · 설치 뒤 Claude Code 재시작 필요 · 추천 = 설치.
+3. 사용자가 설치를 택하면 재시작 후 `/uefn-game-loop`으로 돌아온다(R0부터, 기록은 유지). 설치를 거절하면 **형식만 수동 적용**한다: 라운드·프론티어·번호 질문·추천 답을 이 문서의 규칙대로 직접 쓰고, `state/session-log.md`에 "grilling 미설치 — 형식 수동 적용"을 적는다. 이때 스킬 이름을 호출했다고 말하지 않는다.
+4. `research`가 없으면 WebSearch로 직접 조사하고 같은 형식(`spec/research/`)으로 남긴다. `brainstorming`이 없으면 R1은 grilling만으로 진행한다. `uefn-review`가 없으면 kit 설치가 깨진 것이므로 `node bin/cli.js install`을 안내한다.
+설치 여부는 `node bin/cli.js doctor`가 확인하고 `install`이 자동 설치한다(REQUIRED_PLUGINS).
 
 ## 라운드 표
 | R | 단계 | 필수 스킬 | AI가 하는 일(정확히) | 산출 | 나가는 조건 |

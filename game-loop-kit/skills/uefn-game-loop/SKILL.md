@@ -8,6 +8,9 @@ description: Run the whole UEFN game loop end-to-end — intake (what game / whe
 기본 진입점. `/uefn-intake`·`/uefn-level`·`/uefn-review`는 중간 진입용 단축키다.
 **KIT** = `C:\Users\ACE\Desktop\bobs_project\uefn-inspector\game-loop-kit` · 규약 원본 `KIT/loop/LOOP.md`
 
+## 시작 직후 — 사전 점검
+스킬 목록에 `mattpocock-skills:grilling`·`domain-modeling`·`research`·`superpowers:brainstorming`·`uefn-review`가 있는지 본다. 없으면 `PLANNING-LOOP.md` 사전 점검대로 설치 카드 1장(`node bin/cli.js plugins` → 재시작) 또는 형식 수동 적용. 아직 기획 전이므로 여기서 묻는 것은 규칙 0 위반이 아니다.
+
 ## 규칙 0 — 루프 무정지 (최상위, 아래 모든 규칙에 우선)
 - 경계는 ② DOR 통과다. 그 이전(①·②)에는 질문한다. 통과 이후 ⑤ 판정 보고까지는 **사람에게 묻지 않고 멈추지 않는다.**
 - 막히면 `state/deferred.md`에 한 건 기록(무엇·왜·택한 가정·영향 범위) 후 가장 보수적인 가정으로 진행한다. 진행 불가 티켓은 `deferred`로 표시하고 다음 티켓으로 간다.

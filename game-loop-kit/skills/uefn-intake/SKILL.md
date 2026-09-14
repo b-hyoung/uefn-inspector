@@ -23,7 +23,7 @@ description: Run the UEFN game-loop intake interview — ask what game, where th
 | 6 | `uefn-review` | 전면공격 B-0~B-9, 3회 연속 Blocker 0 |
 | 7 | AI 단독 | 불확실성 두 목록 · 한 페이지 요약 · 종료 조건 |
 grilling 형식(프론티어 질문 전부 + 번호 + 추천 답)이 결정 카드다. 답은 `DECISIONS.md`에 ADR로 남긴다. 아래 Phase 순서는 R1~R4 안에서 묻는 내용이다.
-**호출은 AI가 한다.** 사용자에게 스킬을 부르라고 하지 않는다. R1~R4에서 사용자에게 무엇이든 물을 때는 먼저 `mattpocock-skills:grilling`을 호출하고 그 형식으로 낸다. 애매함(선택지가 둘 이상이고 설계를 바꾸는 것)이 나타나면 그 자리에서 grilling을 부른다. 뻔한 것은 기본값으로 정해 `DECISIONS.md` 끝에 통보로 적는다.
+**호출은 AI가 한다.** 사용자에게 스킬을 부르라고 하지 않는다. 스킬이 목록에 없으면 `PLANNING-LOOP.md` 사전 점검(설치 카드 또는 형식 수동 적용)을 먼저 처리한다. R1~R4에서 사용자에게 무엇이든 물을 때는 먼저 `mattpocock-skills:grilling`을 호출하고 그 형식으로 낸다. 애매함(선택지가 둘 이상이고 설계를 바꾸는 것)이 나타나면 그 자리에서 grilling을 부른다. 뻔한 것은 기본값으로 정해 `DECISIONS.md` 끝에 통보로 적는다.
 
 ## 실행 순서
 
