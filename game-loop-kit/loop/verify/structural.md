@@ -44,7 +44,7 @@ assert share <= 0.20 and len(mats) >= 6 and len(meshes) >= 8, (share, len(mats),
 기본값(20%·6·8)은 예시이며 `spec/GDD.md §0`에서 게임별로 확정한다. 세션 유효성은 오프라인으로 못 잰다 → 라이브 StartSession 결과(Disallowed reference 0)를 `levels/LEVEL-X/build.md`에 기록.
 
 ### 7) 구조 설명서 (규칙 9) ⭐
-`level_map(<레벨 디렉터리>, cell=500)` → 평면도(`map`·`legend`)·구역표(`zones`: 클래스별 개수·중심·범위)·`extent`·`unplaced`. 이 출력을 `levels/LEVEL-X/build.md` 구조 절에 붙이고 테마·구역 용도·동선(스폰→첫 결정→목표→출구 좌표)·스크린샷 3장 경로를 채운다. `unplaced`가 있으면 위치 없는 액터이므로 배치 확인.
+`level_map(<레벨 디렉터리>, cell=500)` → 평면도(`map`·`legend`)·구역표(`zones`: 클래스별 개수·중심·범위)·`extent`·`unplaced`. 이 출력을 `levels/LEVEL-X/build.md` 구조 절에 붙이고 테마·구역 용도·동선(스폰→첫 결정→목표→출구 좌표)·스크린샷 3장 경로를 채운다. 이어서 `flow.md` ②: 플로우 표의 자리 열을 이 좌표로 바꾸고 `spec/MAP.md` 구역표와 대조(빠진 구역·좌표 없는 줄 = 미배치). `unplaced`가 있으면 위치 없는 액터이므로 배치 확인.
 
 ### 8) 디자인 린트 (중간 점검, 규칙 8·9) ⭐
 `design_lint(<레벨 디렉터리>)` → 체크 11개(그레이박스 비율 · 고유 메시/머티리얼 · 불러다 쓴 출처 폴더 · 한 메시 점유 · 높이 층/z 범위 · 점유율 · 판 비율 · 축 이탈 회전 · 필수 기능 클래스 · 광원)를 ok/fail/unverified + 값 + 임계 + 근거로 반환. 뼈대 티켓 뒤와 비주얼 티켓 뒤에 돌리고, `fail`이 있으면 `done` 불가. 임계값은 `DEFAULT_PROFILE`이 기본이며 게임별 값은 GDD §0에서 확정해 `profile`로 넘긴다. `unverified`(스케일·회전 미직렬화)는 실패가 아니지만 스크린샷으로 대신 본다.

@@ -47,6 +47,10 @@ D. 검증 우선순위 — 가장 불확실한 층 → 그 층을 겨냥해 4레
 E. 팩 필수 질문 4개 → `systems/` 규칙 · `FUN-HYPOTHESIS` 지표 · 변주 축.
 산출: `FUN-DEPTH.md` D-NN → `FUN-HYPOTHESIS.md` H-NN(지표는 팩 후보에서 선별).
 
+## Phase 3.7 — 맵 인테이크 (게임이 정해진 뒤, 맵을 게임에 맞게)
+`MAP-INTAKE.md` A 공통 11문 + 선택한 팩의 B 질문을 던진다. 구역 5종(스폰·목표·위험·안전·경계)·첫 결정 지점·긴장 최고점의 자리·순환/수직성·랜드마크·시야·스폰 기하·경계·구조 축 변수. 답은 `spec/MAP.md`. 답마다 "이 자리를 쓰는 규칙"을 같이 적는다.
+이어서 `loop/verify/flow.md` 종이 검증: 맵 구역 × 규칙 × 플레이어 플로우 표를 채우고 F1~F10을 돈다. fail 0이어야 DOR로 간다.
+
 ## Phase 4 — 기둥과 경계
 디자인 기둥 3~4개(모든 결정의 판단 기준) → GDD §0 · 안티 기둥(의도적으로 하지 않는 것) → 스코프 방어.
 
@@ -61,5 +65,6 @@ E. 팩 필수 질문 4개 → `systems/` 규칙 · `FUN-HYPOTHESIS` 지표 · �
 - [ ] Creative Brief · **형태 1개(DESIGN-SPACE §2) + 비틀기 1개(§3)** · 피치·Core Verb·Fantasy·Hook·최대 리스크 · 왜 UEFN인가
 - [ ] 형태 적합성(🟡 번역 확정 / 🔴 사용자 결정) · 장르 팩(주/부) + 공통 질문 · 팩 필수 질문 4개
 - [ ] 4개 루프의 재미 원천 · 깊이(3층 이상·긴장쌍·실패모드 3개) → `FUN-DEPTH.md`
+- [ ] **맵 인테이크** → `MAP.md`(구역표·동선·구조·시야·변주) · **플로우 검증 fail 0**(`loop/verify/flow.md`)
 - [ ] 기둥 3~4 + 안티기둥 · MVP 경계 · 실현가능성(🔴 없음 또는 대체 확정) · 티켓 해상도
 → `FUN-DEPTH.md` → `FUN-HYPOTHESIS.md` → `GDD.md`·`systems/`·`assets.md` → `DECOMPOSE.md`.

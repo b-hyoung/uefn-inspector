@@ -31,6 +31,7 @@
 - [ ] **자동 구동 모드** 계획 있음 (없으면 A레벨에 구축 티켓 필수)
 - [ ] **GUI 전용 단계** 식별됨(`capabilities` 확인 근거 첨부) → 별도 티켓 + `deferred`. @editable 배선·설정값은 오프라인 가능(`bind_editable`)이므로 GUI 사유가 아니다
 - [ ] 장르 팩(`GENRE-PACKS.md`) 필수 질문 4개 답변됨
+- [ ] **`spec/MAP.md` 작성됨**(구역 5종·동선·구조·시야·구조 축 변수) · **플로우 검증 F1~F10 fail 0**(`loop/verify/flow.md` ①). 규칙 없는 구역·자리 없는 규칙·결정 없는 연속 구간이 남아 있으면 반려
 - [ ] **비주얼 자산 경로 확정**(`loop/visual-options.md`): 기본은 T0·T1·1c. 블렌더·Fab·AI 생성(T3~T5)을 쓸지 **사용자에게 묻는다**(루프 착수 후에는 못 묻는다).
 - [ ] T4(블렌더)를 쓰기로 했으면 **전제조건을 실행으로 확인**: `mcp__blender-assets__get_scene_info`(블렌더 실행·MCP :9876 연결) · `get_polyhaven_status` · `get_sketchfab_status`(API 키) · `get_hyper3d_status`/`get_hunyuan3d_status`(생성 쓸 때). 하나라도 실패면 T4는 이번 세트에서 제외하고 자산 티켓(ASSET-NN)으로 미룬다.
 - [ ] **구조 설명서 형식 합의**: `build.md` 구조 절(테마·구역표·동선·스크린샷 3장)을 레벨마다 쓰기로 함. 사용자가 원하는 추가 항목이 있으면 지금 받는다.
